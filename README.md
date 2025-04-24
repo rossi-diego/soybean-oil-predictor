@@ -1,46 +1,48 @@
-# 🌱 Soybean Oil Spread Predictor
+# 🛢️ Soybean Oil Price Predictor
 
-A beginner-friendly data science project to forecast the price of the front-month soybean oil contract (BOC1) using historical spreads against related commodities such as palm oil and soybean meal. No specialized finance background required.
+This project forecasts the price of the front-month soybean oil futures contract (BOC1) using absolute prices of related commodities (e.g., palm oil, soybean meal, crude oil). It's a beginner-friendly project focused on applied data science and regression modeling.
 
 ---
 
 ## 🚀 Project Overview
 
 **Goal:**  
-Predict the price of the front-month soybean oil contract (BOC1) using relative price spreads versus other key commodities (e.g., palm oil, soybean meal).
+Predict the price of the front-month soybean oil contract (BOC1) using features derived from absolute prices of key related commodities and temporal information.
 
-**Key Steps:**
-- **Data Preparation:** Clean raw price data and save as `.parquet`.
-- **Exploratory Analysis:** Inspect trends, correlations, and outliers using Jupyter notebooks.
-- **Modeling:** Train and evaluate Linear, Lasso, Ridge, and ElasticNet regression models.
-- **Visualization & Reporting:** Build charts and export reports for insights.
+**Pipeline Highlights:**
+- Clean and preprocess historical price data
+- Perform cyclical encoding of the `month` variable
+- Use `RobustScaler` to scale numerical features
+- Train Linear, Ridge, Lasso, and ElasticNet models
+- Compare performance using cross-validation
+- Visualize residuals and coefficients
 
 ---
 
-## 🗂️ Project Structure
+## 📁 Repository Structure
 
 ```
 soybean-oil-spread-predictor/
-├── .gitignore               # Git ignored files and folders
-├── LICENSE                  # MIT License
-├── requirements.txt         # Python dependencies
-├── data/                    # Raw and cleaned data files
+├── data/                      # Raw and cleaned datasets
 │   ├── commodities_raw_data.csv
 │   └── commodities_clean_data.parquet
-├── models/                  # Saved regression model files (.joblib)
-├── notebooks/
-│   └── 01-spreads-eda.ipynb # Exploratory analysis notebook
-├── reports/                 # Generated images or HTML reports
-├── src/                     # Source code modules
-│   ├── config.py            # Project configuration and paths
-│   ├── models.py            # Model pipelines, training, CV
-│   ├── utils.py             # Helpers (e.g., coefficient formatting)
-│   └── visualization.py     # Plotting utilities
+├── models/                    # Saved model file
+│   └── linear_regression.joblib  # Best model: Lasso
+├── notebooks/                 # Jupyter notebooks
+│   ├── 01-eda.ipynb           # Exploratory data analysis
+│   └── 02-linear_regression.ipynb # Modeling and evaluation
+├── src/                       # Source code
+│   ├── config.py              # Project paths
+│   ├── models.py              # Model training and validation
+│   ├── utils.py               # Helper functions
+│   └── visualization.py       # Plots and analysis
+├── reports/                   # Generated plots and summaries
+└── requirements.txt           # Dependencies
 ```
 
 ---
 
-## 💻 Setup & Installation
+## ⚙️ Setup & Installation
 
 Clone the repository:
 
@@ -53,15 +55,10 @@ Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# Or cmd:
-.venv\Scripts\activate.bat
-# Or macOS/Linux:
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows use .venv\Scripts\activate
 ```
 
-Install the dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -69,68 +66,39 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ Usage
+## 📊 Usage
 
-### Exploratory Analysis
-
-Launch Jupyter Lab or Notebook:
+### 1. Run Exploratory Data Analysis
 
 ```bash
-jupyter lab
-# or
-jupyter notebook
+jupyter notebook notebooks/01-eda.ipynb
 ```
 
-Then open and run: `notebooks/01-spreads-eda.ipynb`
-
----
-
-### Model Training & Evaluation
-
-From within your notebook or a script:
-
-```python
-from src.models import train_and_validate_regression_model
-# Follow structure in src/models.py or the notebook example
-```
-
----
-
-### (Optional) Report Generation
+### 2. Train & Evaluate Models
 
 ```bash
-python src/reports_generator.py
+jupyter notebook notebooks/02-linear_regression.ipynb
 ```
 
----
+The best model was **Lasso**, chosen based on lowest RMSE and MAE. The model is saved as:
 
-## 🤝 Contributing
-
-Fork the repo and create your feature branch:
-
-```bash
-git checkout -b feature/your-feature-name
+```
+models/linear_regression.joblib
 ```
 
-Commit your changes and push:
+### 3. Predict New Values (optional app)
 
-```bash
-git add .
-git commit -m "Describe your feature"
-git push origin feature/your-feature-name
-```
-
-Then open a Pull Request for discussion or review.
+Coming soon via Streamlit app.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT License. See `LICENSE` for more information.
 
 ---
 
-## 🙋‍♂️ Contact
+## 🙋‍♂️ Author
 
-Questions or feedback?  
-Open an issue or reach out to **Diego Rossi 94.diegorossi@gmail.com**.
+**Diego Rossi**  
+For questions or suggestions, please open an issue or reach out directly.
