@@ -1,6 +1,6 @@
 from pathlib import Path
 
-PROJECT_FOLDER = Path(__file__).resolve().parents[2]
+PROJECT_FOLDER = Path(__file__).resolve().parents[1]
 
 DATA_FOLDER = PROJECT_FOLDER / "data"
 

@@ -1,3 +1,10 @@
+# ─────────────────────────────────────────────
+# Standard libraries
+import sys
+from pathlib import Path
+
+# ─────────────────────────────────────────────
+# Third-party libraries
 import streamlit as st
 import pandas as pd
 import joblib
@@ -6,32 +13,40 @@ import seaborn as sns
 from streamlit_option_menu import option_menu
 from PIL import Image
 
-import sys
-from pathlib import Path
-
-
-SRC_PATH = Path(__file__).resolve().parent / "notebooks" / "src"
-IMG_PATH = Path(__file__).resolve().parent / "reports" / "images"
-sys.path.append(str(SRC_PATH))
-
-
+# ─────────────────────────────────────────────
+# Paths and environment settings
 ROOT_DIR = Path(__file__).resolve().parent
+SRC_PATH = ROOT_DIR / "notebooks" / "src"
+IMG_PATH = ROOT_DIR / "reports" / "images"
+
+# Garantir que o Python encontre os módulos locais
+sys.path.append(str(SRC_PATH))
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from visualization import (
+# ─────────────────────────────────────────────
+# Local project modules
+from src.visualization import (
     PALETTE,
     plot_coefficients,
     plot_model_metrics_comparison,
     plot_residual_estimator, 
     SCATTER_ALPHA
 )
-from utils import coefficients_dataframe
+from src.utils import coefficients_dataframe
 
+
+# ─────────────────────────────────────────────
+# App configuration
+import streamlit as st
+from streamlit_option_menu import option_menu
+from pathlib import Path
+from PIL import Image
 
 st.set_page_config(page_title="Soybean Oil Predictor", layout="wide")
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
+# ─────────────────────────────────────────────
 # Sidebar menu
 with st.sidebar:
     selected = option_menu(
@@ -42,24 +57,24 @@ with st.sidebar:
         default_index=0,
     )
 
-# Page 1: EDA
+# ─────────────────────────────────────────────
+# Page 1: Exploratory Data Analysis (EDA)
 if selected == "📊 Exploratory Data Analysis":
     st.title("🔍 Exploratory Data Analysis (EDA)")
     st.write(
-    """
-    This section presents key visual analyses to better understand the structure, behavior, and relationships within the dataset used to forecast the front-month soybean oil contract (BOC1).
+        """
+        This section presents key visual analyses to better understand the structure, behavior, 
+        and relationships within the dataset used to forecast the front-month soybean oil contract (BOC1).
 
-    We focus on identifying feature relevance, variable distributions, correlations, and temporal patterns that support model selection and interpretation.
-    """
+        We focus on identifying feature relevance, variable distributions, correlations, 
+        and temporal patterns that support model selection and interpretation.
+        """
     )
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
-    from pathlib import Path
-
     IMG_PATH = Path(__file__).resolve().parent / "reports" / "images"
 
-# Gráficos com explicações
     image_sections = [
         {
             "file": "pairplot.png",
@@ -103,24 +118,16 @@ if selected == "📊 Exploratory Data Analysis":
         else:
             st.warning(f"{section['file']} not found.")
 
-
-
-
-
-
-
-
-###############################################################################################################
-######################### Page 2: Model Results
+# ─────────────────────────────────────────────
+# Page 2: Model Results
 elif selected == "📈 Model Results":
     st.subheader("📌 Model Coefficients")
-    st.write(
-    """
-    This section summarizes the results from various regression models trained to predict the price of the front-month soybean oil contract (BOC1).
+    st.write("""
+        This section summarizes the results from various regression models trained to predict the price of the front-month soybean oil contract (BOC1).
 
-    We compare model performance using cross-validation metrics, inspect feature importance via coefficients, and evaluate residuals to diagnose model behavior and reliability.
-    """
-    )
+        We compare model performance using cross-validation metrics, inspect feature importance via coefficients, and evaluate residuals to diagnose model behavior and reliability.
+    """)
+
     st.markdown("<br>", unsafe_allow_html=True)
     st.write(
         "This chart shows the magnitude and direction of each feature's influence on the target variable (BOC1). "
@@ -129,8 +136,6 @@ elif selected == "📈 Model Results":
     )
 
     model = joblib.load("models/linear_regression.joblib")
-
-    # Recupera os coeficientes e nomes das variáveis
     coefs = model.named_steps["reg"].coef_
     features = model.named_steps["preprocessor"].get_feature_names_out()
 
@@ -138,7 +143,6 @@ elif selected == "📈 Model Results":
     df_coefs["feature"] = df_coefs["feature"].str.replace(r".*__", "", regex=True)
     df_coefs = df_coefs.sort_values(by="coefficient", ascending=True)
 
-    # Plot
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.barh(df_coefs["feature"], df_coefs["coefficient"], color="blue")
     ax.axvline(x=0, color="gray", linestyle="--")
@@ -147,24 +151,19 @@ elif selected == "📈 Model Results":
     ax.set_ylabel("Feature")
     st.pyplot(fig)
 
-    #####################################
     st.markdown("<br>", unsafe_allow_html=True)
     st.subheader("📋 Model Performance")
-
     st.markdown("""
-    This table presents the **average cross-validation scores** for each model tested in this project:
+        This table presents the **average cross-validation scores** for each model tested:
 
-    - **R² Score**: Proportion of the variance in the target variable explained by the model (higher = better).
-    - **MAE (Mean Absolute Error)**: Average magnitude of prediction errors (lower = better).
-    - **RMSE (Root Mean Squared Error)**: Similar to MAE but penalizes larger errors more heavily (lower = better).
+        - **R² Score**: Proportion of the variance in the target variable explained by the model (higher = better).
+        - **MAE**: Mean Absolute Error (lower = better).
+        - **RMSE**: Root Mean Squared Error (lower = better).
 
-    ℹ️ *Note: Since sklearn returns MAE and RMSE as negative scores (for optimization purposes), values below have been converted to positive.*
+        ℹ️ *Note: Since sklearn returns MAE and RMSE as negative scores, values below have been converted to positive.*
     """, unsafe_allow_html=True)
 
- 
     df_results = pd.read_parquet("data/model_comparison_results.parquet")
-
-  
     summary_table = (
         df_results
         .groupby("model")
@@ -174,13 +173,10 @@ elif selected == "📈 Model Results":
             test_neg_root_mean_squared_error=lambda df: -df["test_neg_root_mean_squared_error"]
         )
         .sort_values(by="test_neg_root_mean_squared_error", ascending=True)
-    )[[
-        "test_r2", 
-        "test_neg_mean_absolute_error", 
-        "test_neg_root_mean_squared_error"
-    ]].round(4)
+    )[
+        ["test_r2", "test_neg_mean_absolute_error", "test_neg_root_mean_squared_error"]
+    ].round(4)
 
- 
     st.markdown(
         summary_table.to_html(index=True, justify="center", classes="dataframe", border=0),
         unsafe_allow_html=True
@@ -189,42 +185,34 @@ elif selected == "📈 Model Results":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     st.subheader("📉 Residual Analysis for the Best Model")
-
     st.write("""
-    This plot helps assess how well the model predictions align with the actual values.
+        This plot helps assess how well the model predictions align with the actual values.
 
-    - **Left**: Histogram of residuals (prediction errors)
-    - **Middle**: Residuals vs predicted values (checking for patterns)
-    - **Right**: Actual vs predicted values (ideally close to diagonal)
+        - **Left**: Histogram of residuals (prediction errors)
+        - **Middle**: Residuals vs predicted values
+        - **Right**: Actual vs predicted values
 
-    A good model will show residuals randomly scattered around zero and a tight clustering around the diagonal line.
+        A good model shows residuals randomly scattered around zero and tight clustering around the diagonal.
     """)
 
-   
     model = joblib.load("models/linear_regression.joblib")
     df = pd.read_parquet("data/commodities_clean_data.parquet")
     target_column = "boc1"
     X = df.drop(columns=target_column)
     y = df[target_column]
 
-    # Plot
     fig = plot_residual_estimator(model, X, y)
     st.pyplot(fig)
 
-
-
-
-
-
-###############################################################################################################
-# Page 3: Prediction
+# ─────────────────────────────────────────────
+# Page 3: Make a Prediction
 elif selected == "🧮 Make a Prediction":
     st.subheader("🧮 Make a Prediction")
-    st.write(
-        "Fill in the required commodity and calendar variables to forecast the price of the front-month soybean oil contract (BOC1).\n\n"
-        "The table below summarizes the statistical range of each variable (count, mean, min, max, etc)."
-    )
+    st.write("""
+        Fill in the required commodity and calendar variables to forecast the price of the front-month soybean oil contract (BOC1).
 
+        The table below summarizes the statistical range of each variable (count, mean, min, max, etc).
+    """)
 
     df_stats = pd.read_csv("data/features_describe.csv", index_col=0)
     show_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
@@ -233,12 +221,10 @@ elif selected == "🧮 Make a Prediction":
 
     st.markdown("### Enter input values")
 
-  
     def build_help(col):
         desc = df_stats[col]
         return f"Typical range: {desc['min']:.0f}–{desc['max']:.0f} | Mean: {desc['mean']:.0f}"
 
-   
     smc1 = st.number_input("Soybean Meal (SMC1)", min_value=0.0, help=build_help("smc1"))
     sc1 = st.number_input("Soybean (SC1)", min_value=0.0, help=build_help("sc1"))
     lcoc1 = st.number_input("Brent Crude (LCOc1)", min_value=0.0, help=build_help("lcoc1"))
@@ -257,13 +243,10 @@ elif selected == "🧮 Make a Prediction":
         "month": month,
     }])
 
-
     if st.button("🔍 Predict BOC1"):
         model = joblib.load("models/linear_regression.joblib")
         prediction = model.predict(input_data)[0]
-
         st.success(f"📈 Predicted BOC1 Price: **{prediction:.2f}**")
 
-     
         boc1_stats = pd.read_parquet("data/commodities_clean_data.parquet")["boc1"].describe()
         st.caption(f"Training data range: {boc1_stats['min']:.2f}–{boc1_stats['max']:.2f} | Mean: {boc1_stats['mean']:.2f}")
