@@ -9,12 +9,12 @@ from PIL import Image
 import sys
 from pathlib import Path
 
-# Permitir importar seus módulos locais (notebooks/src)
+
 SRC_PATH = Path(__file__).resolve().parent / "notebooks" / "src"
 IMG_PATH = Path(__file__).resolve().parent / "reports" / "images"
 sys.path.append(str(SRC_PATH))
 
-# Permitir deserializar o pipeline com joblib (precisa ver src.models)
+
 ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -23,7 +23,7 @@ from visualization import (
     PALETTE,
     plot_coefficients,
     plot_model_metrics_comparison,
-    plot_residual_estimator,  # 👈 adicione esta linha
+    plot_residual_estimator, 
     SCATTER_ALPHA
 )
 from utils import coefficients_dataframe
@@ -161,10 +161,10 @@ elif selected == "📈 Model Results":
     ℹ️ *Note: Since sklearn returns MAE and RMSE as negative scores (for optimization purposes), values below have been converted to positive.*
     """, unsafe_allow_html=True)
 
-    # Carregar resultados
+ 
     df_results = pd.read_parquet("data/model_comparison_results.parquet")
 
-    # Agrupar, inverter sinais de MAE e RMSE e formatar
+  
     summary_table = (
         df_results
         .groupby("model")
@@ -180,7 +180,7 @@ elif selected == "📈 Model Results":
         "test_neg_root_mean_squared_error"
     ]].round(4)
 
-    # Exibir centralizado
+ 
     st.markdown(
         summary_table.to_html(index=True, justify="center", classes="dataframe", border=0),
         unsafe_allow_html=True
@@ -200,7 +200,7 @@ elif selected == "📈 Model Results":
     A good model will show residuals randomly scattered around zero and a tight clustering around the diagonal line.
     """)
 
-    # Carregar dados e modelo
+   
     model = joblib.load("models/linear_regression.joblib")
     df = pd.read_parquet("data/commodities_clean_data.parquet")
     target_column = "boc1"
@@ -225,7 +225,7 @@ elif selected == "🧮 Make a Prediction":
         "The table below summarizes the statistical range of each variable (count, mean, min, max, etc)."
     )
 
-    # Carregar e exibir describe das features (sem boc1 e ordenado)
+
     df_stats = pd.read_csv("data/features_describe.csv", index_col=0)
     show_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
     df_stats = df_stats[show_cols]
@@ -233,12 +233,12 @@ elif selected == "🧮 Make a Prediction":
 
     st.markdown("### Enter input values")
 
-    # Função para criar help text automático com base no describe
+  
     def build_help(col):
         desc = df_stats[col]
         return f"Typical range: {desc['min']:.0f}–{desc['max']:.0f} | Mean: {desc['mean']:.0f}"
 
-    # Inputs com tooltips automáticos
+   
     smc1 = st.number_input("Soybean Meal (SMC1)", min_value=0.0, help=build_help("smc1"))
     sc1 = st.number_input("Soybean (SC1)", min_value=0.0, help=build_help("sc1"))
     lcoc1 = st.number_input("Brent Crude (LCOc1)", min_value=0.0, help=build_help("lcoc1"))
@@ -257,13 +257,13 @@ elif selected == "🧮 Make a Prediction":
         "month": month,
     }])
 
-    # Botão de previsão
+
     if st.button("🔍 Predict BOC1"):
         model = joblib.load("models/linear_regression.joblib")
         prediction = model.predict(input_data)[0]
 
         st.success(f"📈 Predicted BOC1 Price: **{prediction:.2f}**")
 
-        # Mostrar faixa de referência do BOC1
+     
         boc1_stats = pd.read_parquet("data/commodities_clean_data.parquet")["boc1"].describe()
         st.caption(f"Training data range: {boc1_stats['min']:.2f}–{boc1_stats['max']:.2f} | Mean: {boc1_stats['mean']:.2f}")
