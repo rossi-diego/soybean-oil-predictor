@@ -36,7 +36,7 @@ from src.visualization import (
     SCATTER_ALPHA
 )
 from src.utils import coefficients_dataframe
-from src.config import LINEAR_REGRESSION_MODEL
+from src.config import LINEAR_REGRESSION_MODEL, CLEAN_DATA, RESULTS_DATA, FEATURES_DATA
 
 # ─────────────────────────────────────────────
 # App configuration
@@ -46,6 +46,27 @@ from pathlib import Path
 from PIL import Image
 
 st.set_page_config(page_title="Soybean Oil Predictor", layout="wide")
+
+# ─────────────────────────────────────────────
+# Load model
+def load_model():
+    """
+    Garante que módulos locais estejam importados antes do unpickle
+    e dá uma mensagem amigável se houver incompatibilidade de versões/símbolos.
+    """
+    try:
+        # importe módulos do projeto que possam conter funções/classes usadas no pipeline
+        mdl = joblib.load(LINEAR_REGRESSION_MODEL)  # aceita Path
+        return mdl
+    except Exception as e:
+        st.error(
+            "❌ Falha ao carregar o modelo.\n\n"
+            "Verifique se as versões de scikit-learn/numpy são as mesmas usadas no treino **e** "
+            "se qualquer transformer/função custom está definido em um módulo Python importável "
+            "antes do `joblib.load()`.\n\n"
+            f"Detalhe técnico: {type(e).__name__}"
+        )
+        st.stop()
 
 
 # ─────────────────────────────────────────────
@@ -138,7 +159,7 @@ elif selected == "📈 Model Results":
     )
 
     # --- Load model
-    model = joblib.load("models/linear_regression.joblib")
+    model = model = load_model()
 
 
     pipe = getattr(model, "regressor", model)
@@ -199,7 +220,7 @@ elif selected == "📈 Model Results":
         ℹ️ *Note: Since sklearn returns MAE and RMSE as negative scores, values below have been converted to positive.*
     """, unsafe_allow_html=True)
 
-    df_results = pd.read_parquet("data/model_comparison_results.parquet")
+    df_results = pd.read_parquet(RESULTS_DATA)
     summary_table = (
         df_results
         .groupby("model")
@@ -228,7 +249,7 @@ elif selected == "📈 Model Results":
         A good model shows residuals randomly scattered around zero and tight clustering around the diagonal.
     """)
 
-    df = pd.read_parquet("data/commodities_clean_data.parquet")
+    df = pd.read_parquet(CLEAN_DATA)
     target_column = "boc1"
     X = df.drop(columns=target_column)
     y = df[target_column]
@@ -246,16 +267,39 @@ elif selected == "🧮 Make a Prediction":
         The table below summarizes the statistical range of each variable (count, mean, min, max, etc).
     """)
 
-    df_stats = pd.read_csv("data/features_describe.csv", index_col=0)
-    show_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1", "so-premp-c1", "brl="]
-    df_stats = df_stats[show_cols]
+    df_stats = pd.read_csv(FEATURES_DATA, index_col=0)
+    requested_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1", "so-premp-c1", "brl="]
+    available_cols = [c for c in requested_cols if c in df_stats.columns]
+    missing_cols = sorted(set(requested_cols) - set(available_cols))
+
+    if missing_cols:
+        st.warning(f"As seguintes variáveis não estão no arquivo de stats e serão ignoradas: {missing_cols}")
+
+    if not available_cols:
+        st.error("Nenhuma das colunas esperadas está disponível em features_describe.csv.")
+        st.stop()
+
+    df_stats = df_stats[available_cols]
     st.dataframe(df_stats.T.style.format(precision=2))
 
     st.markdown("### Enter input values")
 
     def build_help(col):
+        if col not in df_stats.columns:
+            return "Sem estatísticas disponíveis para este campo."
         desc = df_stats[col]
-        return f"Typical range: {desc['min']:.0f}–{desc['max']:.0f} | Mean: {desc['mean']:.0f}"
+        def _num(x):
+            try:
+                return float(x)
+            except Exception:
+                return x
+        min_v = _num(desc.get("min", ""))
+        max_v = _num(desc.get("max", ""))
+        mean_v = _num(desc.get("mean", ""))
+        try:
+            return f"Typical range: {min_v:.0f}–{max_v:.0f} | Mean: {mean_v:.0f}"
+        except Exception:
+            return f"Typical range: {min_v}–{max_v} | Mean: {mean_v}"
 
     smc1 = st.number_input("Soybean Meal (SMC1)", min_value=0.0, help=build_help("smc1"))
     sc1 = st.number_input("Soybean (SC1)", min_value=0.0, help=build_help("sc1"))
@@ -278,10 +322,10 @@ elif selected == "🧮 Make a Prediction":
     }])
 
     if st.button("🔍 Predict BOC1"):
-        model = joblib.load("models/linear_regression.joblib")
+        model = load_model()
         pred_val = model.predict(input_data)
         prediction = float(np.ravel(pred_val)[0])
         st.success(f"📈 Predicted BOC1 Price: **{prediction:.2f}**")
 
-        boc1_stats = pd.read_parquet("data/commodities_clean_data.parquet")["boc1"].describe()
+        boc1_stats = pd.read_parquet(CLEAN_DATA)["boc1"].describe()
         st.caption(f"Training data range: {boc1_stats['min']:.2f}–{boc1_stats['max']:.2f} | Mean: {boc1_stats['mean']:.2f}")

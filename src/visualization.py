@@ -4,8 +4,7 @@ import seaborn as sns
 import pandas as pd
 from matplotlib.ticker import EngFormatter
 from sklearn.metrics import PredictionErrorDisplay
-from sklearn.utils.validation import check_is_fitted
-
+from sklearn.utils.validation import check_is_fitted, check_consistent_length
 
 RANDOM_STATE = 42
 
@@ -16,6 +15,7 @@ SCATTER_ALPHA = 0.2
 
 # Plots a horizontal bar chart of model coefficients for visual analysis
 def plot_coefficients(df_coefs, title="Coefficients"):
+    fig, ax = plt.subplots(figsize=(8, 6))
     df_coefs.plot.barh()
     plt.title(title)
     plt.axvline(x=0, color=".5")
