@@ -6,6 +6,7 @@ from pathlib import Path
 # ─────────────────────────────────────────────
 # Third-party libraries
 import streamlit as st
+import numpy as np
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
@@ -135,21 +136,55 @@ elif selected == "📈 Model Results":
         "Features with larger absolute coefficients are more impactful in the model."
     )
 
+    # --- Load model
     model = joblib.load("models/linear_regression.joblib")
-    coefs = model.named_steps["reg"].coef_
-    features = model.named_steps["preprocessor"].get_feature_names_out()
 
-    df_coefs = pd.DataFrame({"feature": features, "coefficient": coefs})
-    df_coefs["feature"] = df_coefs["feature"].str.replace(r".*__", "", regex=True)
-    df_coefs = df_coefs.sort_values(by="coefficient", ascending=True)
+    # Se for TransformedTargetRegressor, pegue o pipeline real
+    pipe = getattr(model, "regressor", model)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.barh(df_coefs["feature"], df_coefs["coefficient"], color="blue")
-    ax.axvline(x=0, color="gray", linestyle="--")
-    ax.set_title("Lasso Coefficients")
-    ax.set_xlabel("Coefficient Value")
-    ax.set_ylabel("Feature")
-    st.pyplot(fig)
+    # Tente obter preprocessor e reg
+    preproc = pipe.named_steps.get("preprocessor")
+    reg = pipe.named_steps.get("reg")
+
+    if reg is None:
+        st.error("Model step 'reg' not found in pipeline.")
+    else:
+        import numpy as np
+
+        # coef_ pode vir 2D; garanta 1D
+        coefs = getattr(reg, "coef_", None)
+        if coefs is None:
+            st.error("Could not read coefficients from the model step 'reg'.")
+        else:
+            coefs = np.asarray(coefs).reshape(-1)
+
+            # nomes das features (do ColumnTransformer), removendo prefixos "num__", etc.
+            if preproc is not None and hasattr(preproc, "get_feature_names_out"):
+                features = preproc.get_feature_names_out()
+                # remove qualquer prefixo transformer__ para ficar limpo
+                features = pd.Index(features).str.replace(r".*__", "", regex=True)
+            else:
+                # fallback: usa colunas originais do parquet (menos a target)
+                df_tmp = pd.read_parquet("data/commodities_clean_data.parquet")
+                features = df_tmp.drop(columns="boc1").columns
+
+            # Se o tamanho não bater, avisa e faz um alinhamento robusto
+            if len(features) != len(coefs):
+                st.warning(f"Feature length ({len(features)}) != coef length ({len(coefs)}). Attempting to align.")
+                min_len = min(len(features), len(coefs))
+                features = pd.Index(features[:min_len])
+                coefs = coefs[:min_len]
+
+            df_coefs = pd.DataFrame({"feature": features, "coefficient": coefs})
+            df_coefs = df_coefs.sort_values(by="coefficient", ascending=True)
+
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.barh(df_coefs["feature"], df_coefs["coefficient"])  # cor default
+            ax.axvline(x=0, color="gray", linestyle="--")
+            ax.set_title("Model Coefficients")
+            ax.set_xlabel("Coefficient Value")
+            ax.set_ylabel("Feature")
+            st.pyplot(fig)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.subheader("📋 Model Performance")
@@ -167,7 +202,7 @@ elif selected == "📈 Model Results":
     summary_table = (
         df_results
         .groupby("model")
-        .mean()
+        .mean(numeric_only=True)  # <- evita FutureWarning
         .assign(
             test_neg_mean_absolute_error=lambda df: -df["test_neg_mean_absolute_error"],
             test_neg_root_mean_squared_error=lambda df: -df["test_neg_root_mean_squared_error"]
@@ -177,10 +212,7 @@ elif selected == "📈 Model Results":
         ["test_r2", "test_neg_mean_absolute_error", "test_neg_root_mean_squared_error"]
     ].round(4)
 
-    st.markdown(
-        summary_table.to_html(index=True, justify="center", classes="dataframe", border=0),
-        unsafe_allow_html=True
-    )
+    st.dataframe(summary_table)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -195,14 +227,15 @@ elif selected == "📈 Model Results":
         A good model shows residuals randomly scattered around zero and tight clustering around the diagonal.
     """)
 
-    model = joblib.load("models/linear_regression.joblib")
+    # Use o mesmo dataset do treino para o diagnóstico
     df = pd.read_parquet("data/commodities_clean_data.parquet")
     target_column = "boc1"
     X = df.drop(columns=target_column)
     y = df[target_column]
 
-    fig = plot_residual_estimator(model, X, y)
-    st.pyplot(fig)
+    # sua função não retorna fig; ela plota e dá plt.show()
+    plot_residual_estimator(model, X, y)
+    st.pyplot(plt.gcf())
 
 # ─────────────────────────────────────────────
 # Page 3: Make a Prediction
@@ -215,7 +248,7 @@ elif selected == "🧮 Make a Prediction":
     """)
 
     df_stats = pd.read_csv("data/features_describe.csv", index_col=0)
-    show_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
+    show_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1", "so-premp-c1", "brl="]
     df_stats = df_stats[show_cols]
     st.dataframe(df_stats.T.style.format(precision=2))
 
@@ -231,7 +264,8 @@ elif selected == "🧮 Make a Prediction":
     hoc1 = st.number_input("Heating Oil (HOC1)", min_value=0.0, help=build_help("hoc1"))
     fcpoc1 = st.number_input("Palm Oil (FCPOc1)", min_value=0.0, help=build_help("fcpoc1"))
     rsc1 = st.number_input("Rapeseed Oil (RSC1)", min_value=0.0, help=build_help("rsc1"))
-    month = st.selectbox("Month", list(range(1, 13)))
+    so_premp_c1 = st.number_input("Soybean Oil Paranaguá Basis", min_value=-5000, help=build_help("so-premp-c1"))
+    brl = st.number_input("Brl x USD", min_value=0.0, help=build_help("brl="))    
 
     input_data = pd.DataFrame([{
         "smc1": smc1,
@@ -240,12 +274,14 @@ elif selected == "🧮 Make a Prediction":
         "hoc1": hoc1,
         "fcpoc1": fcpoc1,
         "rsc1": rsc1,
-        "month": month,
+        "so-premp-c1": so_premp_c1,
+        "brl=": brl
     }])
 
     if st.button("🔍 Predict BOC1"):
         model = joblib.load("models/linear_regression.joblib")
-        prediction = model.predict(input_data)[0]
+        pred_val = model.predict(input_data)
+        prediction = float(np.ravel(pred_val)[0])
         st.success(f"📈 Predicted BOC1 Price: **{prediction:.2f}**")
 
         boc1_stats = pd.read_parquet("data/commodities_clean_data.parquet")["boc1"].describe()

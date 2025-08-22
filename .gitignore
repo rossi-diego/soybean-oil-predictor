@@ -1,64 +1,44 @@
-# Python bytecode
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
 
-# Virtual environments
+# Virtual envs
 .env
-.venv/
+.venv
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
 
-# Jupyter notebook checkpoints
+# Jupyter notebooks
 .ipynb_checkpoints/
 
-# Data folders
-
-# System files
-.DS_Store
-
-# Logs
-*.log
-
-# IDEs
+# IDEs e editores
 .vscode/
 .idea/
-
-# Test / coverage
-.pytest_cache/
-.tox/
-.nox/
-.coverage
-coverage.xml
-*.cover
-.hypothesis/
-
-# mypy / type-checking
-.mypy_cache/
-.pytype/
-.pyre/
-
-# Reports
-/reports/*.html
-/reports/*.pdf
-
-# Build artifacts
-build/
-dist/
-*.egg-info/
-*.egg
-*.manifest
-*.spec
-*.wheels
-*.pyd
-
-# pip and packaging logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Others
 *.swp
 *.swo
+
+# Dados e modelos (gerados localmente, não versionar no Git)
+data/
+models/
+reports/images/
+*.parquet
+*.csv
+*.joblib
+*.pkl
+
+# Logs e cache
+*.log
+*.tmp
+*.cache
+__cache__/
+*.DS_Store
+
+# Streamlit
+.streamlit/
