@@ -45,7 +45,7 @@ from pathlib import Path
 from PIL import Image
 
 st.set_page_config(page_title="Soybean Oil Predictor", layout="wide")
-st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 # ─────────────────────────────────────────────
 # Sidebar menu
@@ -139,10 +139,10 @@ elif selected == "📈 Model Results":
     # --- Load model
     model = joblib.load("models/linear_regression.joblib")
 
-    # Se for TransformedTargetRegressor, pegue o pipeline real
+
     pipe = getattr(model, "regressor", model)
 
-    # Tente obter preprocessor e reg
+
     preproc = pipe.named_steps.get("preprocessor")
     reg = pipe.named_steps.get("reg")
 
@@ -151,24 +151,24 @@ elif selected == "📈 Model Results":
     else:
         import numpy as np
 
-        # coef_ pode vir 2D; garanta 1D
+
         coefs = getattr(reg, "coef_", None)
         if coefs is None:
             st.error("Could not read coefficients from the model step 'reg'.")
         else:
             coefs = np.asarray(coefs).reshape(-1)
 
-            # nomes das features (do ColumnTransformer), removendo prefixos "num__", etc.
+
             if preproc is not None and hasattr(preproc, "get_feature_names_out"):
                 features = preproc.get_feature_names_out()
-                # remove qualquer prefixo transformer__ para ficar limpo
+
                 features = pd.Index(features).str.replace(r".*__", "", regex=True)
             else:
-                # fallback: usa colunas originais do parquet (menos a target)
+
                 df_tmp = pd.read_parquet("data/commodities_clean_data.parquet")
                 features = df_tmp.drop(columns="boc1").columns
 
-            # Se o tamanho não bater, avisa e faz um alinhamento robusto
+
             if len(features) != len(coefs):
                 st.warning(f"Feature length ({len(features)}) != coef length ({len(coefs)}). Attempting to align.")
                 min_len = min(len(features), len(coefs))
@@ -179,7 +179,7 @@ elif selected == "📈 Model Results":
             df_coefs = df_coefs.sort_values(by="coefficient", ascending=True)
 
             fig, ax = plt.subplots(figsize=(10, 6))
-            ax.barh(df_coefs["feature"], df_coefs["coefficient"])  # cor default
+            ax.barh(df_coefs["feature"], df_coefs["coefficient"]) 
             ax.axvline(x=0, color="gray", linestyle="--")
             ax.set_title("Model Coefficients")
             ax.set_xlabel("Coefficient Value")
@@ -202,7 +202,7 @@ elif selected == "📈 Model Results":
     summary_table = (
         df_results
         .groupby("model")
-        .mean(numeric_only=True)  # <- evita FutureWarning
+        .mean(numeric_only=True) 
         .assign(
             test_neg_mean_absolute_error=lambda df: -df["test_neg_mean_absolute_error"],
             test_neg_root_mean_squared_error=lambda df: -df["test_neg_root_mean_squared_error"]
@@ -227,13 +227,11 @@ elif selected == "📈 Model Results":
         A good model shows residuals randomly scattered around zero and tight clustering around the diagonal.
     """)
 
-    # Use o mesmo dataset do treino para o diagnóstico
     df = pd.read_parquet("data/commodities_clean_data.parquet")
     target_column = "boc1"
     X = df.drop(columns=target_column)
     y = df[target_column]
 
-    # sua função não retorna fig; ela plota e dá plt.show()
     plot_residual_estimator(model, X, y)
     st.pyplot(plt.gcf())
 

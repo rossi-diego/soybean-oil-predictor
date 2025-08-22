@@ -21,7 +21,7 @@ def plot_coefficients(df_coefs, title="Coefficients"):
     plt.axvline(x=0, color=".5")
     plt.xlabel("Coefficients")
     plt.gca().get_legend().remove()
-    plt.show()
+    return fig
 
 # Plots residual distribution, residuals vs predicted values, and actual vs predicted values to evaluate regression performance
 def plot_residual(y_true, y_pred):
@@ -39,9 +39,7 @@ def plot_residual(y_true, y_pred):
         y_true=y_true, y_pred=y_pred, kind="actual_vs_predicted", ax=axs[2]
     )
 
-    plt.tight_layout()
-
-    plt.show()
+    return fig
 
 def plot_residual_estimator(estimator, X, y, eng_formatter=False, fracao_amostra=0.25):
     # 0) garante que o modelo está treinado
@@ -111,8 +109,7 @@ def plot_residual_estimator(estimator, X, y, eng_formatter=False, fracao_amostra
             ax.yaxis.set_major_formatter(EngFormatter())
             ax.xaxis.set_major_formatter(EngFormatter())
 
-    plt.tight_layout()
-    plt.show()
+    return fig
 
 
 # Plots a boxplot comparison of metrics (time, R², MAE, RMSE) across different regression models
@@ -145,6 +142,4 @@ def plot_model_metrics_comparison(df_results):
         ax.set_ylabel(name)
         ax.tick_params(axis="x", rotation=90)
 
-    plt.tight_layout()
-
-    plt.show()
+    return fig
