@@ -20,6 +20,7 @@ ROOT_DIR = Path(__file__).resolve().parent
 SRC_PATH = ROOT_DIR / "notebooks" / "src"
 IMG_PATH = ROOT_DIR / "reports" / "images"
 
+
 # Garantir que o Python encontre os módulos locais
 sys.path.append(str(SRC_PATH))
 if str(ROOT_DIR) not in sys.path:
@@ -35,7 +36,7 @@ from src.visualization import (
     SCATTER_ALPHA
 )
 from src.utils import coefficients_dataframe
-
+from src.config import LINEAR_REGRESSION_MODEL
 
 # ─────────────────────────────────────────────
 # App configuration
@@ -113,7 +114,7 @@ if selected == "📊 Exploratory Data Analysis":
 
         img_file = IMG_PATH / section["file"]
         if img_file.exists():
-            st.image(Image.open(img_file), caption=section["caption"], use_column_width=True)
+            st.image(Image.open(img_file), caption=section["caption"], use_container_width=True)
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
         else:
