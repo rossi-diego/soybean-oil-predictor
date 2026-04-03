@@ -1,0 +1,7 @@
+# Heavy dependencies for local orchestration and data modeling.
+# Install separately: pip install -r requirements-orchestration.txt
+# Not required to run the API, frontend, or tests.
+
+apache-airflow>=3.1.7,<4
+dbt-core>=1.9,<2
+dbt-duckdb>=1.9,<2
