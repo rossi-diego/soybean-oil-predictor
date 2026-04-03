@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.config import DATA_BRONZE, Settings
+from src.config import DATA_BRONZE
 from src.log import get_logger
 
 logger = get_logger(__name__)

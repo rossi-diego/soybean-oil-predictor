@@ -8,8 +8,8 @@ from src.config import (
     LINEAR_REGRESSION_MODEL,
     MODEL_FOLDER,
     REPORT_FOLDER,
-    TICKERS,
     TARGET_COLUMN,
+    TICKERS,
     Settings,
 )
 

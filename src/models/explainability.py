@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import shap
 
-from src.config import IMAGE_FOLDER
 from src.log import get_logger
 
 logger = get_logger(__name__)

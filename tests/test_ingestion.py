@@ -1,7 +1,6 @@
 """Unit tests for ingestion modules."""
 
 import pandas as pd
-import pytest
 
 from src.ingestion.yfinance_ingest import fetch_single_ticker
 

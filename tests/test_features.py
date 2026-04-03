@@ -4,6 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from src.features.calendar import (
+    compute_all_calendar,
+    crop_season_phase,
+    cyclical_month,
+)
 from src.features.spreads import (
     compute_all_spreads,
     crush_spread,
@@ -16,11 +21,6 @@ from src.features.technical import (
     momentum,
     rolling_volatility,
     rolling_zscore,
-)
-from src.features.calendar import (
-    compute_all_calendar,
-    crop_season_phase,
-    cyclical_month,
 )
 
 
@@ -113,7 +113,8 @@ class TestCalendar:
         result = cyclical_month(dates)
         sin_diff = abs(result["month_sin"].iloc[0] - result["month_sin"].iloc[1])
         cos_diff = abs(result["month_cos"].iloc[0] - result["month_cos"].iloc[1])
-        assert sin_diff < 1.0  # December and January should be close in cyclical space
+        assert sin_diff < 1.0
+        assert cos_diff < 1.0
 
     def test_crop_season_phase_mapping(self):
         dates = pd.Series([

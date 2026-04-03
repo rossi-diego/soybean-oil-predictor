@@ -1,8 +1,6 @@
 """Unit tests for model evaluation utilities."""
 
 import numpy as np
-import pandas as pd
-import pytest
 
 from src.models.evaluation import (
     compare_models,

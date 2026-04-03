@@ -8,7 +8,6 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 
 from src.config import (
-    CLEAN_DATA,
     LINEAR_REGRESSION_MODEL,
     RESULTS_DATA,
     XGBOOST_MODEL,

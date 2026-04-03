@@ -2,8 +2,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import pandas as pd
+import seaborn as sns
 from matplotlib.ticker import EngFormatter
 from sklearn.metrics import PredictionErrorDisplay
 from sklearn.utils.validation import check_is_fitted

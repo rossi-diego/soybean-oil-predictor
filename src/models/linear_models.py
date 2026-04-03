@@ -12,7 +12,6 @@ from __future__ import annotations
 import mlflow
 import pandas as pd
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
-from sklearn.model_selection import TimeSeriesSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 

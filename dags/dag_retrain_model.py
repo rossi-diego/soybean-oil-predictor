@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 
 from airflow.sdk import DAG, task
 
-
 default_args = {
     "owner": "soybean-oil-predictor",
     "depends_on_past": False,

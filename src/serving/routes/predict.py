@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 
-from src.config import CLEAN_DATA, LINEAR_REGRESSION_MODEL, XGBOOST_MODEL
+from src.config import LINEAR_REGRESSION_MODEL, XGBOOST_MODEL
 from src.log import get_logger
 from src.serving.schemas import PredictionRequest, PredictionResponse
 from src.utils import load_model
