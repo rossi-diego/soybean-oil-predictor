@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, ModelInfo } from "@/lib/api";
+import { api, isDemoMode, ModelInfo } from "@/lib/api";
+import { DemoBanner } from "@/components/layout/demo-banner";
 
 export default function ModelsPage() {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [activeModel, setActiveModel] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     api
@@ -15,8 +16,10 @@ export default function ModelsPage() {
         setModels(data.models);
         setActiveModel(data.active_model);
       })
-      .catch((e) => setError(e.message));
+      .finally(() => setLoaded(true));
   }, []);
+
+  const demo = loaded && isDemoMode();
 
   return (
     <div className="space-y-8">
@@ -29,11 +32,7 @@ export default function ModelsPage() {
         </p>
       </div>
 
-      {error && (
-        <div className="glass-card p-4 border-gold-500/30 bg-gold-500/5">
-          <p className="text-gold-400 text-sm">{error}</p>
-        </div>
-      )}
+      {demo && <DemoBanner />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {models.map((model) => (
@@ -63,7 +62,11 @@ export default function ModelsPage() {
               {Object.entries(model.metrics).map(([key, value]) => (
                 <div key={key} className="flex justify-between text-sm">
                   <span className="text-gray-500">{key.toUpperCase()}</span>
-                  <span>{typeof value === "number" ? value.toFixed(4) : value}</span>
+                  <span>
+                    {key === "directional_accuracy"
+                      ? `${(value * 100).toFixed(0)}%`
+                      : value.toFixed(4)}
+                  </span>
                 </div>
               ))}
               <div className="flex justify-between text-sm">
@@ -77,14 +80,6 @@ export default function ModelsPage() {
             </div>
           </div>
         ))}
-
-        {models.length === 0 && !error && (
-          <div className="glass-card p-8 col-span-full text-center">
-            <p className="text-gray-500">
-              No models available. Run the training pipeline to generate models.
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="glass-card p-6">
@@ -116,18 +111,10 @@ export default function ModelsPage() {
           <div>
             <h3 className="text-gray-200 font-medium mb-2">Validation</h3>
             <ul className="space-y-1">
-              <li>
-                Walk-forward validation (no look-ahead bias)
-              </li>
-              <li>
-                TimeSeriesSplit for temporal ordering
-              </li>
-              <li>
-                All metrics on out-of-sample data only
-              </li>
-              <li>
-                SHAP explainability for feature contribution
-              </li>
+              <li>Walk-forward validation (no look-ahead bias)</li>
+              <li>TimeSeriesSplit for temporal ordering</li>
+              <li>All metrics on out-of-sample data only</li>
+              <li>SHAP explainability for feature contribution</li>
             </ul>
           </div>
         </div>

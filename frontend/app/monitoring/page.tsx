@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, HealthResponse } from "@/lib/api";
+import { api, isDemoMode, HealthResponse } from "@/lib/api";
+import { DemoBanner } from "@/components/layout/demo-banner";
 
 export default function MonitoringPage() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    api.health().then(setHealth).catch(() => {});
+    api
+      .health()
+      .then(setHealth)
+      .finally(() => setLoaded(true));
   }, []);
+
+  const demo = loaded && isDemoMode();
 
   return (
     <div className="space-y-8">
@@ -21,17 +28,21 @@ export default function MonitoringPage() {
         </p>
       </div>
 
+      {demo && <DemoBanner />}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-6">
           <p className="text-sm text-gray-400 mb-1">API Health</p>
           <p
             className={`text-2xl font-bold ${
-              health?.status === "healthy"
-                ? "text-brand-400"
-                : "text-red-400"
+              demo
+                ? "text-gold-400"
+                : health?.status === "healthy"
+                  ? "text-brand-400"
+                  : "text-red-400"
             }`}
           >
-            {health?.status === "healthy" ? "Healthy" : "Checking..."}
+            {demo ? "Demo" : health?.status === "healthy" ? "Healthy" : "Checking..."}
           </p>
         </div>
         <div className="glass-card p-6">

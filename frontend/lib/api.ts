@@ -1,5 +1,6 @@
 /**
  * FastAPI client for the Soybean Oil Predictor backend.
+ * Falls back to mock data when the API is unreachable (demo mode).
  */
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -41,39 +42,143 @@ export interface HealthResponse {
   data_fresh: boolean;
 }
 
-async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+// ---------------------------------------------------------------------------
+// Mock data for demo mode (when API is unreachable)
+// ---------------------------------------------------------------------------
 
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(error.detail || `API error: ${res.status}`);
+const MOCK_HEALTH: HealthResponse = {
+  status: "demo",
+  version: "0.2.0",
+  models_loaded: true,
+  data_fresh: true,
+};
+
+const MOCK_MODELS: ModelInfo[] = [
+  {
+    name: "xgboost_baseline",
+    model_type: "XGBRegressor",
+    metrics: { r2: 0.9412, mae: 1.83, rmse: 2.47, directional_accuracy: 0.72 },
+    n_features: 12,
+    trained_at: "2025-03-15T14:30:00",
+  },
+  {
+    name: "ridge_regression",
+    model_type: "Ridge",
+    metrics: { r2: 0.8876, mae: 2.51, rmse: 3.18, directional_accuracy: 0.65 },
+    n_features: 12,
+    trained_at: "2025-03-15T14:28:00",
+  },
+  {
+    name: "elasticnet",
+    model_type: "ElasticNet",
+    metrics: { r2: 0.8734, mae: 2.67, rmse: 3.38, directional_accuracy: 0.63 },
+    n_features: 12,
+    trained_at: "2025-03-15T14:29:00",
+  },
+];
+
+const MOCK_FEATURE_STATS = {
+  features: {
+    boc1:   { mean: 41.00, std: 13.86, min: 24.99, max: 90.60 },
+    smc1:   { mean: 356.58, std: 61.35, min: 257.20, max: 521.90 },
+    sc1:    { mean: 1119.44, std: 237.51, min: 791.00, max: 1769.00 },
+    lcoc1:  { mean: 69.91, std: 20.72, min: 19.99, max: 127.98 },
+    hoc1:   { mean: 2.15, std: 0.70, min: 0.61, max: 5.14 },
+    fcpoc1: { mean: 3166.84, std: 1105.07, min: 1759.00, max: 7821.00 },
+    rsc1:   { mean: 591.19, std: 178.30, min: 394.00, max: 1226.00 },
+  },
+};
+
+const MOCK_IMPORTANCES: FeatureImportance[] = [
+  { feature: "smc1", importance: 0.284 },
+  { feature: "hoc1", importance: 0.197 },
+  { feature: "lcoc1", importance: 0.143 },
+  { feature: "fcpoc1", importance: 0.121 },
+  { feature: "sc1", importance: 0.098 },
+  { feature: "rsc1", importance: 0.067 },
+  { feature: "crush_spread", importance: 0.042 },
+  { feature: "oil_share", importance: 0.028 },
+  { feature: "month_sin", importance: 0.012 },
+  { feature: "month_cos", importance: 0.008 },
+];
+
+// ---------------------------------------------------------------------------
+// API client with demo fallback
+// ---------------------------------------------------------------------------
+
+let _isDemoMode = false;
+
+export function isDemoMode(): boolean {
+  return _isDemoMode;
+}
+
+async function fetchApi<T>(
+  path: string,
+  options?: RequestInit,
+  mockFallback?: T,
+): Promise<T> {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(error.detail || `API error: ${res.status}`);
+    }
+
+    _isDemoMode = false;
+    return res.json();
+  } catch {
+    _isDemoMode = true;
+    if (mockFallback !== undefined) {
+      return mockFallback;
+    }
+    throw new Error("API unreachable — showing demo data");
   }
+}
 
-  return res.json();
+function mockPredict(data: PredictionRequest): PredictionResponse {
+  const base = 0.08 * data.smc1 + 0.005 * data.sc1 + 0.12 * data.lcoc1
+    + 8.5 * data.hoc1 + 0.002 * data.fcpoc1 + 0.01 * data.rsc1;
+  const noise = (Math.sin(data.month || 1) * 2);
+  return {
+    predicted_price: Math.round((base / 6 + noise) * 100) / 100,
+    model_name: "xgboost_baseline (demo)",
+    confidence: {},
+    features_used: ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"],
+  };
 }
 
 export const api = {
-  health: () => fetchApi<HealthResponse>("/health"),
+  health: () => fetchApi<HealthResponse>("/health", undefined, MOCK_HEALTH),
 
   predict: (data: PredictionRequest) =>
-    fetchApi<PredictionResponse>("/api/v1/predict", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
+    fetchApi<PredictionResponse>(
+      "/api/v1/predict",
+      { method: "POST", body: JSON.stringify(data) },
+      mockPredict(data),
+    ),
 
   featureStats: () =>
     fetchApi<{ features: Record<string, Record<string, number>> }>(
-      "/api/v1/features/stats"
+      "/api/v1/features/stats",
+      undefined,
+      MOCK_FEATURE_STATS,
     ),
 
   featureImportance: () =>
     fetchApi<{ model_name: string; importances: FeatureImportance[] }>(
-      "/api/v1/features/importance"
+      "/api/v1/features/importance",
+      undefined,
+      { model_name: "xgboost_baseline (demo)", importances: MOCK_IMPORTANCES },
     ),
 
   listModels: () =>
-    fetchApi<{ models: ModelInfo[]; active_model: string }>("/api/v1/models"),
+    fetchApi<{ models: ModelInfo[]; active_model: string }>(
+      "/api/v1/models",
+      undefined,
+      { models: MOCK_MODELS, active_model: "xgboost_baseline" },
+    ),
 };

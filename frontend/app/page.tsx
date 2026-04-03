@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, HealthResponse, ModelInfo } from "@/lib/api";
+import { api, isDemoMode, HealthResponse, ModelInfo } from "@/lib/api";
+import { DemoBanner } from "@/components/layout/demo-banner";
 
 function StatusCard({
   title,
@@ -32,19 +33,16 @@ function StatusCard({
 export default function DashboardPage() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [models, setModels] = useState<ModelInfo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    api
-      .health()
-      .then(setHealth)
-      .catch((e) => setError(e.message));
-
-    api
-      .listModels()
-      .then((data) => setModels(data.models))
-      .catch(() => {});
+    Promise.all([
+      api.health().then(setHealth),
+      api.listModels().then((data) => setModels(data.models)),
+    ]).finally(() => setLoaded(true));
   }, []);
+
+  const demo = loaded && isDemoMode();
 
   return (
     <div className="space-y-8">
@@ -56,23 +54,14 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {error && (
-        <div className="glass-card p-4 border-gold-500/30 bg-gold-500/5">
-          <p className="text-gold-400 text-sm">
-            API not reachable: {error}. Start the backend with{" "}
-            <code className="bg-black/30 px-1 rounded">
-              uvicorn src.serving.app:app
-            </code>
-          </p>
-        </div>
-      )}
+      {demo && <DemoBanner />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatusCard
           title="API Status"
-          value={health?.status === "healthy" ? "Healthy" : "Offline"}
+          value={demo ? "Demo" : health?.status === "healthy" ? "Healthy" : "Offline"}
           subtitle={`v${health?.version || "?"}`}
-          status={health?.status === "healthy" ? "ok" : "error"}
+          status={demo ? "warn" : health?.status === "healthy" ? "ok" : "error"}
         />
         <StatusCard
           title="Models Loaded"
@@ -153,8 +142,11 @@ export default function DashboardPage() {
                 <tr className="border-b border-[#262626] text-gray-400">
                   <th className="text-left py-2 px-3">Name</th>
                   <th className="text-left py-2 px-3">Type</th>
+                  <th className="text-right py-2 px-3">R2</th>
+                  <th className="text-right py-2 px-3">MAE</th>
+                  <th className="text-right py-2 px-3">RMSE</th>
+                  <th className="text-right py-2 px-3">Dir. Acc.</th>
                   <th className="text-left py-2 px-3">Features</th>
-                  <th className="text-left py-2 px-3">Trained At</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,12 +157,21 @@ export default function DashboardPage() {
                   >
                     <td className="py-2 px-3 font-medium">{m.name}</td>
                     <td className="py-2 px-3 text-gray-400">{m.model_type}</td>
-                    <td className="py-2 px-3 text-gray-400">{m.n_features}</td>
-                    <td className="py-2 px-3 text-gray-400">
-                      {m.trained_at
-                        ? new Date(m.trained_at).toLocaleDateString()
-                        : "Unknown"}
+                    <td className="py-2 px-3 text-right text-gray-400">
+                      {m.metrics.r2?.toFixed(4) ?? "-"}
                     </td>
+                    <td className="py-2 px-3 text-right text-gray-400">
+                      {m.metrics.mae?.toFixed(2) ?? "-"}
+                    </td>
+                    <td className="py-2 px-3 text-right text-gray-400">
+                      {m.metrics.rmse?.toFixed(2) ?? "-"}
+                    </td>
+                    <td className="py-2 px-3 text-right text-gray-400">
+                      {m.metrics.directional_accuracy
+                        ? `${(m.metrics.directional_accuracy * 100).toFixed(0)}%`
+                        : "-"}
+                    </td>
+                    <td className="py-2 px-3 text-gray-400">{m.n_features}</td>
                   </tr>
                 ))}
               </tbody>

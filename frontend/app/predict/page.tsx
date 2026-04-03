@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { api, PredictionResponse } from "@/lib/api";
+import { api, isDemoMode, PredictionResponse } from "@/lib/api";
+import { DemoBanner } from "@/components/layout/demo-banner";
 
 const FIELDS = [
   { key: "smc1", label: "Soybean Meal (ZM)", unit: "$/ton", placeholder: "350" },
@@ -17,6 +18,7 @@ export default function PredictPage() {
   const [result, setResult] = useState<PredictionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [demo, setDemo] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ export default function PredictPage() {
 
       const data = await api.predict(payload);
       setResult(data);
+      setDemo(isDemoMode());
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -93,6 +96,11 @@ export default function PredictPage() {
 
           {result && (
             <div className="glass-card p-6 border-brand-500/30 bg-brand-500/5">
+              {demo && (
+                <p className="text-xs text-gold-400 mb-3">
+                  Demo mode — using simplified formula, not the trained model
+                </p>
+              )}
               <p className="text-sm text-gray-400 mb-2">Predicted BOC1 Price</p>
               <p className="text-5xl font-bold text-brand-400">
                 {result.predicted_price.toFixed(2)}

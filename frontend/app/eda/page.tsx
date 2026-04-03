@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, FeatureImportance } from "@/lib/api";
+import { api, isDemoMode, FeatureImportance } from "@/lib/api";
+import { DemoBanner } from "@/components/layout/demo-banner";
 import {
   BarChart,
   Bar,
@@ -16,20 +17,16 @@ import {
 export default function EDAPage() {
   const [stats, setStats] = useState<Record<string, Record<string, number>>>({});
   const [importances, setImportances] = useState<FeatureImportance[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    api
-      .featureStats()
-      .then((data) => setStats(data.features))
-      .catch((e) => setError(e.message));
-
-    api
-      .featureImportance()
-      .then((data) => setImportances(data.importances))
-      .catch(() => {});
+    Promise.all([
+      api.featureStats().then((data) => setStats(data.features)),
+      api.featureImportance().then((data) => setImportances(data.importances)),
+    ]).finally(() => setLoaded(true));
   }, []);
 
+  const demo = loaded && isDemoMode();
   const featureNames = Object.keys(stats);
 
   return (
@@ -45,13 +42,7 @@ export default function EDAPage() {
         </p>
       </div>
 
-      {error && (
-        <div className="glass-card p-4 border-gold-500/30 bg-gold-500/5">
-          <p className="text-gold-400 text-sm">
-            Could not load data: {error}. Ensure the API is running.
-          </p>
-        </div>
-      )}
+      {demo && <DemoBanner />}
 
       {importances.length > 0 && (
         <div className="glass-card p-6">
