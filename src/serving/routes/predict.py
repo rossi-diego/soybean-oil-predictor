@@ -6,27 +6,13 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 
-from src.config import LINEAR_REGRESSION_MODEL, XGBOOST_MODEL
 from src.log import get_logger
+from src.serving.model_cache import get_model
 from src.serving.schemas import PredictionRequest, PredictionResponse
-from src.utils import load_model
 
 logger = get_logger(__name__)
 
 router = APIRouter()
-
-
-def _load_active_model():
-    """Load the best available model (XGBoost preferred, linear fallback)."""
-    if XGBOOST_MODEL.exists():
-        import joblib
-
-        return joblib.load(XGBOOST_MODEL), "xgboost_baseline"
-
-    if LINEAR_REGRESSION_MODEL.exists():
-        return load_model(), "linear_regression"
-
-    raise FileNotFoundError("No trained model found")
 
 
 @router.post("/predict", response_model=PredictionResponse)
@@ -36,10 +22,9 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
     Accepts current commodity prices and returns the predicted
     soybean oil futures price with model metadata.
     """
-    try:
-        model, model_name = _load_active_model()
-    except (FileNotFoundError, RuntimeError) as e:
-        raise HTTPException(status_code=503, detail=str(e)) from e
+    model, model_name = get_model()
+    if model is None:
+        raise HTTPException(status_code=503, detail="No trained model loaded")
 
     input_data = pd.DataFrame([{
         "smc1": request.smc1,
@@ -63,7 +48,6 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
         "prediction_made",
         model=model_name,
         price=predicted_price,
-        inputs=request.model_dump(),
     )
 
     return PredictionResponse(

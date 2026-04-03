@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
+
+COPY src/ src/
+COPY data/commodities_clean_data.parquet data/
+COPY data/features_describe.csv data/
+COPY scripts/ scripts/
+COPY pyproject.toml .
+RUN pip install --no-cache-dir -e .
+
+# Train model at build time
+RUN mkdir -p models && python scripts/train_model.py
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.serving.app:app", "--host", "0.0.0.0", "--port", "8000"]

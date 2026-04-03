@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: soybean-oil-predictor-api
+    runtime: docker
+    repo: https://github.com/rossi-diego/soybean-oil-predictor
+    dockerfilePath: ./Dockerfile.api
+    plan: free
+    envVars:
+      - key: API_LOG_LEVEL
+        value: info

@@ -1,0 +1,26 @@
+# Lightweight API-only dependencies for cloud deployment (Render/Railway).
+# Does NOT include training libs (lightgbm, shap, optuna, matplotlib, etc.)
+
+# API framework
+fastapi>=0.115,<1
+uvicorn[standard]>=0.34,<1
+pydantic>=2.10,<3
+pydantic-settings>=2.7,<3
+httpx>=0.28,<1
+
+# ML inference (prediction only, no training)
+scikit-learn>=1.5,<2
+xgboost>=2.1,<3
+numpy>=2.1,<3
+pandas>=2.2,<3
+joblib>=1.4,<2
+
+# Data
+pyarrow>=17,<20
+yfinance>=0.2,<1
+
+# Logging
+structlog>=25.1,<26
+
+# Config
+python-dotenv>=1.0,<2

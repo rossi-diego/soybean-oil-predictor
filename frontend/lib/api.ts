@@ -22,6 +22,28 @@ export interface PredictionResponse {
   features_used: string[];
 }
 
+export interface LivePrice {
+  name: string;
+  ticker: string;
+  price: number;
+  currency: string;
+  timestamp: string;
+}
+
+export interface LivePricesResponse {
+  prices: LivePrice[];
+  cached: boolean;
+  fetched_at: string;
+}
+
+export interface LivePredictionResponse {
+  predicted_price: number;
+  model_name: string;
+  input_prices: Record<string, number>;
+  cached: boolean;
+  fetched_at: string;
+}
+
 export interface FeatureImportance {
   feature: string;
   importance: number;
@@ -76,6 +98,28 @@ const MOCK_MODELS: ModelInfo[] = [
     trained_at: "2025-03-15T14:29:00",
   },
 ];
+
+const MOCK_LIVE_PRICES: LivePricesResponse = {
+  prices: [
+    { name: "boc1", ticker: "BO=F", price: 42.35, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "sc1", ticker: "ZS=F", price: 1142.50, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "smc1", ticker: "ZM=F", price: 362.80, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "lcoc1", ticker: "BZ=F", price: 72.15, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "hoc1", ticker: "HO=F", price: 2.18, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "fcpoc1", ticker: "FCPO=F", price: 3420.00, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "rsc1", ticker: "RS=F", price: 615.20, currency: "USD", timestamp: new Date().toISOString() },
+  ],
+  cached: true,
+  fetched_at: new Date().toISOString(),
+};
+
+const MOCK_LIVE_PREDICTION: LivePredictionResponse = {
+  predicted_price: 43.12,
+  model_name: "xgboost_baseline (demo)",
+  input_prices: { smc1: 362.80, sc1: 1142.50, lcoc1: 72.15, hoc1: 2.18, fcpoc1: 3420.00, rsc1: 615.20 },
+  cached: true,
+  fetched_at: new Date().toISOString(),
+};
 
 const MOCK_FEATURE_STATS = {
   features: {
@@ -180,5 +224,19 @@ export const api = {
       "/api/v1/models",
       undefined,
       { models: MOCK_MODELS, active_model: "xgboost_baseline" },
+    ),
+
+  livePrices: () =>
+    fetchApi<LivePricesResponse>(
+      "/api/v1/prices/latest",
+      undefined,
+      MOCK_LIVE_PRICES,
+    ),
+
+  predictLive: () =>
+    fetchApi<LivePredictionResponse>(
+      "/api/v1/predict/live",
+      undefined,
+      MOCK_LIVE_PREDICTION,
     ),
 };
