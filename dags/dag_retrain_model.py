@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.sdk import DAG, task
+
 
 default_args = {
     "owner": "soybean-oil-predictor",
@@ -21,7 +21,8 @@ default_args = {
 }
 
 
-def run_model_retraining(**kwargs):
+@task
+def run_model_retraining():
     """Retrain XGBoost baseline on latest gold-layer data."""
     import pandas as pd
     from sklearn.model_selection import train_test_split
@@ -47,7 +48,8 @@ def run_model_retraining(**kwargs):
     return f"Model retrained. RMSE: {result['metrics']['rmse']:.4f}"
 
 
-def run_drift_check(**kwargs):
+@task
+def run_drift_check():
     """Check for data drift after retraining."""
     import pandas as pd
 
@@ -75,16 +77,5 @@ with DAG(
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["training", "mlops", "monitoring"],
-) as dag:
-
-    retrain_task = PythonOperator(
-        task_id="retrain_xgboost",
-        python_callable=run_model_retraining,
-    )
-
-    drift_task = PythonOperator(
-        task_id="check_drift",
-        python_callable=run_drift_check,
-    )
-
-    retrain_task >> drift_task
+):
+    run_model_retraining() >> run_drift_check()

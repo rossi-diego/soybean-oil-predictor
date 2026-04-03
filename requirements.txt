@@ -45,7 +45,7 @@ mlflow>=3.10,<4
 evidently>=0.5,<1
 
 # Orchestration
-apache-airflow>=2.10,<3
+apache-airflow>=3.1.7,<4
 
 # Structured logging
 structlog>=25.1,<26

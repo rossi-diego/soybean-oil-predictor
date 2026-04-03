@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.sdk import DAG, task
+
 
 default_args = {
     "owner": "soybean-oil-predictor",
@@ -21,7 +21,8 @@ default_args = {
 }
 
 
-def run_wasde_ingestion(**kwargs):
+@task
+def run_wasde_ingestion():
     """Execute WASDE report ingestion."""
     from src.ingestion.usda_ingest import ingest_wasde
     from src.log import setup_logging
@@ -39,9 +40,5 @@ with DAG(
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["ingestion", "bronze", "wasde", "fundamentals"],
-) as dag:
-
-    ingest_task = PythonOperator(
-        task_id="ingest_wasde_reports",
-        python_callable=run_wasde_ingestion,
-    )
+):
+    run_wasde_ingestion()
