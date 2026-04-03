@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *.pyo
 *.pyd
 *.so
@@ -8,32 +9,49 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-# Virtual envs
+# Virtual environments
 .env
-.venv
-env/
+.venv/
 venv/
+env/
 ENV/
+machine-learning-env/
 
 # Jupyter notebooks
 .ipynb_checkpoints/
 
-# IDEs e editores
+# IDEs and editors
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Dados e modelos (gerados localmente, não versionar no Git)
-data/
-models/
-reports/images/
-*.parquet
-*.csv
-*.joblib
-*.pkl
+# Data lake (generated locally, not versioned)
+data/bronze/
+data/silver/
+data/gold/
+data/*.duckdb
+data/*.duckdb.wal
 
-# Logs e cache
+# Legacy data files (keep committed for now)
+# data/commodities_raw_data.csv
+# data/commodities_clean_data.parquet
+# data/model_comparison_results.parquet
+# data/features_describe.csv
+
+# Models (tracked by MLflow, not git)
+models/*.joblib
+models/*.pkl
+models/*.onnx
+!models/.gitkeep
+
+# Reports (generated)
+reports/monitoring/
+reports/images/*.png
+!reports/.gitkeep
+!reports/images/.gitkeep
+
+# Logs and cache
 *.log
 *.tmp
 *.cache
@@ -42,3 +60,28 @@ __cache__/
 
 # Streamlit
 .streamlit/
+
+# MLflow
+mlruns/
+
+# Airflow
+airflow.db
+airflow.cfg
+airflow-webserver.pid
+logs/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# Next.js frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Docker
+*.pid
+
+# Personal notes
+SETUP.md
