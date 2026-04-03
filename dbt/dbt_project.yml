@@ -1,0 +1,25 @@
+name: soybean_oil_predictor
+version: "0.1.0"
+config-version: 2
+
+profile: soybean_oil_predictor
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  soybean_oil_predictor:
+    bronze:
+      +materialized: table
+      +schema: bronze
+    silver:
+      +materialized: table
+      +schema: silver
+    gold:
+      +materialized: table
+      +schema: gold

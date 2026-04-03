@@ -1,0 +1,7 @@
+soybean_oil_predictor:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/soybean_oil.duckdb"
+      threads: 4
