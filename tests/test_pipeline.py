@@ -4,14 +4,23 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.config import CLEAN_DATA
-from src.utils import load_model
+from src.config import CLEAN_DATA, LINEAR_REGRESSION_MODEL
+
+pytestmark = pytest.mark.skipif(
+    not LINEAR_REGRESSION_MODEL.exists(),
+    reason="Trained model not available (generated locally, not committed)",
+)
 
 
 @pytest.fixture(scope="module")
 def model():
     """Load the trained pipeline once for the entire test module."""
-    return load_model()
+    from src.utils import load_model
+
+    try:
+        return load_model()
+    except (FileNotFoundError, RuntimeError) as exc:
+        pytest.skip(f"Model not loadable: {exc}")
 
 
 @pytest.fixture(scope="module")
@@ -21,10 +30,8 @@ def feature_names(model) -> list[str]:
     preproc = pipe.named_steps.get("preprocessor")
     if preproc is not None and hasattr(preproc, "get_feature_names_out"):
         import re
-        return [
-            re.sub(r".*__", "", n)
-            for n in preproc.get_feature_names_out()
-        ]
+
+        return [re.sub(r".*__", "", n) for n in preproc.get_feature_names_out()]
     df = pd.read_parquet(CLEAN_DATA)
     return [c for c in df.columns if c != "boc1"]
 

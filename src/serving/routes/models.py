@@ -45,10 +45,18 @@ async def list_models() -> ModelListResponse:
     if LINEAR_REGRESSION_MODEL.exists():
         import joblib
 
-        model = joblib.load(LINEAR_REGRESSION_MODEL)
-        pipe = getattr(model, "regressor", model)
-        reg = pipe.named_steps.get("reg")
-        n_features = len(reg.coef_) if reg and hasattr(reg, "coef_") else 0
+        try:
+            model = joblib.load(LINEAR_REGRESSION_MODEL)
+        except Exception:
+            logger.warning("linear_model_load_failed", path=str(LINEAR_REGRESSION_MODEL))
+            model = None
+
+        n_features = 0
+        if model is not None:
+            pipe = getattr(model, "regressor", model)
+            reg = pipe.named_steps.get("reg")
+            n_features = len(reg.coef_) if reg and hasattr(reg, "coef_") else 0
+
         modified = datetime.fromtimestamp(LINEAR_REGRESSION_MODEL.stat().st_mtime)
 
         metrics = {}

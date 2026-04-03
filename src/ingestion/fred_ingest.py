@@ -5,6 +5,8 @@ Provides context indicators that influence commodity prices:
 - WTI Crude Oil (DCOILWTICO)
 - 10Y Treasury Yield (DGS10)
 - Brazilian Real exchange rate (DEXBZUS)
+
+Uses FRED's public CSV endpoint — no API key required, no extra dependencies.
 """
 
 from __future__ import annotations
@@ -12,19 +14,20 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import pandas_datareader.data as web
 
 from src.config import DATA_BRONZE
 from src.log import get_logger
 
 logger = get_logger(__name__)
 
+FRED_BASE_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"
+
 FRED_SERIES = {
-    "dxy_proxy": "DTWEXBGS",        # Trade-weighted USD index (broad)
-    "wti_crude": "DCOILWTICO",       # WTI crude oil spot price
-    "treasury_10y": "DGS10",         # 10-Year Treasury yield
-    "brl_usd": "DEXBZUS",           # Brazilian Real per USD
-    "cpi_yoy": "CPIAUCSL",          # Consumer Price Index (inflation proxy)
+    "dxy_proxy": "DTWEXBGS",
+    "wti_crude": "DCOILWTICO",
+    "treasury_10y": "DGS10",
+    "brl_usd": "DEXBZUS",
+    "cpi_yoy": "CPIAUCSL",
 }
 
 DEFAULT_START = "2010-01-01"
@@ -35,7 +38,7 @@ def fetch_fred_series(
     start: str | None = None,
     end: str | None = None,
 ) -> pd.DataFrame:
-    """Fetch a single FRED time series.
+    """Fetch a single FRED time series via public CSV endpoint.
 
     Args:
         series_id: FRED series identifier (e.g. ``DCOILWTICO``).
@@ -48,11 +51,16 @@ def fetch_fred_series(
     start = start or DEFAULT_START
     logger.info("fetching_fred", series_id=series_id, start=start)
 
-    df = web.DataReader(series_id, "fred", start=start, end=end)
-    df = df.reset_index()
+    params = f"?id={series_id}&cosd={start}"
+    if end:
+        params += f"&coed={end}"
+    url = f"{FRED_BASE_URL}{params}"
+
+    df = pd.read_csv(url, parse_dates=["DATE"])
     df.columns = ["date", "value"]
-    df["series_id"] = series_id
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
     df = df.dropna(subset=["value"])
+    df["series_id"] = series_id
 
     logger.info("fred_fetched", series_id=series_id, rows=len(df))
     return df

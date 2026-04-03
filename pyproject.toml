@@ -34,7 +34,6 @@ dependencies = [
     "structlog>=25.1,<26",
     "python-dotenv>=1.0,<2",
     "yfinance>=0.2,<1",
-    "pandas-datareader>=0.10,<1",
 ]
 
 [project.optional-dependencies]

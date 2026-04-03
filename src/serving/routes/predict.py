@@ -38,7 +38,7 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
     """
     try:
         model, model_name = _load_active_model()
-    except FileNotFoundError as e:
+    except (FileNotFoundError, RuntimeError) as e:
         raise HTTPException(status_code=503, detail=str(e)) from e
 
     input_data = pd.DataFrame([{
