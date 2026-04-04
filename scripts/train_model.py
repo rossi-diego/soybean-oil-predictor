@@ -178,6 +178,16 @@ def train_and_save():
             "n_folds": 5,
         },
         "trained_at": datetime.now().isoformat(),
+        "feature_ranges": {
+            col: {
+                "min": round(float(X[col].min()), 2),
+                "max": round(float(X[col].max()), 2),
+                "mean": round(float(X[col].mean()), 2),
+                "p5": round(float(X[col].quantile(0.05)), 2),
+                "p95": round(float(X[col].quantile(0.95)), 2),
+            }
+            for col in feature_cols
+        },
     }
 
     with open(METADATA_FILE, "w") as f:

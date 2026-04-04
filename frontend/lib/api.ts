@@ -45,6 +45,7 @@ export interface ModelMetadata {
     n_folds: number;
   };
   hyperparameters: Record<string, any>;
+  feature_ranges: Record<string, { min: number; max: number; mean: number; p5: number; p95: number }>;
 }
 
 export interface LivePrice {
@@ -194,6 +195,14 @@ const MOCK_MODEL_METADATA: ModelMetadata = {
     max_depth: 6,
     learning_rate: 0.05,
     subsample: 0.8,
+  },
+  feature_ranges: {
+    smc1: { min: 257.2, max: 521.9, mean: 356.58, p5: 285.6, p95: 471.21 },
+    sc1: { min: 791.0, max: 1769.0, mean: 1119.44, p5: 856.99, p95: 1544.11 },
+    lcoc1: { min: 19.99, max: 127.98, mean: 69.91, p5: 39.84, p95: 108.84 },
+    hoc1: { min: 0.61, max: 5.14, mean: 2.15, p5: 1.14, p95: 3.41 },
+    fcpoc1: { min: 1759.0, max: 7821.0, mean: 3166.84, p5: 2020.0, p95: 5217.35 },
+    rsc1: { min: 394.0, max: 1226.0, mean: 591.19, p5: 439.09, p95: 996.93 },
   },
 };
 

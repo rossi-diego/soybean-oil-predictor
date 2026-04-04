@@ -22,23 +22,23 @@ import {
   ReferenceLine,
 } from "recharts";
 
-const FIELDS = [
-  { key: "smc1", label: "Soybean Meal", ticker: "ZM", unit: "$/ton", placeholder: "350" },
-  { key: "sc1", label: "Soybeans", ticker: "ZS", unit: "c/bu", placeholder: "1100" },
-  { key: "lcoc1", label: "Brent Crude", ticker: "BZ", unit: "$/bbl", placeholder: "75" },
-  { key: "hoc1", label: "Heating Oil", ticker: "HO", unit: "$/gal", placeholder: "2.20" },
-  { key: "fcpoc1", label: "Palm Oil", ticker: "PALM", unit: "GBp", placeholder: "78" },
-  { key: "rsc1", label: "Wheat", ticker: "ZW", unit: "c/bu", placeholder: "600" },
-] as const;
+const FIELDS: {
+  key: string;
+  label: string;
+  unit: string;
+  why: string;
+}[] = [
+  { key: "smc1", label: "Soybean Meal", unit: "$/ton", why: "Crush economics — meal is the co-product of soybean oil production. Higher meal prices support oil margins." },
+  { key: "sc1", label: "Soybeans", unit: "c/bu", why: "Feedstock cost — soybeans are crushed into oil and meal. Higher bean prices increase production costs." },
+  { key: "lcoc1", label: "Brent Crude", unit: "$/bbl", why: "Biodiesel demand — soybean oil competes as a biodiesel feedstock. Crude prices drive renewable fuel economics." },
+  { key: "hoc1", label: "Heating Oil", unit: "$/gal", why: "Energy correlation — heating oil tracks energy-vegetable oil substitution and refining margins." },
+  { key: "fcpoc1", label: "Palm Oil", unit: "GBp", why: "Substitution benchmark — palm oil is the closest substitute. Price gaps drive buyer switching." },
+  { key: "rsc1", label: "Wheat", unit: "c/bu", why: "Grain complex — wheat reflects broader agricultural market sentiment and planting competition." },
+];
 
-const FEATURE_CONTEXT: Record<string, { label: string; why: string }> = {
-  smc1: { label: "Soybean Meal", why: "Crush economics" },
-  sc1: { label: "Soybeans", why: "Feedstock cost" },
-  lcoc1: { label: "Brent Crude", why: "Biodiesel demand proxy" },
-  hoc1: { label: "Heating Oil", why: "Energy-vegetable oil correlation" },
-  fcpoc1: { label: "Palm Oil", why: "Substitution benchmark" },
-  rsc1: { label: "Wheat", why: "Broader grain complex sentiment" },
-};
+const FEATURE_CONTEXT: Record<string, { label: string; why: string }> = Object.fromEntries(
+  FIELDS.map((f) => [f.key, { label: f.label, why: f.why.split(" — ")[0] }])
+);
 
 export default function PredictPage() {
   const [values, setValues] = useState<Record<string, string>>({});
@@ -49,11 +49,16 @@ export default function PredictPage() {
   const [demo, setDemo] = useState(false);
   const [boc1, setBoc1] = useState<number | null>(null);
   const [meta, setMeta] = useState<ModelMetadata | null>(null);
+  const [livePriceMap, setLivePriceMap] = useState<Record<string, number>>({});
+  const [tooltipOpen, setTooltipOpen] = useState<string | null>(null);
 
   useEffect(() => {
     api.livePrices().then((d) => {
       const b = d.prices.find((p) => p.name === "boc1");
       if (b) setBoc1(b.price);
+      const map: Record<string, number> = {};
+      d.prices.forEach((p) => { map[p.name] = p.price; });
+      setLivePriceMap(map);
     }).catch(() => {});
     api.modelInfo().then(setMeta).catch(() => {});
   }, []);
@@ -133,22 +138,56 @@ export default function PredictPage() {
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {FIELDS.map(({ key, label, unit, placeholder }) => (
-              <div key={key}>
-                <label className="block text-[11px] text-zinc-500 mb-1 font-medium">
-                  {label} <span className="text-zinc-600">({unit})</span>
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  min="0"
-                  placeholder={placeholder}
-                  value={values[key] || ""}
-                  onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-                  className="w-full bg-black/30 border border-[#262626] rounded-md px-2.5 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-700"
-                />
-              </div>
-            ))}
+            {FIELDS.map(({ key, label, unit, why }) => {
+              const range = meta?.feature_ranges?.[key];
+              const livePrice = livePriceMap[key];
+              const val = parseFloat(values[key] || "");
+              const outOfRange = range && !isNaN(val) && val > 0 && (val < range.min || val > range.max);
+
+              return (
+                <div key={key}>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="text-[11px] text-zinc-500 font-medium">
+                      {label} <span className="text-zinc-600">({unit})</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setTooltipOpen(tooltipOpen === key ? null : key)}
+                      className="text-zinc-600 hover:text-zinc-400 transition-colors"
+                      aria-label={`Info about ${label}`}
+                    >
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                  {tooltipOpen === key && (
+                    <p className="text-[10px] text-zinc-400 mb-1 leading-relaxed">{why}</p>
+                  )}
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    placeholder={livePrice ? `${livePrice.toFixed(2)} (live)` : range?.mean?.toFixed(1) ?? ""}
+                    value={values[key] || ""}
+                    onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
+                    className={`w-full bg-black/30 border rounded-md px-2.5 py-2 text-sm tabular-nums focus:outline-none transition-colors placeholder:text-zinc-700 ${
+                      outOfRange ? "border-yellow-600/50" : "border-[#262626] focus:border-zinc-500"
+                    }`}
+                  />
+                  {range && (
+                    <p className="text-[9px] text-zinc-600 mt-0.5">
+                      Range: {range.min}–{range.max} {unit}
+                    </p>
+                  )}
+                  {outOfRange && (
+                    <p className="text-[10px] text-yellow-500/80 mt-0.5">
+                      Outside training distribution — prediction may be less reliable
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <button
             type="submit"
