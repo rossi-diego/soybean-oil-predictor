@@ -44,6 +44,18 @@ export interface LivePredictionResponse {
   fetched_at: string;
 }
 
+export interface PriceHistoryPoint {
+  date: string;
+  actual: number;
+  predicted: number | null;
+}
+
+export interface PriceHistoryResponse {
+  history: PriceHistoryPoint[];
+  model_name: string;
+  days: number;
+}
+
 export interface FeatureImportance {
   feature: string;
   importance: number;
@@ -120,6 +132,28 @@ const MOCK_LIVE_PREDICTION: LivePredictionResponse = {
   cached: true,
   fetched_at: new Date().toISOString(),
 };
+
+function generateMockHistory(): PriceHistoryResponse {
+  const history: PriceHistoryPoint[] = [];
+  let price = 42;
+  const today = new Date();
+  for (let i = 60; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    price += (Math.random() - 0.48) * 1.2;
+    price = Math.max(35, Math.min(55, price));
+    const predicted = price + (Math.random() - 0.5) * 3;
+    history.push({
+      date: d.toISOString().slice(0, 10),
+      actual: Math.round(price * 100) / 100,
+      predicted: Math.round(predicted * 100) / 100,
+    });
+  }
+  return { history, model_name: "xgboost_baseline (demo)", days: history.length };
+}
+
+const MOCK_HISTORY = generateMockHistory();
 
 const MOCK_FEATURE_STATS = {
   features: {
@@ -238,5 +272,12 @@ export const api = {
       "/api/v1/predict/live",
       undefined,
       MOCK_LIVE_PREDICTION,
+    ),
+
+  priceHistory: (days = 90) =>
+    fetchApi<PriceHistoryResponse>(
+      `/api/v1/prices/history?days=${days}`,
+      undefined,
+      MOCK_HISTORY,
     ),
 };

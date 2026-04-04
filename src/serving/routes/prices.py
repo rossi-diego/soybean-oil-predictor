@@ -142,3 +142,75 @@ async def predict_live() -> dict:
         "cached": prices.get("_cached", False),
         "fetched_at": datetime.fromtimestamp(prices.get("_ts", 0)).isoformat(),
     }
+
+
+@router.get("/prices/history")
+async def get_price_history(days: int = 90) -> dict:
+    """Return historical BOC1 prices with model predictions.
+
+    Fetches daily closing prices from Yahoo Finance and runs the model
+    on each day's feature set to produce a predicted vs actual chart.
+    """
+    from src.serving.model_cache import get_model
+    import numpy as np
+
+    days = min(days, 365)
+
+    boc1_ticker = yf.Ticker(TICKERS.get("boc1", "ZL=F"))
+    boc1_hist = boc1_ticker.history(period=f"{days}d")
+
+    if boc1_hist.empty:
+        raise HTTPException(status_code=502, detail="Could not fetch BOC1 history")
+
+    feature_tickers = {
+        name: yf.Ticker(symbol)
+        for name, symbol in TICKERS.items()
+        if name != "boc1" and name != "zc1"
+    }
+
+    feature_data = {}
+    for name, ticker in feature_tickers.items():
+        hist = ticker.history(period=f"{days}d")
+        if not hist.empty:
+            feature_data[name] = hist["Close"]
+
+    model, model_name = get_model()
+
+    result = []
+    feature_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
+
+    for date, row in boc1_hist.iterrows():
+        actual = float(row["Close"])
+        date_str = date.strftime("%Y-%m-%d") if hasattr(date, "strftime") else str(date)[:10]
+        entry = {"date": date_str, "actual": round(actual, 2), "predicted": None}
+
+        if model is not None:
+            features = {}
+            all_available = True
+            for col in feature_cols:
+                if col in feature_data:
+                    nearest = feature_data[col].asof(date)
+                    if pd.notna(nearest):
+                        features[col] = float(nearest)
+                    else:
+                        all_available = False
+                        break
+                else:
+                    all_available = False
+                    break
+
+            if all_available:
+                try:
+                    input_df = pd.DataFrame([features])
+                    pred = model.predict(input_df)
+                    entry["predicted"] = round(float(np.ravel(pred)[0]), 2)
+                except Exception:
+                    pass
+
+        result.append(entry)
+
+    return {
+        "history": result,
+        "model_name": model_name or "none",
+        "days": len(result),
+    }

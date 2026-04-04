@@ -8,8 +8,19 @@ import {
   ModelInfo,
   LivePrice,
   LivePredictionResponse,
+  PriceHistoryPoint,
 } from "@/lib/api";
 import { DemoBanner } from "@/components/layout/demo-banner";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 const COMMODITY_LABELS: Record<string, string> = {
   boc1: "Soybean Oil",
@@ -55,6 +66,7 @@ export default function DashboardPage() {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [prices, setPrices] = useState<LivePrice[]>([]);
   const [livePred, setLivePred] = useState<LivePredictionResponse | null>(null);
+  const [history, setHistory] = useState<PriceHistoryPoint[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -63,6 +75,7 @@ export default function DashboardPage() {
       api.listModels().then((data) => setModels(data.models)),
       api.livePrices().then((data) => setPrices(data.prices)),
       api.predictLive().then(setLivePred),
+      api.priceHistory(90).then((data) => setHistory(data.history)),
     ]).finally(() => setLoaded(true));
   }, []);
 
@@ -178,6 +191,65 @@ export default function DashboardPage() {
           <p className="text-xs text-gray-600 mt-1">v{health?.version ?? "?"}</p>
         </div>
       </div>
+
+      {/* Actual vs Predicted Chart */}
+      {history.length > 0 && (
+        <div className="glass-card p-6">
+          <h2 className="text-lg font-semibold mb-1">
+            BOC1 Price — Actual vs Model Prediction
+          </h2>
+          <p className="text-xs text-gray-500 mb-4">
+            Last {history.length} trading days. The model predicts each day
+            using the previous day&apos;s feature values (no look-ahead bias).
+          </p>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={history}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#525252"
+                  fontSize={11}
+                  tickFormatter={(d: string) => d.slice(5)}
+                />
+                <YAxis
+                  stroke="#525252"
+                  fontSize={11}
+                  domain={["auto", "auto"]}
+                  tickFormatter={(v: number) => v.toFixed(1)}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#141414",
+                    border: "1px solid #262626",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  formatter={(value: number) => value.toFixed(2)}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="actual"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Actual BOC1"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="predicted"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  strokeDasharray="4 2"
+                  dot={false}
+                  name="Model Prediction"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Commodity Prices */}
       {prices.length > 0 && (
