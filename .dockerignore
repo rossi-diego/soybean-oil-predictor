@@ -1,0 +1,17 @@
+machine-learning-env/
+.venv/
+.git/
+.github/
+.claude/
+frontend/
+notebooks/
+dbt/
+dags/
+reports/
+mlruns/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+SETUP.md
+.env
