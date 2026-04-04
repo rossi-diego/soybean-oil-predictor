@@ -49,10 +49,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build API Docker image
-        run: docker build --target api -t soybean-oil-api:test .
-
-      - name: Build Frontend Docker image
-        run: docker build -f Dockerfile.frontend -t soybean-oil-frontend:test .
+        run: docker build -f Dockerfile.api -t soybean-oil-api:test .
 
   frontend-lint:
     runs-on: ubuntu-latest
