@@ -13,8 +13,9 @@ COPY src/ src/
 COPY data/commodities_clean_data.parquet data/
 COPY data/features_describe.csv data/
 COPY scripts/ scripts/
-COPY pyproject.toml .
-RUN pip install --no-cache-dir -e .
+
+# Make src importable without installing full pyproject.toml deps
+ENV PYTHONPATH=/app
 
 # Train model at build time
 RUN mkdir -p models && python scripts/train_model.py
