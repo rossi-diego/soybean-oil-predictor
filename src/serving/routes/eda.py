@@ -1,0 +1,281 @@
+"""EDA endpoints — historical prices, correlations, distributions, spreads, seasonality, stationarity."""
+
+from __future__ import annotations
+
+from datetime import datetime, timedelta
+
+import numpy as np
+import pandas as pd
+from fastapi import APIRouter, HTTPException
+
+from src.config import CLEAN_DATA
+from src.log import get_logger
+
+logger = get_logger(__name__)
+
+router = APIRouter()
+
+LABELS = {
+    "boc1": "Soybean Oil",
+    "smc1": "Soybean Meal",
+    "sc1": "Soybeans",
+    "lcoc1": "Brent Crude",
+    "hoc1": "Heating Oil",
+    "fcpoc1": "Palm Oil",
+    "rsc1": "Wheat",
+}
+
+_df_cache: pd.DataFrame | None = None
+
+
+def _load_data() -> pd.DataFrame:
+    global _df_cache
+    if _df_cache is not None:
+        return _df_cache
+    if not CLEAN_DATA.exists():
+        raise HTTPException(status_code=404, detail="Training data not available")
+    df = pd.read_parquet(CLEAN_DATA)
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df.index = pd.to_datetime(df.index)
+    df = df.sort_index()
+    _df_cache = df
+    return df
+
+
+@router.get("/eda/prices")
+async def eda_prices(period: str = "all") -> dict:
+    """Historical commodity price series with optional normalization."""
+    df = _load_data()
+    cols = [c for c in LABELS if c in df.columns]
+
+    if period != "all":
+        years = {"1Y": 1, "3Y": 3, "5Y": 5}.get(period, None)
+        if years:
+            cutoff = df.index.max() - pd.DateOffset(years=years)
+            df = df[df.index >= cutoff]
+
+    dates = [d.strftime("%Y-%m-%d") for d in df.index]
+
+    series = {}
+    normalized = {}
+    for col in cols:
+        vals = df[col].tolist()
+        series[col] = [round(v, 2) if pd.notna(v) else None for v in vals]
+        first = next((v for v in vals if pd.notna(v)), None)
+        if first and first != 0:
+            normalized[col] = [round(v / first * 100, 2) if pd.notna(v) else None for v in vals]
+
+    return {
+        "dates": dates,
+        "series": series,
+        "normalized": normalized,
+        "n_points": len(dates),
+        "labels": {c: LABELS[c] for c in cols},
+    }
+
+
+@router.get("/eda/correlations")
+async def eda_correlations(method: str = "pearson") -> dict:
+    """Correlation matrix between all features."""
+    df = _load_data()
+    cols = [c for c in LABELS if c in df.columns]
+    sub = df[cols].dropna()
+
+    if method == "spearman":
+        corr = sub.corr(method="spearman")
+    else:
+        corr = sub.corr(method="pearson")
+
+    return {
+        "features": cols,
+        "matrix": [[round(corr.iloc[i, j], 4) for j in range(len(cols))] for i in range(len(cols))],
+        "method": method,
+        "labels": {c: LABELS[c] for c in cols},
+    }
+
+
+@router.get("/eda/distributions")
+async def eda_distributions() -> dict:
+    """Histogram and quartile data for each feature, plus recent 30-day window."""
+    df = _load_data()
+    cols = [c for c in LABELS if c in df.columns]
+    recent = df.tail(30)
+    result = {}
+
+    for col in cols:
+        vals = df[col].dropna()
+        recent_vals = recent[col].dropna()
+
+        hist_counts, hist_edges = np.histogram(vals, bins=25)
+        recent_counts, _ = np.histogram(recent_vals, bins=hist_edges)
+
+        bins = []
+        for i in range(len(hist_counts)):
+            bins.append({
+                "x": round(float(hist_edges[i]), 2),
+                "x_end": round(float(hist_edges[i + 1]), 2),
+                "count": int(hist_counts[i]),
+                "recent_count": int(recent_counts[i]),
+            })
+
+        q = vals.quantile([0, 0.25, 0.5, 0.75, 1.0])
+        result[col] = {
+            "bins": bins,
+            "quartiles": {
+                "min": round(float(q[0.0]), 2),
+                "q1": round(float(q[0.25]), 2),
+                "median": round(float(q[0.5]), 2),
+                "q3": round(float(q[0.75]), 2),
+                "max": round(float(q[1.0]), 2),
+            },
+            "mean": round(float(vals.mean()), 2),
+            "std": round(float(vals.std()), 2),
+            "n": len(vals),
+            "recent_n": len(recent_vals),
+        }
+
+    return {"features": result, "labels": {c: LABELS[c] for c in cols}}
+
+
+@router.get("/eda/spreads")
+async def eda_spreads() -> dict:
+    """Historical spread time series with percentile bands."""
+    df = _load_data()
+    dates = [d.strftime("%Y-%m-%d") for d in df.index]
+
+    result: dict = {"dates": dates, "spreads": {}}
+
+    if all(c in df.columns for c in ["boc1", "smc1", "sc1"]):
+        crush = 11 * df["boc1"] + df["smc1"] - df["sc1"]
+        p10, p90 = float(crush.quantile(0.1)), float(crush.quantile(0.9))
+        result["spreads"]["crush"] = {
+            "values": [round(v, 2) if pd.notna(v) else None for v in crush],
+            "label": "Crush Spread",
+            "unit": "$/ton",
+            "p10": round(p10, 2),
+            "p90": round(p90, 2),
+            "mean": round(float(crush.mean()), 2),
+        }
+
+    if all(c in df.columns for c in ["boc1", "fcpoc1"]):
+        op = df["boc1"] - df["fcpoc1"] / 100
+        p10, p90 = float(op.quantile(0.1)), float(op.quantile(0.9))
+        result["spreads"]["oil_palm"] = {
+            "values": [round(v, 2) if pd.notna(v) else None for v in op],
+            "label": "Oil / Palm Spread",
+            "unit": "c/lb",
+            "p10": round(p10, 2),
+            "p90": round(p90, 2),
+            "mean": round(float(op.mean()), 2),
+        }
+
+    if all(c in df.columns for c in ["sc1"]) and "rsc1" in df.columns:
+        ratio = df["sc1"] / df["rsc1"].replace(0, np.nan)
+        p10, p90 = float(ratio.quantile(0.1)), float(ratio.quantile(0.9))
+        result["spreads"]["soy_wheat"] = {
+            "values": [round(v, 2) if pd.notna(v) else None for v in ratio],
+            "label": "Soy / Wheat Ratio",
+            "unit": "ratio",
+            "p10": round(p10, 2),
+            "p90": round(p90, 2),
+            "mean": round(float(ratio.mean()), 2),
+        }
+
+    return result
+
+
+@router.get("/eda/seasonality")
+async def eda_seasonality() -> dict:
+    """Monthly BOC1 statistics for seasonal analysis."""
+    df = _load_data()
+    if "boc1" not in df.columns:
+        raise HTTPException(status_code=404, detail="BOC1 data not available")
+
+    df_m = df[["boc1"]].dropna().copy()
+    df_m["month"] = df_m.index.month
+
+    months = []
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    for m in range(1, 13):
+        vals = df_m[df_m["month"] == m]["boc1"]
+        if len(vals) == 0:
+            continue
+        q = vals.quantile([0, 0.25, 0.5, 0.75, 1.0])
+        months.append({
+            "month": m,
+            "name": month_names[m - 1],
+            "min": round(float(q[0.0]), 2),
+            "q1": round(float(q[0.25]), 2),
+            "median": round(float(q[0.5]), 2),
+            "q3": round(float(q[0.75]), 2),
+            "max": round(float(q[1.0]), 2),
+            "mean": round(float(vals.mean()), 2),
+            "n": len(vals),
+        })
+
+    return {"months": months, "target": "boc1"}
+
+
+@router.get("/eda/stationarity")
+async def eda_stationarity() -> dict:
+    """Returns distribution, ADF tests, and ACF/PACF for time series analysis."""
+    from scipy.stats import norm
+
+    df = _load_data()
+    cols = [c for c in LABELS if c in df.columns]
+
+    # ADF tests
+    from statsmodels.tsa.stattools import adfuller, acf, pacf
+
+    adf_results = {}
+    for col in cols:
+        series = df[col].dropna()
+        try:
+            stat, pvalue, lags, nobs, crit, _ = adfuller(series, maxlag=20)
+            adf_results[col] = {
+                "statistic": round(float(stat), 4),
+                "p_value": round(float(pvalue), 6),
+                "lags": int(lags),
+                "n_obs": int(nobs),
+                "stationary": pvalue < 0.05,
+                "critical_values": {k: round(float(v), 4) for k, v in crit.items()},
+            }
+        except Exception:
+            adf_results[col] = {"stationary": None, "p_value": None}
+
+    # Returns distribution (BOC1)
+    boc1 = df["boc1"].dropna()
+    returns = boc1.pct_change().dropna()
+    ret_counts, ret_edges = np.histogram(returns, bins=40)
+    returns_hist = []
+    for i in range(len(ret_counts)):
+        returns_hist.append({
+            "x": round(float(ret_edges[i]) * 100, 2),
+            "x_end": round(float(ret_edges[i + 1]) * 100, 2),
+            "count": int(ret_counts[i]),
+        })
+
+    # ACF / PACF for BOC1
+    acf_vals = acf(boc1, nlags=30, fft=True)
+    pacf_vals = pacf(boc1, nlags=30)
+    n = len(boc1)
+    ci = 1.96 / np.sqrt(n)
+
+    acf_data = [{"lag": i, "value": round(float(acf_vals[i]), 4)} for i in range(len(acf_vals))]
+    pacf_data = [{"lag": i, "value": round(float(pacf_vals[i]), 4)} for i in range(len(pacf_vals))]
+
+    return {
+        "adf_tests": adf_results,
+        "returns_hist": returns_hist,
+        "returns_stats": {
+            "mean": round(float(returns.mean()) * 100, 4),
+            "std": round(float(returns.std()) * 100, 4),
+            "skew": round(float(returns.skew()), 4),
+            "kurtosis": round(float(returns.kurtosis()), 4),
+        },
+        "acf": acf_data,
+        "pacf": pacf_data,
+        "confidence_interval": round(float(ci), 4),
+        "labels": {c: LABELS[c] for c in cols},
+    }

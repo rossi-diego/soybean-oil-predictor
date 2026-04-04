@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config import Settings
 from src.log import get_logger, setup_logging
 from src.serving.model_cache import load_models
-from src.serving.routes import features, health, models, predict, prices
+from src.serving.routes import eda, features, health, models, predict, prices
 
 logger = get_logger(__name__)
 
@@ -53,6 +53,7 @@ def create_app() -> FastAPI:
     app.include_router(prices.router, prefix="/api/v1", tags=["Live Prices"])
     app.include_router(features.router, prefix="/api/v1", tags=["Features"])
     app.include_router(models.router, prefix="/api/v1", tags=["Models"])
+    app.include_router(eda.router, prefix="/api/v1", tags=["EDA"])
 
     return app
 

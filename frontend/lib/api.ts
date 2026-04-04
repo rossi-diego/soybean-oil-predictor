@@ -94,6 +94,65 @@ export interface BacktestPoint {
   upper: number;
 }
 
+// --- EDA types ---
+export interface EdaPricesResponse {
+  dates: string[];
+  series: Record<string, (number | null)[]>;
+  normalized: Record<string, (number | null)[]>;
+  n_points: number;
+  labels: Record<string, string>;
+}
+
+export interface EdaCorrelationsResponse {
+  features: string[];
+  matrix: number[][];
+  method: string;
+  labels: Record<string, string>;
+}
+
+export interface EdaDistributionBin { x: number; x_end: number; count: number; recent_count: number }
+export interface EdaQuartiles { min: number; q1: number; median: number; q3: number; max: number }
+export interface EdaFeatureDistribution {
+  bins: EdaDistributionBin[];
+  quartiles: EdaQuartiles;
+  mean: number; std: number; n: number; recent_n: number;
+}
+export interface EdaDistributionsResponse {
+  features: Record<string, EdaFeatureDistribution>;
+  labels: Record<string, string>;
+}
+
+export interface EdaSpreadSeries {
+  values: (number | null)[];
+  label: string; unit: string;
+  p10: number; p90: number; mean: number;
+}
+export interface EdaSpreadsResponse {
+  dates: string[];
+  spreads: Record<string, EdaSpreadSeries>;
+}
+
+export interface EdaMonthStats {
+  month: number; name: string;
+  min: number; q1: number; median: number; q3: number; max: number;
+  mean: number; n: number;
+}
+export interface EdaSeasonalityResponse { months: EdaMonthStats[] }
+
+export interface EdaAdfResult {
+  statistic: number; p_value: number; lags: number;
+  stationary: boolean; critical_values: Record<string, number>;
+}
+export interface EdaStationarityResponse {
+  adf_tests: Record<string, EdaAdfResult>;
+  returns_hist: { x: number; x_end: number; count: number }[];
+  returns_stats: { mean: number; std: number; skew: number; kurtosis: number };
+  acf: { lag: number; value: number }[];
+  pacf: { lag: number; value: number }[];
+  confidence_interval: number;
+  labels: Record<string, string>;
+}
+
 export interface BacktestResponse {
   points: BacktestPoint[];
   metrics: {
@@ -459,4 +518,22 @@ export const api = {
       undefined,
       MOCK_MODEL_METADATA,
     ),
+
+  edaPrices: (period = "all") =>
+    fetchApi<EdaPricesResponse>(`/api/v1/eda/prices?period=${period}`),
+
+  edaCorrelations: (method = "pearson") =>
+    fetchApi<EdaCorrelationsResponse>(`/api/v1/eda/correlations?method=${method}`),
+
+  edaDistributions: () =>
+    fetchApi<EdaDistributionsResponse>("/api/v1/eda/distributions"),
+
+  edaSpreads: () =>
+    fetchApi<EdaSpreadsResponse>("/api/v1/eda/spreads"),
+
+  edaSeasonality: () =>
+    fetchApi<EdaSeasonalityResponse>("/api/v1/eda/seasonality"),
+
+  edaStationarity: () =>
+    fetchApi<EdaStationarityResponse>("/api/v1/eda/stationarity"),
 };
