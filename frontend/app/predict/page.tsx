@@ -9,8 +9,8 @@ const FIELDS = [
   { key: "sc1", label: "Soybeans (ZS)", unit: "c/bu", placeholder: "1100" },
   { key: "lcoc1", label: "Brent Crude (BZ)", unit: "$/bbl", placeholder: "75" },
   { key: "hoc1", label: "Heating Oil (HO)", unit: "$/gal", placeholder: "2.20" },
-  { key: "fcpoc1", label: "Palm Oil (FCPO)", unit: "MYR/t", placeholder: "3200" },
-  { key: "rsc1", label: "Canola (RS)", unit: "CAD/t", placeholder: "600" },
+  { key: "fcpoc1", label: "Palm Oil (PALM)", unit: "GBp", placeholder: "78" },
+  { key: "rsc1", label: "Wheat (ZW)", unit: "c/bu", placeholder: "600" },
 ] as const;
 
 export default function PredictPage() {

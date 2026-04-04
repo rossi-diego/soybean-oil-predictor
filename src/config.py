@@ -44,14 +44,14 @@ DUCKDB_PATH = DATA_FOLDER / "soybean_oil.duckdb"
 # Ticker symbols — CBOT / ICE / Bursa Malaysia
 # ---------------------------------------------------------------------------
 TICKERS = {
-    "boc1": "BO=F",       # Soybean oil front-month (CBOT)
+    "boc1": "ZL=F",       # Soybean oil front-month (CBOT)
     "sc1": "ZS=F",        # Soybean front-month (CBOT)
     "smc1": "ZM=F",       # Soybean meal front-month (CBOT)
     "zc1": "ZC=F",        # Corn front-month (CBOT)
     "lcoc1": "BZ=F",      # Brent crude front-month (ICE)
     "hoc1": "HO=F",       # Heating oil front-month (NYMEX)
-    "fcpoc1": "FCPO=F",   # Crude palm oil (Bursa Malaysia, proxy via yfinance)
-    "rsc1": "RS=F",       # Canola/rapeseed (ICE Winnipeg)
+    "fcpoc1": "PALM.L",   # Palm oil ETF proxy (London, yfinance available)
+    "rsc1": "ZW=F",       # Wheat front-month (CBOT, proxy for canola)
 }
 
 TARGET_COLUMN = "boc1"

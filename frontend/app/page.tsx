@@ -17,8 +17,8 @@ const COMMODITY_LABELS: Record<string, string> = {
   smc1: "Soybean Meal",
   lcoc1: "Brent Crude",
   hoc1: "Heating Oil",
-  fcpoc1: "Crude Palm Oil",
-  rsc1: "Canola",
+  fcpoc1: "Palm Oil",
+  rsc1: "Wheat",
   zc1: "Corn",
 };
 
@@ -28,8 +28,8 @@ const COMMODITY_UNITS: Record<string, string> = {
   smc1: "$/ton",
   lcoc1: "$/bbl",
   hoc1: "$/gal",
-  fcpoc1: "MYR/t",
-  rsc1: "CAD/t",
+  fcpoc1: "GBp",
+  rsc1: "c/bu",
   zc1: "c/bu",
 };
 
