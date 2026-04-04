@@ -44,6 +44,22 @@ export interface LivePredictionResponse {
   fetched_at: string;
 }
 
+export interface SpreadSignal {
+  name: string;
+  label: string;
+  value: number;
+  unit: string;
+  ma30: number;
+  deviation_pct: number;
+  trend: "up" | "down" | "flat";
+  interpretation: string;
+  signal: "bullish" | "bearish" | "neutral";
+}
+
+export interface SpreadsResponse {
+  spreads: SpreadSignal[];
+}
+
 export interface PriceHistoryPoint {
   date: string;
   actual: number;
@@ -110,6 +126,33 @@ const MOCK_MODELS: ModelInfo[] = [
     trained_at: "2025-03-15T14:29:00",
   },
 ];
+
+const MOCK_SPREADS: SpreadsResponse = {
+  spreads: [
+    {
+      name: "crush_spread",
+      label: "Crush Spread",
+      value: 142.30,
+      unit: "$/ton",
+      ma30: 128.50,
+      deviation_pct: 10.7,
+      trend: "up",
+      interpretation: "Crush margin 11% above 30d avg — bullish for processor demand",
+      signal: "bullish",
+    },
+    {
+      name: "oil_palm_spread",
+      label: "Oil / Palm Spread",
+      value: -35.15,
+      unit: "c/lb",
+      ma30: -32.80,
+      deviation_pct: -7.2,
+      trend: "down",
+      interpretation: "Spread narrowing — soy oil gaining competitive advantage",
+      signal: "bearish",
+    },
+  ],
+};
 
 const MOCK_LIVE_PRICES: LivePricesResponse = {
   prices: [
@@ -279,5 +322,12 @@ export const api = {
       `/api/v1/prices/history?days=${days}`,
       undefined,
       MOCK_HISTORY,
+    ),
+
+  spreads: () =>
+    fetchApi<SpreadsResponse>(
+      "/api/v1/spreads",
+      undefined,
+      MOCK_SPREADS,
     ),
 };

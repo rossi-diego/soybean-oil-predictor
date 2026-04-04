@@ -144,6 +144,88 @@ async def predict_live() -> dict:
     }
 
 
+@router.get("/spreads")
+async def get_spread_signals() -> dict:
+    """Compute spread signals with 30-day MA, trend, and interpretation.
+
+    Returns crush spread and oil/palm spread with actionable
+    trading context for commodity risk managers.
+    """
+    from src.serving.spread_signals import (
+        compute_trend,
+        interpret_crush_spread,
+        interpret_oil_palm_spread,
+    )
+
+    tickers_needed = {
+        "boc1": TICKERS.get("boc1", "ZL=F"),
+        "sc1": TICKERS.get("sc1", "ZS=F"),
+        "smc1": TICKERS.get("smc1", "ZM=F"),
+        "fcpoc1": TICKERS.get("fcpoc1", "PALM.L"),
+    }
+
+    history_data: dict[str, list[float]] = {}
+    for name, symbol in tickers_needed.items():
+        try:
+            hist = yf.Ticker(symbol).history(period="60d")
+            if not hist.empty:
+                history_data[name] = hist["Close"].dropna().tolist()
+        except Exception:
+            logger.warning("spread_ticker_failed", ticker=symbol)
+
+    signals = []
+
+    # Crush spread: 11 * oil + meal - beans
+    if all(k in history_data for k in ("boc1", "smc1", "sc1")):
+        min_len = min(len(history_data["boc1"]), len(history_data["smc1"]), len(history_data["sc1"]))
+        crush_series = [
+            11 * history_data["boc1"][i] + history_data["smc1"][i] - history_data["sc1"][i]
+            for i in range(min_len)
+        ]
+        current = crush_series[-1] if crush_series else 0
+        ma30 = sum(crush_series[-30:]) / min(30, len(crush_series)) if crush_series else 0
+        deviation_pct = ((current - ma30) / abs(ma30) * 100) if ma30 != 0 else 0
+        trend = compute_trend(crush_series)
+        interp = interpret_crush_spread(current, ma30, trend)
+
+        signals.append({
+            "name": "crush_spread",
+            "label": "Crush Spread",
+            "value": round(current, 2),
+            "unit": "$/ton",
+            "ma30": round(ma30, 2),
+            "deviation_pct": round(deviation_pct, 1),
+            "trend": trend,
+            **interp,
+        })
+
+    # Oil/palm spread: boc1 - fcpoc1/100
+    if all(k in history_data for k in ("boc1", "fcpoc1")):
+        min_len = min(len(history_data["boc1"]), len(history_data["fcpoc1"]))
+        op_series = [
+            history_data["boc1"][i] - history_data["fcpoc1"][i] / 100
+            for i in range(min_len)
+        ]
+        current = op_series[-1] if op_series else 0
+        ma30 = sum(op_series[-30:]) / min(30, len(op_series)) if op_series else 0
+        deviation_pct = ((current - ma30) / abs(ma30) * 100) if ma30 != 0 else 0
+        trend = compute_trend(op_series)
+        interp = interpret_oil_palm_spread(current, ma30, trend)
+
+        signals.append({
+            "name": "oil_palm_spread",
+            "label": "Oil / Palm Spread",
+            "value": round(current, 2),
+            "unit": "c/lb",
+            "ma30": round(ma30, 2),
+            "deviation_pct": round(deviation_pct, 1),
+            "trend": trend,
+            **interp,
+        })
+
+    return {"spreads": signals}
+
+
 @router.get("/prices/history")
 async def get_price_history(days: int = 90) -> dict:
     """Return historical BOC1 prices with model predictions.

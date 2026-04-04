@@ -9,6 +9,7 @@ import {
   LivePrice,
   LivePredictionResponse,
   PriceHistoryPoint,
+  SpreadSignal,
 } from "@/lib/api";
 import { DemoBanner } from "@/components/layout/demo-banner";
 import {
@@ -48,14 +49,17 @@ function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`skeleton ${className}`} />;
 }
 
-function computeSpreads(prices: LivePrice[]) {
-  const p: Record<string, number> = {};
-  prices.forEach((pr) => (p[pr.name] = pr.price));
-  return {
-    crush: p.boc1 && p.smc1 && p.sc1 ? 11 * p.boc1 + p.smc1 - p.sc1 : null,
-    oilPalm: p.boc1 && p.fcpoc1 ? p.boc1 - p.fcpoc1 / 100 : null,
-  };
-}
+const TREND_ICON: Record<string, string> = { up: "\u25B2", down: "\u25BC", flat: "\u2192" };
+const SIGNAL_BORDER: Record<string, string> = {
+  bullish: "border-l-green-500",
+  bearish: "border-l-red-500",
+  neutral: "border-l-yellow-500",
+};
+const SIGNAL_TEXT: Record<string, string> = {
+  bullish: "text-green-400",
+  bearish: "text-red-400",
+  neutral: "text-yellow-500",
+};
 
 export default function DashboardPage() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -63,6 +67,7 @@ export default function DashboardPage() {
   const [prices, setPrices] = useState<LivePrice[]>([]);
   const [livePred, setLivePred] = useState<LivePredictionResponse | null>(null);
   const [history, setHistory] = useState<PriceHistoryPoint[]>([]);
+  const [spreads, setSpreads] = useState<SpreadSignal[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -72,12 +77,12 @@ export default function DashboardPage() {
       api.livePrices().then((d) => setPrices(d.prices)),
       api.predictLive().then(setLivePred),
       api.priceHistory(90).then((d) => setHistory(d.history)),
+      api.spreads().then((d) => setSpreads(d.spreads)),
     ]).finally(() => setLoaded(true));
   }, []);
 
   const demo = loaded && isDemoMode();
   const boc1 = prices.find((p) => p.name === "boc1")?.price;
-  const spreads = computeSpreads(prices);
   const diff = livePred && boc1 ? livePred.predicted_price - boc1 : null;
 
   return (
@@ -95,8 +100,8 @@ export default function DashboardPage() {
         </p>
       </section>
 
-      {/* Key metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Price metrics */}
+      <div className="grid grid-cols-2 gap-3">
         <div className="glass-card p-4">
           <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
             BOC1 Last
@@ -137,36 +142,56 @@ export default function DashboardPage() {
             {livePred?.model_name ?? "loading"}
           </p>
         </div>
-        <div className="glass-card p-4">
-          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
-            Crush Spread
-          </p>
-          {!loaded ? (
-            <Skeleton className="h-8 w-20 mt-1.5" />
-          ) : (
-            <p className="text-2xl font-bold mt-1">
-              {spreads.crush?.toFixed(1) ?? "N/A"}
-            </p>
-          )}
-          <p className="text-[10px] text-zinc-600 mt-0.5">
-            11 x oil + meal &minus; beans
-          </p>
-        </div>
-        <div className="glass-card p-4">
-          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
-            Oil / Palm Spread
-          </p>
-          {!loaded ? (
-            <Skeleton className="h-8 w-20 mt-1.5" />
-          ) : (
-            <p className="text-2xl font-bold mt-1">
-              {spreads.oilPalm?.toFixed(2) ?? "N/A"}
-            </p>
-          )}
-          <p className="text-[10px] text-zinc-600 mt-0.5">
-            BOC1 &minus; CPO/100
-          </p>
-        </div>
+      </div>
+
+      {/* Spread signal cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {!loaded ? (
+          <>
+            <Skeleton className="h-28" />
+            <Skeleton className="h-28" />
+          </>
+        ) : (
+          spreads.map((s) => (
+            <div
+              key={s.name}
+              className={`glass-card p-4 border-l-[3px] ${SIGNAL_BORDER[s.signal]}`}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
+                    {s.label}
+                  </p>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <p className="text-2xl font-bold tabular-nums">
+                      {s.value.toFixed(2)}
+                    </p>
+                    <span className="text-[11px] text-zinc-600">{s.unit}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`text-sm ${SIGNAL_TEXT[s.signal]}`}>
+                    {TREND_ICON[s.trend]}
+                  </span>
+                  <p className="text-[10px] text-zinc-600 mt-0.5">
+                    30d avg: {s.ma30.toFixed(2)}
+                  </p>
+                  <span
+                    className={`text-[10px] font-medium ${
+                      s.deviation_pct > 0 ? "text-green-400" : s.deviation_pct < 0 ? "text-red-400" : "text-zinc-400"
+                    }`}
+                  >
+                    {s.deviation_pct > 0 ? "+" : ""}
+                    {s.deviation_pct.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+              <p className="text-[12px] text-zinc-400 mt-2 leading-relaxed">
+                {s.interpretation}
+              </p>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Chart */}
