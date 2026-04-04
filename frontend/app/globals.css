@@ -3,27 +3,36 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #141414;
-  --card-border: #262626;
-  --muted: #737373;
-  --accent: #22c55e;
-  --accent-gold: #f59e0b;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #111113;
+  --card-border: #1e1e22;
+  --muted: #71717a;
+  --accent-green: #22c55e;
+  --accent-blue: #3b82f6;
+  --accent-gold: #eab308;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-[#141414] border border-[#262626] rounded-xl;
+    @apply bg-[#111113] border border-[#1e1e22] rounded-xl;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-brand-400 to-gold-400 bg-clip-text text-transparent;
+    background: linear-gradient(135deg, #22c55e 0%, #eab308 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-[#1e1e22] rounded;
   }
 }

@@ -5,64 +5,67 @@ import { api, isDemoMode, LivePrice, PredictionResponse } from "@/lib/api";
 import { DemoBanner } from "@/components/layout/demo-banner";
 
 const FIELDS = [
-  { key: "smc1", label: "Soybean Meal (ZM)", unit: "$/ton", placeholder: "350" },
-  { key: "sc1", label: "Soybeans (ZS)", unit: "c/bu", placeholder: "1100" },
-  { key: "lcoc1", label: "Brent Crude (BZ)", unit: "$/bbl", placeholder: "75" },
-  { key: "hoc1", label: "Heating Oil (HO)", unit: "$/gal", placeholder: "2.20" },
-  { key: "fcpoc1", label: "Palm Oil (PALM)", unit: "GBp", placeholder: "78" },
-  { key: "rsc1", label: "Wheat (ZW)", unit: "c/bu", placeholder: "600" },
+  { key: "smc1", label: "Soybean Meal", ticker: "ZM", unit: "$/ton", placeholder: "350" },
+  { key: "sc1", label: "Soybeans", ticker: "ZS", unit: "c/bu", placeholder: "1100" },
+  { key: "lcoc1", label: "Brent Crude", ticker: "BZ", unit: "$/bbl", placeholder: "75" },
+  { key: "hoc1", label: "Heating Oil", ticker: "HO", unit: "$/gal", placeholder: "2.20" },
+  { key: "fcpoc1", label: "Palm Oil", ticker: "PALM", unit: "GBp", placeholder: "78" },
+  { key: "rsc1", label: "Wheat", ticker: "ZW", unit: "c/bu", placeholder: "600" },
 ] as const;
 
 export default function PredictPage() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [result, setResult] = useState<PredictionResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loadingPrices, setLoadingPrices] = useState(false);
+  const [filling, setFilling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
-  const [boc1Current, setBoc1Current] = useState<number | null>(null);
-  const [livePrices, setLivePrices] = useState<LivePrice[]>([]);
+  const [boc1, setBoc1] = useState<number | null>(null);
 
   useEffect(() => {
-    api.livePrices().then((data) => {
-      setLivePrices(data.prices);
-      const boc1 = data.prices.find((p) => p.name === "boc1");
-      if (boc1) setBoc1Current(boc1.price);
+    api.livePrices().then((d) => {
+      const b = d.prices.find((p) => p.name === "boc1");
+      if (b) setBoc1(b.price);
     }).catch(() => {});
   }, []);
 
-  const fillLivePrices = async () => {
-    setLoadingPrices(true);
+  const fillLive = async () => {
+    setFilling(true);
     try {
-      const data = await api.livePrices();
-      setLivePrices(data.prices);
-      const newValues: Record<string, string> = {};
+      const d = await api.livePrices();
+      const v: Record<string, string> = {};
       for (const { key } of FIELDS) {
-        const match = data.prices.find((p) => p.name === key);
-        if (match) newValues[key] = match.price.toString();
+        const m = d.prices.find((p) => p.name === key);
+        if (m) v[key] = m.price.toString();
       }
-      setValues(newValues);
+      setValues(v);
       setDemo(isDemoMode());
-      const boc1 = data.prices.find((p) => p.name === "boc1");
-      if (boc1) setBoc1Current(boc1.price);
+      const b = d.prices.find((p) => p.name === "boc1");
+      if (b) setBoc1(b.price);
     } catch {
       setError("Could not fetch live prices");
     } finally {
-      setLoadingPrices(false);
+      setFilling(false);
     }
   };
 
+  const allFilled = FIELDS.every(({ key }) => {
+    const v = parseFloat(values[key] || "");
+    return !isNaN(v) && v > 0;
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!allFilled) return;
     setLoading(true);
     setError(null);
 
-    try {
-      const payload = Object.fromEntries(
-        FIELDS.map(({ key }) => [key, parseFloat(values[key] || "0")])
-      ) as any;
-      payload.month = new Date().getMonth() + 1;
+    const payload = Object.fromEntries(
+      FIELDS.map(({ key }) => [key, parseFloat(values[key])])
+    ) as any;
+    payload.month = new Date().getMonth() + 1;
 
+    try {
       const data = await api.predict(payload);
       setResult(data);
       setDemo(isDemoMode());
@@ -73,54 +76,54 @@ export default function PredictPage() {
     }
   };
 
-  const predDiff =
-    result && boc1Current
-      ? result.predicted_price - boc1Current
-      : null;
+  const diff = result && boc1 ? result.predicted_price - boc1 : null;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold gradient-text">Price Prediction</h1>
-        <p className="text-gray-400 mt-2">
-          Forecast the BOC1 soybean oil futures price. Use live market prices
-          as a starting point, then adjust for scenario analysis.
+    <div className="space-y-6">
+      <section>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Price Forecast
+        </h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          Enter commodity prices or load live market data, then forecast
+          the BOC1 soybean oil price. Adjust inputs for scenario analysis.
         </p>
-      </div>
+      </section>
 
       {demo && <DemoBanner />}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <form onSubmit={handleSubmit} className="glass-card p-6 space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Form — 3 columns */}
+        <form onSubmit={handleSubmit} className="lg:col-span-3 glass-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Input Features</h2>
+            <h2 className="text-sm font-semibold">Input Features</h2>
             <button
               type="button"
-              onClick={fillLivePrices}
-              disabled={loadingPrices}
-              className="text-sm bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-3 py-1.5 rounded-lg transition-colors"
+              onClick={fillLive}
+              disabled={filling}
+              className="text-[12px] bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              {loadingPrices ? "Loading..." : "Use Live Prices"}
+              {filling ? "Loading..." : "Load Live Prices"}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {FIELDS.map(({ key, label, unit, placeholder }) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {FIELDS.map(({ key, label, ticker, unit, placeholder }) => (
               <div key={key}>
-                <label className="block text-sm text-gray-400 mb-1">
-                  {label}{" "}
-                  <span className="text-gray-600">({unit})</span>
+                <label className="block text-[11px] text-zinc-500 mb-1 font-medium">
+                  {label}
+                  <span className="text-zinc-600 ml-1">({unit})</span>
                 </label>
                 <input
                   type="number"
                   step="any"
+                  min="0"
                   placeholder={placeholder}
                   value={values[key] || ""}
                   onChange={(e) =>
                     setValues((v) => ({ ...v, [key]: e.target.value }))
                   }
-                  className="w-full bg-black/30 border border-[#333] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-                  required
+                  className="w-full bg-black/30 border border-[#262626] rounded-md px-2.5 py-2 text-sm tabular-nums focus:outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-700"
                 />
               </div>
             ))}
@@ -128,93 +131,94 @@ export default function PredictPage() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg transition-colors"
+            disabled={loading || !allFilled}
+            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 rounded-md transition-colors"
           >
-            {loading ? "Predicting..." : "Predict BOC1 Price"}
+            {loading ? "Running model..." : "Forecast BOC1 Price"}
           </button>
+
+          {!allFilled && Object.keys(values).length > 0 && (
+            <p className="text-[11px] text-zinc-600 text-center">
+              All fields must be greater than zero
+            </p>
+          )}
         </form>
 
-        <div className="space-y-4">
+        {/* Result — 2 columns */}
+        <div className="lg:col-span-2 space-y-4">
           {error && (
-            <div className="glass-card p-4 border-red-500/30 bg-red-500/5">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="glass-card p-3 border-red-500/20 bg-red-500/5">
+              <p className="text-red-400 text-[13px]">{error}</p>
             </div>
           )}
 
-          {result && (
-            <div className="glass-card p-6 border-brand-500/30 bg-brand-500/5">
+          {result ? (
+            <div className="glass-card p-5 border-green-500/20 bg-green-500/5">
               {demo && (
-                <p className="text-xs text-gold-400 mb-3">
-                  Demo mode — simplified formula, not the trained model
+                <p className="text-[10px] text-yellow-500 mb-2">
+                  Sample data &mdash; simplified formula
                 </p>
               )}
-              <p className="text-sm text-gray-400 mb-2">Predicted BOC1 Price</p>
-              <div className="flex items-end gap-3">
-                <p className="text-5xl font-bold text-brand-400">
+              <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
+                Predicted BOC1
+              </p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <p className="text-4xl font-bold text-green-400 tabular-nums">
                   {result.predicted_price.toFixed(2)}
                 </p>
-                {predDiff !== null && (
-                  <span
-                    className={`text-sm font-medium px-2 py-1 rounded-full mb-2 ${
-                      predDiff > 0
-                        ? "bg-green-500/20 text-green-400"
-                        : predDiff < 0
-                          ? "bg-red-500/20 text-red-400"
-                          : "bg-gray-500/20 text-gray-400"
-                    }`}
-                  >
-                    {predDiff > 0 ? "+" : ""}
-                    {predDiff.toFixed(2)} vs current
-                  </span>
-                )}
+                <span className="text-sm text-zinc-500">c/lb</span>
               </div>
-              <p className="text-sm text-gray-500 mt-1">cents per pound</p>
 
-              {boc1Current && (
-                <div className="mt-4 pt-4 border-t border-[#262626] grid grid-cols-2 gap-3 text-sm">
+              {diff !== null && (
+                <div className="mt-3 pt-3 border-t border-[#1e1e22] grid grid-cols-2 gap-3 text-[13px]">
                   <div>
-                    <p className="text-gray-500">Current BOC1</p>
-                    <p className="font-medium">{boc1Current.toFixed(2)} c/lb</p>
+                    <p className="text-zinc-500">Current BOC1</p>
+                    <p className="font-medium tabular-nums">
+                      {boc1?.toFixed(2)} c/lb
+                    </p>
                   </div>
                   <div>
-                    <p className="text-gray-500">Signal</p>
-                    <p className={`font-medium ${
-                      predDiff && predDiff > 0 ? "text-green-400" : "text-red-400"
-                    }`}>
-                      {predDiff && predDiff > 0
-                        ? "Model suggests upside"
-                        : "Model suggests downside"}
+                    <p className="text-zinc-500">Signal</p>
+                    <p
+                      className={`font-medium ${
+                        diff > 0 ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {diff > 0 ? "Upside" : "Downside"}{" "}
+                      ({diff > 0 ? "+" : ""}
+                      {diff.toFixed(2)})
                     </p>
                   </div>
                 </div>
               )}
 
-              <div className="mt-3 pt-3 border-t border-[#262626]">
-                <p className="text-xs text-gray-500">
-                  Model: {result.model_name} | Features: {result.features_used.join(", ")}
-                </p>
-              </div>
+              <p className="text-[10px] text-zinc-600 mt-3">
+                Model: {result.model_name}
+              </p>
+            </div>
+          ) : (
+            <div className="glass-card p-5 text-center">
+              <p className="text-zinc-600 text-sm">
+                Load live prices and run the forecast to see results.
+              </p>
             </div>
           )}
 
-          <div className="glass-card p-6">
-            <h3 className="text-sm font-semibold text-gray-400 mb-3">
+          <div className="glass-card p-4">
+            <h3 className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium mb-2">
               How to use
             </h3>
-            <ol className="text-sm text-gray-500 leading-relaxed space-y-2 list-decimal list-inside">
+            <ol className="text-[13px] text-zinc-500 space-y-1.5 list-decimal list-inside">
               <li>
-                Click <strong>Use Live Prices</strong> to auto-fill with current
-                market data from Yahoo Finance.
+                Click <strong className="text-zinc-300">Load Live Prices</strong>{" "}
+                to pull current market data
               </li>
               <li>
-                Adjust any price to run a{" "}
-                <strong>scenario analysis</strong> — e.g., &ldquo;what if crude oil
-                jumps 10%?&rdquo;
+                Adjust any value for scenario analysis
               </li>
               <li>
-                Click <strong>Predict</strong> to see the forecasted BOC1 price
-                and whether the model sees upside or downside vs current.
+                Click <strong className="text-zinc-300">Forecast</strong>{" "}
+                to see the predicted price vs current
               </li>
             </ol>
           </div>
