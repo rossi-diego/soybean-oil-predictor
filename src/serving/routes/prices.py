@@ -10,7 +10,7 @@ import yfinance as yf
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from src.config import TICKERS
+from src.config import DATA_FOLDER, TICKERS
 from src.log import get_logger
 
 logger = get_logger(__name__)
@@ -224,6 +224,58 @@ async def get_spread_signals() -> dict:
         })
 
     return {"spreads": signals}
+
+
+@router.get("/backtest")
+async def get_backtest() -> dict:
+    """Return walk-forward out-of-sample backtest results.
+
+    These predictions were generated at build time using TimeSeriesSplit
+    with 5 folds. Each prediction was made using only past data —
+    no look-ahead bias.
+    """
+    import numpy as np
+
+    backtest_path = DATA_FOLDER / "walk_forward_backtest.parquet"
+    if not backtest_path.exists():
+        raise HTTPException(status_code=404, detail="Backtest data not available")
+
+    df = pd.read_parquet(backtest_path)
+
+    actual = df["actual"].values
+    predicted = df["predicted"].values
+    residuals = actual - predicted
+
+    mae = float(np.mean(np.abs(residuals)))
+    rmse = float(np.sqrt(np.mean(residuals ** 2)))
+    r2 = float(1 - np.sum(residuals ** 2) / np.sum((actual - actual.mean()) ** 2))
+
+    true_dir = np.sign(np.diff(actual))
+    pred_dir = np.sign(np.diff(predicted))
+    dir_acc = float((true_dir == pred_dir).sum() / len(true_dir)) if len(true_dir) > 0 else 0.0
+
+    points = []
+    for _, row in df.iterrows():
+        points.append({
+            "date": int(row["row_index"]),
+            "actual": round(float(row["actual"]), 2),
+            "predicted": round(float(row["predicted"]), 2),
+            "lower": round(float(row["lower"]), 2),
+            "upper": round(float(row["upper"]), 2),
+        })
+
+    return {
+        "points": points,
+        "metrics": {
+            "mae": round(mae, 2),
+            "rmse": round(rmse, 2),
+            "r2": round(r2, 4),
+            "directional_accuracy": round(dir_acc, 4),
+        },
+        "n_points": len(points),
+        "n_folds": int(df["fold"].nunique()),
+        "model": "xgboost_baseline",
+    }
 
 
 @router.get("/prices/history")

@@ -8,11 +8,13 @@ import {
   ModelInfo,
   LivePrice,
   LivePredictionResponse,
-  PriceHistoryPoint,
   SpreadSignal,
+  BacktestResponse,
 } from "@/lib/api";
 import { DemoBanner } from "@/components/layout/demo-banner";
 import {
+  Area,
+  ComposedChart,
   LineChart,
   Line,
   XAxis,
@@ -66,7 +68,7 @@ export default function DashboardPage() {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [prices, setPrices] = useState<LivePrice[]>([]);
   const [livePred, setLivePred] = useState<LivePredictionResponse | null>(null);
-  const [history, setHistory] = useState<PriceHistoryPoint[]>([]);
+  const [backtest, setBacktest] = useState<BacktestResponse | null>(null);
   const [spreads, setSpreads] = useState<SpreadSignal[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -76,7 +78,7 @@ export default function DashboardPage() {
       api.listModels().then((d) => setModels(d.models)),
       api.livePrices().then((d) => setPrices(d.prices)),
       api.predictLive().then(setLivePred),
-      api.priceHistory(90).then((d) => setHistory(d.history)),
+      api.backtest().then(setBacktest),
       api.spreads().then((d) => setSpreads(d.spreads)),
     ]).finally(() => setLoaded(true));
   }, []);
@@ -194,36 +196,42 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Chart */}
-      {(history.length > 0 || !loaded) && (
-        <div className="glass-card p-5">
-          <div className="flex items-baseline justify-between mb-4">
-            <div>
-              <h2 className="text-sm font-semibold">
-                Actual vs Predicted
-              </h2>
-              <p className="text-[11px] text-zinc-500 mt-0.5">
-                {history.length} trading days, walk-forward out-of-sample
-              </p>
-            </div>
-            {loaded && (
-              <span className="text-[10px] text-zinc-600">
-                Model: {livePred?.model_name}
-              </span>
-            )}
+      {/* Walk-forward backtest chart */}
+      <div className="glass-card p-5">
+        <div className="flex items-baseline justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-semibold">
+              Actual vs Predicted
+            </h2>
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              {backtest
+                ? `Walk-forward validation, ${backtest.n_points} predictions, ${backtest.n_folds} folds`
+                : "Loading backtest data..."}
+            </p>
           </div>
-          {!loaded ? (
-            <Skeleton className="h-64 w-full" />
-          ) : (
+          {backtest && (
+            <span className="text-[10px] text-zinc-600">
+              {backtest.model}
+            </span>
+          )}
+        </div>
+        {!loaded ? (
+          <Skeleton className="h-64 w-full" />
+        ) : backtest && backtest.points.length > 0 ? (
+          <>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={history}>
+                <ComposedChart data={backtest.points}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
                   <XAxis
                     dataKey="date"
                     stroke="#3f3f46"
                     fontSize={10}
-                    tickFormatter={(d: string) => d.slice(5)}
+                    tickFormatter={(v: number) =>
+                      v % Math.ceil(backtest.points.length / 8) === 0
+                        ? String(v)
+                        : ""
+                    }
                   />
                   <YAxis
                     stroke="#3f3f46"
@@ -238,10 +246,29 @@ export default function DashboardPage() {
                       borderRadius: 8,
                       fontSize: 11,
                     }}
-                    formatter={(v: number) => v?.toFixed(2)}
+                    formatter={(v: number, name: string) => [
+                      v?.toFixed(2),
+                      name === "interval" ? "95% CI" : name,
+                    ]}
                   />
-                  <Legend
-                    wrapperStyle={{ fontSize: 11, color: "#71717a" }}
+                  <Legend wrapperStyle={{ fontSize: 11, color: "#71717a" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="upper"
+                    stroke="none"
+                    fill="#3b82f6"
+                    fillOpacity={0.08}
+                    name="interval"
+                    legendType="none"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="lower"
+                    stroke="none"
+                    fill="#09090b"
+                    fillOpacity={1}
+                    name="lower"
+                    legendType="none"
                   />
                   <Line
                     type="monotone"
@@ -260,12 +287,43 @@ export default function DashboardPage() {
                     dot={false}
                     name="Predicted"
                   />
-                </LineChart>
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
-          )}
-        </div>
-      )}
+            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-[#1e1e22]">
+              {[
+                { label: "MAE", value: backtest.metrics.mae.toFixed(2), unit: "c/lb" },
+                { label: "RMSE", value: backtest.metrics.rmse.toFixed(2), unit: "c/lb" },
+                { label: "R\u00B2", value: backtest.metrics.r2.toFixed(4), unit: "" },
+                {
+                  label: "Dir. Accuracy",
+                  value: `${(backtest.metrics.directional_accuracy * 100).toFixed(1)}%`,
+                  unit: "",
+                },
+              ].map((m) => (
+                <div
+                  key={m.label}
+                  className="bg-white/[0.03] rounded-md px-3 py-1.5"
+                >
+                  <span className="text-[10px] text-zinc-500">{m.label}</span>
+                  <span className="text-[13px] font-semibold tabular-nums ml-1.5">
+                    {m.value}
+                  </span>
+                  {m.unit && (
+                    <span className="text-[10px] text-zinc-600 ml-0.5">
+                      {m.unit}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-zinc-600 text-center py-8">
+            No backtest data available
+          </p>
+        )}
+      </div>
 
       {/* Commodity prices */}
       <div className="glass-card p-5">

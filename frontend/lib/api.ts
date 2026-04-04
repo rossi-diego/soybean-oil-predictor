@@ -60,6 +60,27 @@ export interface SpreadsResponse {
   spreads: SpreadSignal[];
 }
 
+export interface BacktestPoint {
+  date: number;
+  actual: number;
+  predicted: number;
+  lower: number;
+  upper: number;
+}
+
+export interface BacktestResponse {
+  points: BacktestPoint[];
+  metrics: {
+    mae: number;
+    rmse: number;
+    r2: number;
+    directional_accuracy: number;
+  };
+  n_points: number;
+  n_folds: number;
+  model: string;
+}
+
 export interface PriceHistoryPoint {
   date: string;
   actual: number;
@@ -153,6 +174,33 @@ const MOCK_SPREADS: SpreadsResponse = {
     },
   ],
 };
+
+function generateMockBacktest(): BacktestResponse {
+  const points: BacktestPoint[] = [];
+  let price = 38;
+  for (let i = 0; i < 200; i++) {
+    price += (Math.random() - 0.48) * 1.5;
+    price = Math.max(28, Math.min(65, price));
+    const predicted = price + (Math.random() - 0.5) * 8;
+    const std = 4.5;
+    points.push({
+      date: i,
+      actual: Math.round(price * 100) / 100,
+      predicted: Math.round(predicted * 100) / 100,
+      lower: Math.round((predicted - 1.96 * std) * 100) / 100,
+      upper: Math.round((predicted + 1.96 * std) * 100) / 100,
+    });
+  }
+  return {
+    points,
+    metrics: { mae: 3.83, rmse: 6.16, r2: 0.8266, directional_accuracy: 0.619 },
+    n_points: points.length,
+    n_folds: 5,
+    model: "xgboost_baseline",
+  };
+}
+
+const MOCK_BACKTEST = generateMockBacktest();
 
 const MOCK_LIVE_PRICES: LivePricesResponse = {
   prices: [
@@ -329,5 +377,12 @@ export const api = {
       "/api/v1/spreads",
       undefined,
       MOCK_SPREADS,
+    ),
+
+  backtest: () =>
+    fetchApi<BacktestResponse>(
+      "/api/v1/backtest",
+      undefined,
+      MOCK_BACKTEST,
     ),
 };
