@@ -82,3 +82,18 @@ async def list_models() -> ModelListResponse:
         raise HTTPException(status_code=404, detail="No trained models found")
 
     return ModelListResponse(models=models_list, active_model=active_model)
+
+
+@router.get("/model/info")
+async def get_model_info() -> dict:
+    """Return detailed training metadata for the active model."""
+    import json
+
+    from src.config import DATA_FOLDER
+
+    metadata_path = DATA_FOLDER / "model_metadata.json"
+    if not metadata_path.exists():
+        raise HTTPException(status_code=404, detail="Model metadata not available")
+
+    with open(metadata_path) as f:
+        return json.load(f)

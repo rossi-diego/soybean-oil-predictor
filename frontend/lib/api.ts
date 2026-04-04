@@ -15,11 +15,36 @@ export interface PredictionRequest {
   month?: number;
 }
 
+export interface FeatureContribution {
+  feature: string;
+  contribution: number;
+}
+
 export interface PredictionResponse {
   predicted_price: number;
   model_name: string;
-  confidence: Record<string, number>;
+  confidence: { lower?: number; upper?: number };
   features_used: string[];
+  feature_contributions: FeatureContribution[];
+}
+
+export interface ModelMetadata {
+  algorithm: string;
+  n_training_samples: number;
+  n_total_samples: number;
+  n_features: number;
+  feature_names: string[];
+  residual_std: number;
+  trained_at: string;
+  backtest_metrics: {
+    mae: number;
+    rmse: number;
+    r2: number;
+    directional_accuracy: number;
+    n_predictions: number;
+    n_folds: number;
+  };
+  hyperparameters: Record<string, any>;
 }
 
 export interface LivePrice {
@@ -147,6 +172,30 @@ const MOCK_MODELS: ModelInfo[] = [
     trained_at: "2025-03-15T14:29:00",
   },
 ];
+
+const MOCK_MODEL_METADATA: ModelMetadata = {
+  algorithm: "XGBRegressor",
+  n_training_samples: 2016,
+  n_total_samples: 2520,
+  n_features: 8,
+  feature_names: ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1", "so-premp-c1", "brl="],
+  residual_std: 5.87,
+  trained_at: "2025-03-15T14:30:00",
+  backtest_metrics: {
+    mae: 3.83,
+    rmse: 6.16,
+    r2: 0.8266,
+    directional_accuracy: 0.619,
+    n_predictions: 2100,
+    n_folds: 5,
+  },
+  hyperparameters: {
+    n_estimators: 500,
+    max_depth: 6,
+    learning_rate: 0.05,
+    subsample: 0.8,
+  },
+};
 
 const MOCK_SPREADS: SpreadsResponse = {
   spreads: [
@@ -312,11 +361,20 @@ function mockPredict(data: PredictionRequest): PredictionResponse {
   const base = 0.08 * data.smc1 + 0.005 * data.sc1 + 0.12 * data.lcoc1
     + 8.5 * data.hoc1 + 0.002 * data.fcpoc1 + 0.01 * data.rsc1;
   const noise = (Math.sin(data.month || 1) * 2);
+  const price = Math.round((base / 6 + noise) * 100) / 100;
   return {
-    predicted_price: Math.round((base / 6 + noise) * 100) / 100,
+    predicted_price: price,
     model_name: "xgboost_baseline (demo)",
-    confidence: {},
+    confidence: { lower: Math.round((price - 11.5) * 100) / 100, upper: Math.round((price + 11.5) * 100) / 100 },
     features_used: ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"],
+    feature_contributions: [
+      { feature: "hoc1", contribution: 4.82 },
+      { feature: "smc1", contribution: 3.15 },
+      { feature: "lcoc1", contribution: -2.41 },
+      { feature: "fcpoc1", contribution: 1.87 },
+      { feature: "sc1", contribution: -1.23 },
+      { feature: "rsc1", contribution: 0.64 },
+    ],
   };
 }
 
@@ -384,5 +442,12 @@ export const api = {
       "/api/v1/backtest",
       undefined,
       MOCK_BACKTEST,
+    ),
+
+  modelInfo: () =>
+    fetchApi<ModelMetadata>(
+      "/api/v1/model/info",
+      undefined,
+      MOCK_MODEL_METADATA,
     ),
 };

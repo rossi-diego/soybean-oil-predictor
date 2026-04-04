@@ -44,6 +44,10 @@ class PredictionResponse(BaseModel):
         default_factory=list,
         description="Features that contributed to the prediction",
     )
+    feature_contributions: list[dict] = Field(
+        default_factory=list,
+        description="Per-feature contributions to this prediction (SHAP-like)",
+    )
 
 
 class FeatureImportance(BaseModel):

@@ -27,6 +27,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_FILE = PROJECT_ROOT / "data" / "commodities_clean_data.parquet"
 MODEL_DIR = PROJECT_ROOT / "models"
 BACKTEST_FILE = PROJECT_ROOT / "data" / "walk_forward_backtest.parquet"
+METADATA_FILE = PROJECT_ROOT / "data" / "model_metadata.json"
 
 TARGET = "boc1"
 RANDOM_STATE = 42
@@ -145,10 +146,43 @@ def train_and_save():
     # Overall backtest metrics
     all_actual = backtest_df["actual"].values
     all_pred = backtest_df["predicted"].values
-    print(f"Overall — MAE: {mean_absolute_error(all_actual, all_pred):.2f}, "
-          f"RMSE: {np.sqrt(np.mean((all_actual - all_pred) ** 2)):.2f}, "
-          f"R2: {r2_score(all_actual, all_pred):.4f}, "
-          f"DirAcc: {directional_accuracy(all_actual, all_pred):.1%}")
+    overall_residual_std = float(np.std(all_actual - all_pred))
+    overall_mae = float(mean_absolute_error(all_actual, all_pred))
+    overall_rmse = float(np.sqrt(np.mean((all_actual - all_pred) ** 2)))
+    overall_r2 = float(r2_score(all_actual, all_pred))
+    overall_da = directional_accuracy(all_actual, all_pred)
+
+    print(f"Overall — MAE: {overall_mae:.2f}, RMSE: {overall_rmse:.2f}, "
+          f"R2: {overall_r2:.4f}, DirAcc: {overall_da:.1%}")
+
+    # --- Save model metadata ---
+    import json
+    from datetime import datetime
+
+    metadata = {
+        "algorithm": "XGBRegressor",
+        "hyperparameters": xgb_params,
+        "n_training_samples": len(X_train),
+        "n_test_samples": len(X_test),
+        "n_total_samples": len(df),
+        "n_features": len(feature_cols),
+        "feature_names": feature_cols,
+        "target": TARGET,
+        "residual_std": round(overall_residual_std, 4),
+        "backtest_metrics": {
+            "mae": round(overall_mae, 2),
+            "rmse": round(overall_rmse, 2),
+            "r2": round(overall_r2, 4),
+            "directional_accuracy": round(overall_da, 4),
+            "n_predictions": len(backtest_df),
+            "n_folds": 5,
+        },
+        "trained_at": datetime.now().isoformat(),
+    }
+
+    with open(METADATA_FILE, "w") as f:
+        json.dump(metadata, f, indent=2, default=str)
+    print(f"Metadata saved: {METADATA_FILE}")
 
     print("\nTraining complete.")
 
