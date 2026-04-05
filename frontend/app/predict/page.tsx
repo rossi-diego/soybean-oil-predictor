@@ -28,11 +28,11 @@ const FIELDS: {
   unit: string;
   why: string;
 }[] = [
-  { key: "smc1", label: "Soybean Meal", unit: "$/ton", why: "Crush economics — meal is the co-product of soybean oil production. Higher meal prices support oil margins." },
-  { key: "sc1", label: "Soybeans", unit: "c/bu", why: "Feedstock cost — soybeans are crushed into oil and meal. Higher bean prices increase production costs." },
-  { key: "lcoc1", label: "Brent Crude", unit: "$/bbl", why: "Biodiesel demand — soybean oil competes as a biodiesel feedstock. Crude prices drive renewable fuel economics." },
-  { key: "hoc1", label: "Heating Oil", unit: "$/gal", why: "Energy correlation — heating oil tracks energy-vegetable oil substitution and refining margins." },
-  { key: "rsc1", label: "Wheat", unit: "c/bu", why: "Grain complex — wheat reflects broader agricultural market sentiment and planting competition." },
+  { key: "smc1", label: "Soybean Meal (CBOT)", unit: "$/ton", why: "Crush economics — meal is the co-product of soybean oil production. Higher meal prices support oil margins." },
+  { key: "sc1", label: "Soybeans (CBOT)", unit: "c/bu", why: "Feedstock cost — soybeans are crushed into oil and meal. Higher bean prices increase production costs." },
+  { key: "lcoc1", label: "Brent Crude (ICE)", unit: "$/bbl", why: "Biodiesel demand — soybean oil competes as a biodiesel feedstock. Crude prices drive renewable fuel economics." },
+  { key: "hoc1", label: "Heating Oil (NYMEX)", unit: "$/gal", why: "Energy correlation — heating oil tracks energy-vegetable oil substitution and refining margins." },
+  { key: "rsc1", label: "Wheat (CBOT)", unit: "c/bu", why: "Grain complex — wheat reflects broader agricultural market sentiment and planting competition." },
 ];
 
 const FEATURE_CONTEXT: Record<string, { label: string; why: string }> = Object.fromEntries(

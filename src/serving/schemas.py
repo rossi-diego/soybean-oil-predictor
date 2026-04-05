@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field
 class PredictionRequest(BaseModel):
     """Request body for BOC1 price prediction."""
 
-    smc1: float = Field(..., gt=0, description="Soybean Meal futures price ($/short ton)")
-    sc1: float = Field(..., gt=0, description="Soybean futures price (cents/bushel)")
-    lcoc1: float = Field(..., gt=0, description="Brent Crude Oil futures price ($/barrel)")
-    hoc1: float = Field(..., gt=0, description="Heating Oil futures price ($/gallon)")
-    rsc1: float = Field(..., gt=0, description="Wheat futures price (cents/bushel)")
+    smc1: float = Field(..., gt=0, description="Soybean Meal futures (CBOT ZM=F, $/short ton)")
+    sc1: float = Field(..., gt=0, description="Soybean futures (CBOT ZS=F, cents/bushel)")
+    lcoc1: float = Field(..., gt=0, description="Brent Crude Oil futures (ICE BZ=F, $/barrel)")
+    hoc1: float = Field(..., gt=0, description="Heating Oil futures (NYMEX HO=F, $/gallon)")
+    rsc1: float = Field(..., gt=0, description="Wheat futures (CBOT ZW=F, cents/bushel)")
     month: int = Field(default=1, ge=1, le=12, description="Month of the year (1-12)")
 
     model_config = {"json_schema_extra": {
