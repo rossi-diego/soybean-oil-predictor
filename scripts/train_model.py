@@ -157,8 +157,11 @@ def train_and_save():
             if name == champion:
                 residual_std = float(np.std(residuals))
                 for i, idx in enumerate(test_idx):
+                    date_val = df.index[idx]
+                    date_str = date_val.strftime("%Y-%m-%d") if hasattr(date_val, "strftime") else str(date_val)[:10]
                     backtest_rows.append({
                         "row_index": int(idx),
+                        "date": date_str,
                         "fold": fold,
                         "actual": float(y_te.iloc[i]),
                         "predicted": float(preds[i]),
@@ -296,6 +299,10 @@ def train_and_save():
         "residual_std": round(overall_residual_std, 4),
         "backtest_metrics": {**overall_metrics, "n_predictions": len(backtest_df), "n_folds": 5},
         "trained_at": datetime.now().isoformat(),
+        "train_start": df.index[0].strftime("%Y-%m-%d"),
+        "train_end": df.index[len(X_train) - 1].strftime("%Y-%m-%d"),
+        "test_start": df.index[len(X_train)].strftime("%Y-%m-%d"),
+        "test_end": df.index[-1].strftime("%Y-%m-%d"),
         "feature_ranges": {
             col: {
                 "min": round(float(X[col].min()), 2),

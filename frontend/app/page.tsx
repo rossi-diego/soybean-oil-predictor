@@ -22,6 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from "recharts";
 
 const LABELS: Record<string, string> = {
@@ -197,28 +198,28 @@ export default function DashboardPage() {
 
       {/* Walk-forward backtest chart */}
       <div className="glass-card p-5">
-        <div className="flex items-baseline justify-between mb-4">
-          <div>
-            <h2 className="text-sm font-semibold">
-              Actual vs Predicted
-            </h2>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
-              {backtest
-                ? `Walk-forward validation, ${backtest.n_points} predictions, ${backtest.n_folds} folds`
-                : "Loading backtest data..."}
-            </p>
-          </div>
+        <div className="flex items-baseline justify-between mb-1">
+          <h2 className="text-sm font-semibold">Actual vs Predicted</h2>
           {backtest && (
             <span className="text-[10px] text-zinc-600">
               {backtest.model}
             </span>
           )}
         </div>
+        <p className="text-[11px] text-zinc-500 mb-4">
+          {backtest
+            ? `Walk-forward validation, ${backtest.n_points.toLocaleString()} out-of-sample predictions across ${backtest.n_folds} folds${
+                backtest.points.length > 0
+                  ? `, ${backtest.points[0].date} to ${backtest.points[backtest.points.length - 1].date}`
+                  : ""
+              }`
+            : "Loading backtest data..."}
+        </p>
         {!loaded ? (
-          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-72 w-full" />
         ) : backtest && backtest.points.length > 0 ? (
           <>
-            <div className="h-64">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={backtest.points}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
@@ -226,11 +227,13 @@ export default function DashboardPage() {
                     dataKey="date"
                     stroke="#3f3f46"
                     fontSize={10}
-                    tickFormatter={(v: number) =>
-                      v % Math.ceil(backtest.points.length / 8) === 0
-                        ? String(v)
-                        : ""
-                    }
+                    interval={Math.ceil(backtest.points.length / 10)}
+                    tickFormatter={(d: string) => {
+                      if (!d || d.length < 7) return d;
+                      const [y, m] = d.split("-");
+                      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                      return `${months[parseInt(m, 10) - 1]} ${y}`;
+                    }}
                   />
                   <YAxis
                     stroke="#3f3f46"
@@ -244,21 +247,24 @@ export default function DashboardPage() {
                       border: "1px solid #1e1e22",
                       borderRadius: 8,
                       fontSize: 11,
+                      lineHeight: 1.6,
                     }}
-                    formatter={(v: number, name: string) => [
-                      v?.toFixed(2),
-                      name === "interval" ? "95% CI" : name,
-                    ]}
+                    labelFormatter={(d: string) => d}
+                    formatter={(v: number, name: string) => {
+                      if (name === "upper" || name === "lower") return [null, null];
+                      return [`${v?.toFixed(2)} c/lb`, name];
+                    }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 11, color: "#71717a" }} />
+                  <Legend wrapperStyle={{ fontSize: 10, color: "#71717a" }} />
+                  {/* 95% prediction interval band */}
                   <Area
                     type="monotone"
                     dataKey="upper"
                     stroke="none"
                     fill="#3b82f6"
-                    fillOpacity={0.08}
-                    name="interval"
+                    fillOpacity={0.07}
                     legendType="none"
+                    name="upper"
                   />
                   <Area
                     type="monotone"
@@ -266,26 +272,26 @@ export default function DashboardPage() {
                     stroke="none"
                     fill="#09090b"
                     fillOpacity={1}
-                    name="lower"
                     legendType="none"
+                    name="lower"
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="actual"
-                    stroke="#22c55e"
-                    strokeWidth={1.5}
-                    dot={false}
-                    name="Actual"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="predicted"
-                    stroke="#3b82f6"
-                    strokeWidth={1.5}
-                    strokeDasharray="4 2"
-                    dot={false}
-                    name="Predicted"
-                  />
+                  {/* Fold boundary lines */}
+                  {backtest.fold_boundaries?.slice(1).map((fb) => (
+                    <ReferenceLine
+                      key={fb.fold}
+                      x={fb.start_date}
+                      stroke="#3f3f46"
+                      strokeDasharray="2 4"
+                      label={{
+                        value: `F${fb.fold}`,
+                        position: "insideTopRight",
+                        fill: "#52525b",
+                        fontSize: 9,
+                      }}
+                    />
+                  ))}
+                  <Line type="monotone" dataKey="actual" stroke="#22c55e" strokeWidth={1.5} dot={false} name="Actual" />
+                  <Line type="monotone" dataKey="predicted" stroke="#3b82f6" strokeWidth={1.5} strokeDasharray="4 2" dot={false} name="Predicted" />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -294,33 +300,20 @@ export default function DashboardPage() {
                 { label: "MAE", value: backtest.metrics.mae.toFixed(2), unit: "c/lb" },
                 { label: "RMSE", value: backtest.metrics.rmse.toFixed(2), unit: "c/lb" },
                 { label: "R\u00B2", value: backtest.metrics.r2.toFixed(4), unit: "" },
-                {
-                  label: "Dir. Accuracy",
-                  value: `${(backtest.metrics.directional_accuracy * 100).toFixed(1)}%`,
-                  unit: "",
-                },
+                { label: "Dir. Accuracy", value: `${(backtest.metrics.directional_accuracy * 100).toFixed(1)}%`, unit: "" },
+                { label: "Folds", value: String(backtest.n_folds), unit: "" },
+                { label: "OOS Predictions", value: backtest.n_points.toLocaleString(), unit: "" },
               ].map((m) => (
-                <div
-                  key={m.label}
-                  className="bg-white/[0.03] rounded-md px-3 py-1.5"
-                >
+                <div key={m.label} className="bg-white/[0.03] rounded-md px-3 py-1.5">
                   <span className="text-[10px] text-zinc-500">{m.label}</span>
-                  <span className="text-[13px] font-semibold tabular-nums ml-1.5">
-                    {m.value}
-                  </span>
-                  {m.unit && (
-                    <span className="text-[10px] text-zinc-600 ml-0.5">
-                      {m.unit}
-                    </span>
-                  )}
+                  <span className="text-[13px] font-semibold tabular-nums ml-1.5">{m.value}</span>
+                  {m.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{m.unit}</span>}
                 </div>
               ))}
             </div>
           </>
         ) : (
-          <p className="text-sm text-zinc-600 text-center py-8">
-            No backtest data available
-          </p>
+          <p className="text-sm text-zinc-600 text-center py-8">No backtest data available</p>
         )}
       </div>
 

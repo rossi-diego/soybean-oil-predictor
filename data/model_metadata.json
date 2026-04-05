@@ -34,7 +34,11 @@
     "n_predictions": 2100,
     "n_folds": 5
   },
-  "trained_at": "2026-04-05T14:15:45.699057",
+  "trained_at": "2026-04-05T14:32:44.552282",
+  "train_start": "2013-10-17",
+  "train_end": "2022-12-21",
+  "test_start": "2022-12-22",
+  "test_end": "2025-04-16",
   "feature_ranges": {
     "smc1": {
       "min": 257.2,

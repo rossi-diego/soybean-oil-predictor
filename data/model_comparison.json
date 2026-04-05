@@ -6,7 +6,7 @@
       "rmse": 3.53,
       "r2": 0.8138,
       "directional_accuracy": 0.7634,
-      "train_time_s": 0.004
+      "train_time_s": 0.003
     },
     {
       "model": "linear",
@@ -38,7 +38,7 @@
       "rmse": 7.52,
       "r2": 0.1526,
       "directional_accuracy": 0.6223,
-      "train_time_s": 0.469
+      "train_time_s": 0.443
     }
   ],
   "champion": "ridge"

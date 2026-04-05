@@ -257,15 +257,25 @@ async def get_backtest() -> dict:
     points = []
     for _, row in df.iterrows():
         points.append({
-            "date": int(row["row_index"]),
+            "date": row.get("date", str(int(row["row_index"]))),
             "actual": round(float(row["actual"]), 2),
             "predicted": round(float(row["predicted"]), 2),
+            "residual": round(float(row["residual"]), 2),
             "lower": round(float(row["lower"]), 2),
             "upper": round(float(row["upper"]), 2),
+            "fold": int(row["fold"]),
         })
+
+    # Fold boundaries for train/test split visualization
+    fold_boundaries = []
+    for fold_num in sorted(df["fold"].unique()):
+        fold_data = df[df["fold"] == fold_num]
+        first_date = fold_data["date"].iloc[0] if "date" in fold_data.columns else None
+        fold_boundaries.append({"fold": int(fold_num), "start_date": first_date})
 
     return {
         "points": points,
+        "fold_boundaries": fold_boundaries,
         "metrics": {
             "mae": round(mae, 2),
             "rmse": round(rmse, 2),

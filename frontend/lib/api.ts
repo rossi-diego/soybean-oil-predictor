@@ -86,11 +86,18 @@ export interface SpreadsResponse {
 }
 
 export interface BacktestPoint {
-  date: number;
+  date: string;
   actual: number;
   predicted: number;
+  residual: number;
   lower: number;
   upper: number;
+  fold: number;
+}
+
+export interface FoldBoundary {
+  fold: number;
+  start_date: string;
 }
 
 // --- EDA types ---
@@ -178,6 +185,7 @@ export interface WalkForwardResponse { folds: WalkForwardFold[]; champion: strin
 
 export interface BacktestResponse {
   points: BacktestPoint[];
+  fold_boundaries: FoldBoundary[];
   metrics: {
     mae: number;
     rmse: number;
@@ -317,25 +325,38 @@ const MOCK_SPREADS: SpreadsResponse = {
 function generateMockBacktest(): BacktestResponse {
   const points: BacktestPoint[] = [];
   let price = 38;
+  const start = new Date("2016-01-01");
   for (let i = 0; i < 200; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i * 5);
     price += (Math.random() - 0.48) * 1.5;
     price = Math.max(28, Math.min(65, price));
     const predicted = price + (Math.random() - 0.5) * 8;
     const std = 4.5;
+    const fold = Math.floor(i / 40);
     points.push({
-      date: i,
+      date: d.toISOString().slice(0, 10),
       actual: Math.round(price * 100) / 100,
       predicted: Math.round(predicted * 100) / 100,
+      residual: Math.round((price - predicted) * 100) / 100,
       lower: Math.round((predicted - 1.96 * std) * 100) / 100,
       upper: Math.round((predicted + 1.96 * std) * 100) / 100,
+      fold,
     });
   }
   return {
     points,
-    metrics: { mae: 3.83, rmse: 6.16, r2: 0.8266, directional_accuracy: 0.619 },
+    fold_boundaries: [
+      { fold: 0, start_date: "2016-01-01" },
+      { fold: 1, start_date: "2016-07-01" },
+      { fold: 2, start_date: "2017-01-01" },
+      { fold: 3, start_date: "2017-07-01" },
+      { fold: 4, start_date: "2018-01-01" },
+    ],
+    metrics: { mae: 2.69, rmse: 3.53, r2: 0.8138, directional_accuracy: 0.763 },
     n_points: points.length,
     n_folds: 5,
-    model: "xgboost_baseline",
+    model: "ridge",
   };
 }
 
