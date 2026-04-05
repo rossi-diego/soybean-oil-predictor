@@ -51,6 +51,9 @@ export interface LivePrice {
   name: string;
   ticker: string;
   price: number;
+  prev_close: number;
+  change: number;
+  change_pct: number;
   currency: string;
   timestamp: string;
 }
@@ -364,12 +367,12 @@ const MOCK_BACKTEST = generateMockBacktest();
 
 const MOCK_LIVE_PRICES: LivePricesResponse = {
   prices: [
-    { name: "boc1", ticker: "BO=F", price: 42.35, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "sc1", ticker: "ZS=F", price: 1142.50, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "smc1", ticker: "ZM=F", price: 362.80, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "lcoc1", ticker: "BZ=F", price: 72.15, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "hoc1", ticker: "HO=F", price: 2.18, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "rsc1", ticker: "ZW=F", price: 615.20, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "boc1", ticker: "ZL=F", price: 42.35, prev_close: 41.80, change: 0.55, change_pct: 1.32, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "sc1", ticker: "ZS=F", price: 1142.50, prev_close: 1148.25, change: -5.75, change_pct: -0.50, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "smc1", ticker: "ZM=F", price: 362.80, prev_close: 358.40, change: 4.40, change_pct: 1.23, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "lcoc1", ticker: "BZ=F", price: 72.15, prev_close: 73.02, change: -0.87, change_pct: -1.19, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "hoc1", ticker: "HO=F", price: 2.18, prev_close: 2.15, change: 0.03, change_pct: 1.40, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "rsc1", ticker: "ZW=F", price: 615.20, prev_close: 612.50, change: 2.70, change_pct: 0.44, currency: "USD", timestamp: new Date().toISOString() },
   ],
   cached: true,
   fetched_at: new Date().toISOString(),

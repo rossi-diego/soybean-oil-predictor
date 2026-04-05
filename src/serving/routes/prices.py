@@ -23,11 +23,14 @@ _CACHE_TTL = 900  # 15 minutes
 
 
 class PriceData(BaseModel):
-    """Single commodity price."""
+    """Single commodity price with daily change."""
 
     name: str
     ticker: str
     price: float
+    prev_close: float = 0
+    change: float = 0
+    change_pct: float = 0
     currency: str
     timestamp: str
 
@@ -55,8 +58,12 @@ def _fetch_live_prices() -> dict[str, float]:
         try:
             ticker = yf.Ticker(symbol)
             hist = ticker.history(period="5d")
-            if not hist.empty:
+            if not hist.empty and len(hist) >= 2:
                 prices[name] = float(hist["Close"].iloc[-1])
+                prices[f"{name}_prev"] = float(hist["Close"].iloc[-2])
+            elif not hist.empty:
+                prices[name] = float(hist["Close"].iloc[-1])
+                prices[f"{name}_prev"] = float(hist["Close"].iloc[-1])
             else:
                 logger.warning("empty_price_data", ticker=symbol)
         except Exception:
@@ -87,10 +94,17 @@ async def get_latest_prices() -> LivePricesResponse:
     price_list = []
     for name, symbol in TICKERS.items():
         if name in prices:
+            current = prices[name]
+            prev = prices.get(f"{name}_prev", current)
+            chg = current - prev
+            chg_pct = (chg / prev * 100) if prev != 0 else 0
             price_list.append(PriceData(
                 name=name,
                 ticker=symbol,
-                price=round(prices[name], 4),
+                price=round(current, 4),
+                prev_close=round(prev, 4),
+                change=round(chg, 4),
+                change_pct=round(chg_pct, 2),
                 currency="USD",
                 timestamp=datetime.fromtimestamp(ts).isoformat(),
             ))

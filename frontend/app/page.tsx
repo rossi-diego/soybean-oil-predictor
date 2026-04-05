@@ -71,6 +71,7 @@ export default function DashboardPage() {
   const [backtest, setBacktest] = useState<BacktestResponse | null>(null);
   const [spreads, setSpreads] = useState<SpreadSignal[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [showPriceTable, setShowPriceTable] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -317,47 +318,74 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Commodity prices */}
-      <div className="glass-card p-5">
-        <h2 className="text-sm font-semibold mb-3">Market Prices</h2>
+      {/* Ticker strip */}
+      <div className="glass-card px-4 py-3">
         {!loaded ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
-            ))}
-          </div>
+          <Skeleton className="h-5 w-full" />
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-              {prices.map((p) => (
-                <div
-                  key={p.name}
-                  className={`p-2.5 rounded-lg ${
-                    p.name === "boc1"
-                      ? "bg-green-500/8 border border-green-500/20"
-                      : "bg-white/[0.02]"
-                  }`}
-                >
-                  <p className="text-[10px] text-zinc-500 font-medium uppercase">
-                    {LABELS[p.name] ?? p.name}
-                  </p>
-                  <p className="text-base font-semibold mt-0.5 tabular-nums">
-                    {p.price.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-                  <p className="text-[9px] text-zinc-600">
-                    {UNITS[p.name] ?? "USD"}
-                  </p>
-                </div>
-              ))}
+            <div
+              className="flex items-center gap-4 overflow-x-auto cursor-pointer"
+              onClick={() => setShowPriceTable(!showPriceTable)}
+            >
+              {prices.map((p) => {
+                const up = (p.change_pct ?? 0) >= 0;
+                return (
+                  <div
+                    key={p.name}
+                    className="flex items-center gap-1.5 shrink-0"
+                  >
+                    <span className={`text-[11px] font-medium ${p.name === "boc1" ? "text-green-400" : "text-zinc-400"}`}>
+                      {LABELS[p.name]?.split(" ")[0] ?? p.name.toUpperCase()}
+                    </span>
+                    <span className="text-[12px] font-semibold tabular-nums">
+                      {p.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <span className={`text-[10px] tabular-nums font-medium ${up ? "text-green-400" : "text-red-400"}`}>
+                      {up ? "\u25B2" : "\u25BC"}
+                      {Math.abs(p.change_pct ?? 0).toFixed(1)}%
+                    </span>
+                  </div>
+                );
+              })}
+              <span className="text-[9px] text-zinc-600 shrink-0 ml-auto">
+                yfinance {prices[0] && `\u00B7 ${new Date(prices[0].timestamp).toLocaleTimeString()}`}
+              </span>
             </div>
-            <p className="text-[10px] text-zinc-600 mt-2">
-              Yahoo Finance
-              {prices[0] &&
-                ` \u00B7 ${new Date(prices[0].timestamp).toLocaleString()}`}
-            </p>
+
+            {showPriceTable && (
+              <div className="mt-3 pt-3 border-t border-[#1e1e22]">
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="text-zinc-500">
+                      <th className="text-left py-1 font-medium">Commodity</th>
+                      <th className="text-right py-1 font-medium">Price</th>
+                      <th className="text-right py-1 font-medium">Prev</th>
+                      <th className="text-right py-1 font-medium">Chg</th>
+                      <th className="text-right py-1 font-medium">% Chg</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prices.map((p) => {
+                      const up = (p.change_pct ?? 0) >= 0;
+                      return (
+                        <tr key={p.name} className="border-t border-[#1e1e22]/50">
+                          <td className="py-1.5 font-medium">{LABELS[p.name] ?? p.name}</td>
+                          <td className="py-1.5 text-right tabular-nums">{p.price.toFixed(2)}</td>
+                          <td className="py-1.5 text-right tabular-nums text-zinc-500">{(p.prev_close ?? p.price).toFixed(2)}</td>
+                          <td className={`py-1.5 text-right tabular-nums ${up ? "text-green-400" : "text-red-400"}`}>
+                            {up ? "+" : ""}{(p.change ?? 0).toFixed(2)}
+                          </td>
+                          <td className={`py-1.5 text-right tabular-nums font-medium ${up ? "text-green-400" : "text-red-400"}`}>
+                            {up ? "+" : ""}{(p.change_pct ?? 0).toFixed(2)}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </>
         )}
       </div>
