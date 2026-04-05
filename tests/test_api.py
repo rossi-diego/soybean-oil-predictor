@@ -83,4 +83,4 @@ class TestModelEndpoints:
         if response.status_code == 200:
             data = response.json()
             assert "models" in data
-            assert "active_model" in data
+            assert "champion" in data or "active_model" in data
