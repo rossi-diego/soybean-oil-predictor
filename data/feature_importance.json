@@ -1,0 +1,206 @@
+{
+  "models": {
+    "xgboost": [
+      {
+        "feature": "rsc1",
+        "importance": 0.6435
+      },
+      {
+        "feature": "fcpoc1",
+        "importance": 0.2282
+      },
+      {
+        "feature": "sc1",
+        "importance": 0.0481
+      },
+      {
+        "feature": "hoc1",
+        "importance": 0.0462
+      },
+      {
+        "feature": "lcoc1",
+        "importance": 0.0123
+      },
+      {
+        "feature": "so-premp-c1",
+        "importance": 0.0102
+      },
+      {
+        "feature": "brl=",
+        "importance": 0.0067
+      },
+      {
+        "feature": "smc1",
+        "importance": 0.0047
+      }
+    ],
+    "ridge": [
+      {
+        "feature": "sc1",
+        "importance": 12.2649,
+        "coefficient": 12.2649
+      },
+      {
+        "feature": "smc1",
+        "importance": 4.5589,
+        "coefficient": -4.5589
+      },
+      {
+        "feature": "hoc1",
+        "importance": 3.7157,
+        "coefficient": 3.7157
+      },
+      {
+        "feature": "fcpoc1",
+        "importance": 2.5622,
+        "coefficient": 2.5622
+      },
+      {
+        "feature": "brl=",
+        "importance": 2.0979,
+        "coefficient": 2.0979
+      },
+      {
+        "feature": "lcoc1",
+        "importance": 1.6426,
+        "coefficient": -1.6426
+      },
+      {
+        "feature": "so-premp-c1",
+        "importance": 1.2219,
+        "coefficient": -1.2219
+      },
+      {
+        "feature": "rsc1",
+        "importance": 1.1118,
+        "coefficient": 1.1118
+      }
+    ],
+    "lasso": [
+      {
+        "feature": "sc1",
+        "importance": 5.2217,
+        "coefficient": 5.2217
+      },
+      {
+        "feature": "fcpoc1",
+        "importance": 3.4924,
+        "coefficient": 3.4924
+      },
+      {
+        "feature": "hoc1",
+        "importance": 1.8308,
+        "coefficient": 1.8308
+      },
+      {
+        "feature": "so-premp-c1",
+        "importance": 1.6466,
+        "coefficient": -1.6466
+      },
+      {
+        "feature": "rsc1",
+        "importance": 1.5966,
+        "coefficient": 1.5966
+      },
+      {
+        "feature": "brl=",
+        "importance": 1.3416,
+        "coefficient": 1.3416
+      },
+      {
+        "feature": "smc1",
+        "importance": 0.0,
+        "coefficient": -0.0
+      },
+      {
+        "feature": "lcoc1",
+        "importance": 0.0,
+        "coefficient": 0.0
+      }
+    ],
+    "elasticnet": [
+      {
+        "feature": "sc1",
+        "importance": 3.7953,
+        "coefficient": 3.7953
+      },
+      {
+        "feature": "fcpoc1",
+        "importance": 3.2153,
+        "coefficient": 3.2153
+      },
+      {
+        "feature": "rsc1",
+        "importance": 1.9483,
+        "coefficient": 1.9483
+      },
+      {
+        "feature": "hoc1",
+        "importance": 1.7071,
+        "coefficient": 1.7071
+      },
+      {
+        "feature": "so-premp-c1",
+        "importance": 1.6469,
+        "coefficient": -1.6469
+      },
+      {
+        "feature": "brl=",
+        "importance": 1.0548,
+        "coefficient": 1.0548
+      },
+      {
+        "feature": "lcoc1",
+        "importance": 0.4071,
+        "coefficient": 0.4071
+      },
+      {
+        "feature": "smc1",
+        "importance": 0.1713,
+        "coefficient": 0.1713
+      }
+    ],
+    "linear": [
+      {
+        "feature": "sc1",
+        "importance": 12.7139,
+        "coefficient": 12.7139
+      },
+      {
+        "feature": "smc1",
+        "importance": 4.8195,
+        "coefficient": -4.8195
+      },
+      {
+        "feature": "hoc1",
+        "importance": 3.835,
+        "coefficient": 3.835
+      },
+      {
+        "feature": "fcpoc1",
+        "importance": 2.4639,
+        "coefficient": 2.4639
+      },
+      {
+        "feature": "brl=",
+        "importance": 2.0817,
+        "coefficient": 2.0817
+      },
+      {
+        "feature": "lcoc1",
+        "importance": 1.7862,
+        "coefficient": -1.7862
+      },
+      {
+        "feature": "so-premp-c1",
+        "importance": 1.1854,
+        "coefficient": -1.1854
+      },
+      {
+        "feature": "rsc1",
+        "importance": 1.107,
+        "coefficient": 1.107
+      }
+    ]
+  }
+}

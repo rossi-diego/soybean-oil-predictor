@@ -153,6 +153,30 @@ export interface EdaStationarityResponse {
   labels: Record<string, string>;
 }
 
+// --- Models page types ---
+export interface ModelComparisonEntry {
+  model: string; mae: number; rmse: number; r2: number;
+  directional_accuracy: number; train_time_s: number;
+}
+export interface ModelComparisonResponse { models: ModelComparisonEntry[]; champion: string }
+
+export interface DiagnosticPoint { actual: number; predicted: number; residual: number; index: number }
+export interface ChampionDiagnosticsResponse {
+  model: string;
+  points: DiagnosticPoint[];
+  residual_stats: { mean: number; std: number; skew: number; kurtosis: number };
+  residual_histogram: { x: number; count: number }[];
+}
+
+export interface FeatureImportanceEntry { feature: string; importance: number; coefficient?: number }
+export interface FeatureImportanceResponse { models: Record<string, FeatureImportanceEntry[]> }
+
+export interface LearningCurveModel { train_sizes: number[]; train_mae: number[]; val_mae: number[] }
+export interface LearningCurvesResponse { models: Record<string, LearningCurveModel> }
+
+export interface WalkForwardFold { fold: number; n_train: number; n_test: number; [key: string]: number }
+export interface WalkForwardResponse { folds: WalkForwardFold[]; champion: string; models: string[] }
+
 export interface BacktestResponse {
   points: BacktestPoint[];
   metrics: {
@@ -518,6 +542,21 @@ export const api = {
       undefined,
       MOCK_MODEL_METADATA,
     ),
+
+  modelsComparison: () =>
+    fetchApi<ModelComparisonResponse>("/api/v1/models/comparison"),
+
+  championDiagnostics: () =>
+    fetchApi<ChampionDiagnosticsResponse>("/api/v1/models/champion/diagnostics"),
+
+  featureImportanceAll: () =>
+    fetchApi<FeatureImportanceResponse>("/api/v1/models/champion/feature-importance"),
+
+  learningCurves: () =>
+    fetchApi<LearningCurvesResponse>("/api/v1/models/learning-curves"),
+
+  walkForward: () =>
+    fetchApi<WalkForwardResponse>("/api/v1/models/walk-forward"),
 
   edaPrices: (period = "all") =>
     fetchApi<EdaPricesResponse>(`/api/v1/eda/prices?period=${period}`),

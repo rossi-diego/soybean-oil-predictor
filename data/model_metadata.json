@@ -1,5 +1,6 @@
 {
   "algorithm": "XGBRegressor",
+  "champion": "xgboost",
   "hyperparameters": {
     "n_estimators": 500,
     "max_depth": 6,
@@ -36,7 +37,7 @@
     "n_predictions": 2100,
     "n_folds": 5
   },
-  "trained_at": "2026-04-04T17:54:26.475416",
+  "trained_at": "2026-04-05T13:02:46.865684",
   "feature_ranges": {
     "smc1": {
       "min": 257.2,

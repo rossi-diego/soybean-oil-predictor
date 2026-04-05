@@ -1,24 +1,27 @@
-"""Train models and generate walk-forward backtest results.
+"""Train models, run walk-forward backtest, and generate all diagnostics.
 
 Usage:
     python scripts/train_model.py
 
-Trains XGBoost and Ridge models from commodities_clean_data.parquet,
-runs walk-forward validation, and saves models + backtest results.
-Designed to run during Docker build or locally.
+Trains 5 models, runs walk-forward validation, computes learning curves,
+feature importance, and residual diagnostics. All results saved as JSON
+files served by the API at zero latency.
 """
 
 from __future__ import annotations
 
+import json
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.model_selection import TimeSeriesSplit, train_test_split
+from sklearn.model_selection import TimeSeriesSplit, learning_curve, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 from xgboost import XGBRegressor
@@ -26,26 +29,36 @@ from xgboost import XGBRegressor
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_FILE = PROJECT_ROOT / "data" / "commodities_clean_data.parquet"
 MODEL_DIR = PROJECT_ROOT / "models"
-BACKTEST_FILE = PROJECT_ROOT / "data" / "walk_forward_backtest.parquet"
-METADATA_FILE = PROJECT_ROOT / "data" / "model_metadata.json"
+DATA_DIR = PROJECT_ROOT / "data"
 
 TARGET = "boc1"
 RANDOM_STATE = 42
 
+XGB_PARAMS = dict(
+    n_estimators=500, max_depth=6, learning_rate=0.05,
+    subsample=0.8, colsample_bytree=0.8,
+    reg_alpha=0.1, reg_lambda=1.0,
+    random_state=RANDOM_STATE, n_jobs=-1, verbosity=0,
+)
+
+MODELS = {
+    "xgboost": lambda: XGBRegressor(**XGB_PARAMS),
+    "ridge": lambda: Pipeline([("scaler", RobustScaler()), ("reg", Ridge(alpha=1.0, random_state=RANDOM_STATE))]),
+    "lasso": lambda: Pipeline([("scaler", RobustScaler()), ("reg", Lasso(alpha=0.1, random_state=RANDOM_STATE, max_iter=5000))]),
+    "elasticnet": lambda: Pipeline([("scaler", RobustScaler()), ("reg", ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=RANDOM_STATE, max_iter=5000))]),
+    "linear": lambda: Pipeline([("scaler", RobustScaler()), ("reg", LinearRegression())]),
+}
+
 
 def directional_accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Percentage of correct up/down predictions."""
     if len(y_true) < 2:
         return 0.0
-    true_dir = np.sign(np.diff(y_true))
-    pred_dir = np.sign(np.diff(y_pred))
-    return float((true_dir == pred_dir).sum() / len(true_dir))
+    return float((np.sign(np.diff(y_true)) == np.sign(np.diff(y_pred))).mean())
 
 
 def train_and_save():
-    """Train models, run walk-forward backtest, save everything."""
     if not DATA_FILE.exists():
-        print(f"ERROR: Training data not found at {DATA_FILE}")
+        print(f"ERROR: Data not found at {DATA_FILE}")
         sys.exit(1)
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -59,109 +72,217 @@ def train_and_save():
         X, y, test_size=0.2, shuffle=False, random_state=RANDOM_STATE
     )
 
-    print(f"Training data: {len(X_train)} rows, {len(feature_cols)} features")
-    print(f"Test data: {len(X_test)} rows")
+    print(f"Data: {len(df)} rows, {len(feature_cols)} features")
+    print(f"Train: {len(X_train)} | Test: {len(X_test)}\n")
 
-    # --- XGBoost ---
-    xgb_params = dict(
-        n_estimators=500,
-        max_depth=6,
-        learning_rate=0.05,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        reg_alpha=0.1,
-        reg_lambda=1.0,
-        random_state=RANDOM_STATE,
-        n_jobs=-1,
-        verbosity=0,
-    )
-    xgb = XGBRegressor(**xgb_params)
-    xgb.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+    # =========================================================================
+    # 1. Train all models + compute test metrics
+    # =========================================================================
+    comparison = []
+    trained_models = {}
 
-    y_pred = xgb.predict(X_test)
-    rmse = float(np.sqrt(np.mean((y_test - y_pred) ** 2)))
-    r2 = float(r2_score(y_test, y_pred))
-    print(f"XGBoost — RMSE: {rmse:.4f}, R2: {r2:.4f}")
+    for name, factory in MODELS.items():
+        model = factory()
+        t0 = time.time()
 
-    xgb_path = MODEL_DIR / "xgboost_baseline.joblib"
-    joblib.dump(xgb, xgb_path)
-    print(f"Saved: {xgb_path}")
+        if name == "xgboost":
+            model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+        else:
+            model.fit(X_train, y_train)
 
-    # --- Ridge ---
-    ridge_pipe = Pipeline([
-        ("scaler", RobustScaler()),
-        ("reg", Ridge(alpha=1.0, random_state=RANDOM_STATE)),
-    ])
-    ridge_pipe.fit(X_train, y_train)
+        train_time = round(time.time() - t0, 3)
+        y_pred = model.predict(X_test)
 
-    y_pred_r = ridge_pipe.predict(X_test)
-    rmse_r = float(np.sqrt(np.mean((y_test - y_pred_r) ** 2)))
-    r2_r = float(r2_score(y_test, y_pred_r))
-    print(f"Ridge   — RMSE: {rmse_r:.4f}, R2: {r2_r:.4f}")
+        metrics = {
+            "model": name,
+            "mae": round(float(mean_absolute_error(y_test, y_pred)), 2),
+            "rmse": round(float(np.sqrt(np.mean((y_test - y_pred) ** 2))), 2),
+            "r2": round(float(r2_score(y_test, y_pred)), 4),
+            "directional_accuracy": round(directional_accuracy(y_test.values, y_pred), 4),
+            "train_time_s": train_time,
+        }
+        comparison.append(metrics)
+        trained_models[name] = model
 
-    ridge_path = MODEL_DIR / "ridge_regression.joblib"
-    joblib.dump(ridge_pipe, ridge_path)
-    print(f"Saved: {ridge_path}")
+        print(f"{name:12} MAE={metrics['mae']:.2f}  RMSE={metrics['rmse']:.2f}  "
+              f"R2={metrics['r2']:.4f}  DirAcc={metrics['directional_accuracy']:.1%}  "
+              f"Time={train_time:.3f}s")
 
-    # --- Walk-forward backtest ---
-    print("\nRunning walk-forward backtest (5 folds)...")
+        # Save model
+        joblib.dump(model, MODEL_DIR / f"{name}.joblib")
+
+    # Also save the XGBoost as xgboost_baseline.joblib for backward compat
+    joblib.dump(trained_models["xgboost"], MODEL_DIR / "xgboost_baseline.joblib")
+
+    comparison.sort(key=lambda x: x["mae"])
+    champion = comparison[0]["model"]
+    print(f"\nChampion: {champion} (lowest MAE)")
+
+    with open(DATA_DIR / "model_comparison.json", "w") as f:
+        json.dump({"models": comparison, "champion": champion}, f, indent=2)
+
+    # =========================================================================
+    # 2. Walk-forward backtest (champion only for residuals, all for fold metrics)
+    # =========================================================================
+    print("\nWalk-forward backtest (5 folds)...")
     tscv = TimeSeriesSplit(n_splits=5)
     backtest_rows = []
+    fold_metrics = []
 
     for fold, (train_idx, test_idx) in enumerate(tscv.split(X)):
         X_tr, X_te = X.iloc[train_idx], X.iloc[test_idx]
         y_tr, y_te = y.iloc[train_idx], y.iloc[test_idx]
 
-        model = XGBRegressor(**xgb_params)
-        model.fit(X_tr, y_tr, eval_set=[(X_te, y_te)], verbose=False)
+        fold_results = {"fold": fold, "n_train": len(train_idx), "n_test": len(test_idx)}
 
-        preds = model.predict(X_te)
-        residuals = y_te.values - preds
-        residual_std = float(np.std(residuals))
+        for name, factory in MODELS.items():
+            m = factory()
+            if name == "xgboost":
+                m.fit(X_tr, y_tr, eval_set=[(X_te, y_te)], verbose=False)
+            else:
+                m.fit(X_tr, y_tr)
 
-        for i, idx in enumerate(test_idx):
-            backtest_rows.append({
-                "row_index": int(idx),
-                "fold": fold,
-                "actual": float(y_te.iloc[i]),
-                "predicted": float(preds[i]),
-                "residual": float(residuals[i]),
-                "lower": float(preds[i] - 1.96 * residual_std),
-                "upper": float(preds[i] + 1.96 * residual_std),
-            })
+            preds = m.predict(X_te)
+            residuals = y_te.values - preds
+            fold_results[f"{name}_mae"] = round(float(mean_absolute_error(y_te, preds)), 2)
+            fold_results[f"{name}_rmse"] = round(float(np.sqrt(np.mean(residuals ** 2))), 2)
+            fold_results[f"{name}_r2"] = round(float(r2_score(y_te, preds)), 4)
+            fold_results[f"{name}_da"] = round(directional_accuracy(y_te.values, preds), 4)
 
-        fold_mae = float(mean_absolute_error(y_te, preds))
-        fold_rmse = float(np.sqrt(np.mean(residuals ** 2)))
-        fold_r2 = float(r2_score(y_te, preds))
-        fold_da = directional_accuracy(y_te.values, preds)
-        print(
-            f"  Fold {fold}: MAE={fold_mae:.2f}, RMSE={fold_rmse:.2f}, "
-            f"R2={fold_r2:.4f}, DirAcc={fold_da:.1%} ({len(test_idx)} samples)"
-        )
+            # Store residuals for champion
+            if name == champion:
+                residual_std = float(np.std(residuals))
+                for i, idx in enumerate(test_idx):
+                    backtest_rows.append({
+                        "row_index": int(idx),
+                        "fold": fold,
+                        "actual": float(y_te.iloc[i]),
+                        "predicted": float(preds[i]),
+                        "residual": float(residuals[i]),
+                        "lower": float(preds[i] - 1.96 * residual_std),
+                        "upper": float(preds[i] + 1.96 * residual_std),
+                    })
 
+        fold_metrics.append(fold_results)
+        print(f"  Fold {fold}: {fold_results[f'{champion}_mae']:.2f} MAE ({len(test_idx)} samples)")
+
+    # Save backtest parquet
     backtest_df = pd.DataFrame(backtest_rows)
-    backtest_df.to_parquet(BACKTEST_FILE, index=False)
-    print(f"\nBacktest saved: {BACKTEST_FILE} ({len(backtest_df)} predictions)")
+    backtest_df.to_parquet(DATA_DIR / "walk_forward_backtest.parquet", index=False)
 
-    # Overall backtest metrics
-    all_actual = backtest_df["actual"].values
-    all_pred = backtest_df["predicted"].values
-    overall_residual_std = float(np.std(all_actual - all_pred))
-    overall_mae = float(mean_absolute_error(all_actual, all_pred))
-    overall_rmse = float(np.sqrt(np.mean((all_actual - all_pred) ** 2)))
-    overall_r2 = float(r2_score(all_actual, all_pred))
-    overall_da = directional_accuracy(all_actual, all_pred)
+    # Save fold metrics
+    with open(DATA_DIR / "walk_forward_folds.json", "w") as f:
+        json.dump({"folds": fold_metrics, "champion": champion, "models": list(MODELS.keys())}, f, indent=2)
 
-    print(f"Overall — MAE: {overall_mae:.2f}, RMSE: {overall_rmse:.2f}, "
-          f"R2: {overall_r2:.4f}, DirAcc: {overall_da:.1%}")
+    # =========================================================================
+    # 3. Champion diagnostics (residuals for scatter/histogram)
+    # =========================================================================
+    champ_model = trained_models[champion]
+    y_pred_full = champ_model.predict(X_test)
+    residuals_full = y_test.values - y_pred_full
 
-    # --- Save model metadata ---
-    import json
-    from datetime import datetime
+    diagnostics = {
+        "model": champion,
+        "points": [
+            {
+                "actual": round(float(y_test.iloc[i]), 2),
+                "predicted": round(float(y_pred_full[i]), 2),
+                "residual": round(float(residuals_full[i]), 2),
+                "index": int(i),
+            }
+            for i in range(len(y_test))
+        ],
+        "residual_stats": {
+            "mean": round(float(np.mean(residuals_full)), 4),
+            "std": round(float(np.std(residuals_full)), 4),
+            "skew": round(float(pd.Series(residuals_full).skew()), 4),
+            "kurtosis": round(float(pd.Series(residuals_full).kurtosis()), 4),
+        },
+        "residual_histogram": [],
+    }
+
+    counts, edges = np.histogram(residuals_full, bins=30)
+    for i in range(len(counts)):
+        diagnostics["residual_histogram"].append({
+            "x": round(float(edges[i]), 2),
+            "count": int(counts[i]),
+        })
+
+    with open(DATA_DIR / "champion_diagnostics.json", "w") as f:
+        json.dump(diagnostics, f, indent=2)
+
+    # =========================================================================
+    # 4. Feature importance
+    # =========================================================================
+    importance_data = {"models": {}}
+
+    # XGBoost native importance
+    xgb = trained_models["xgboost"]
+    imp = sorted(
+        [{"feature": f, "importance": round(float(v), 4)} for f, v in zip(feature_cols, xgb.feature_importances_)],
+        key=lambda x: x["importance"], reverse=True
+    )
+    importance_data["models"]["xgboost"] = imp
+
+    # Linear model coefficients
+    for name in ["ridge", "lasso", "elasticnet", "linear"]:
+        m = trained_models[name]
+        coefs = m.named_steps["reg"].coef_
+        imp = sorted(
+            [{"feature": f, "importance": round(float(abs(c)), 4), "coefficient": round(float(c), 4)}
+             for f, c in zip(feature_cols, coefs)],
+            key=lambda x: x["importance"], reverse=True
+        )
+        importance_data["models"][name] = imp
+
+    with open(DATA_DIR / "feature_importance.json", "w") as f:
+        json.dump(importance_data, f, indent=2)
+
+    # =========================================================================
+    # 5. Learning curves
+    # =========================================================================
+    print("\nComputing learning curves...")
+    lc_data = {"models": {}}
+
+    for name in ["xgboost", "ridge", "lasso"]:
+        m = MODELS[name]()
+        try:
+            sizes, train_scores, val_scores = learning_curve(
+                m, X, y, cv=3,
+                train_sizes=[0.2, 0.4, 0.6, 0.8, 1.0],
+                scoring="neg_mean_absolute_error",
+                n_jobs=-1,
+            )
+            lc_data["models"][name] = {
+                "train_sizes": [int(s) for s in sizes],
+                "train_mae": [round(float(-s.mean()), 2) for s in train_scores.T] if train_scores.ndim > 1 else [],
+                "val_mae": [round(float(-s.mean()), 2) for s in val_scores.T] if val_scores.ndim > 1 else [],
+            }
+            # Fix: learning_curve returns (n_sizes, n_folds) — need to mean across folds
+            lc_data["models"][name]["train_mae"] = [round(float(-train_scores[i].mean()), 2) for i in range(len(sizes))]
+            lc_data["models"][name]["val_mae"] = [round(float(-val_scores[i].mean()), 2) for i in range(len(sizes))]
+            print(f"  {name}: {len(sizes)} points")
+        except Exception as e:
+            print(f"  {name}: FAILED ({e})")
+
+    with open(DATA_DIR / "learning_curves.json", "w") as f:
+        json.dump(lc_data, f, indent=2)
+
+    # =========================================================================
+    # 6. Model metadata (updated)
+    # =========================================================================
+    overall_residual_std = float(np.std(backtest_df["residual"].values))
+    overall_metrics = {
+        "mae": round(float(mean_absolute_error(backtest_df["actual"], backtest_df["predicted"])), 2),
+        "rmse": round(float(np.sqrt(np.mean(backtest_df["residual"].values ** 2))), 2),
+        "r2": round(float(r2_score(backtest_df["actual"], backtest_df["predicted"])), 4),
+        "directional_accuracy": round(directional_accuracy(backtest_df["actual"].values, backtest_df["predicted"].values), 4),
+    }
 
     metadata = {
         "algorithm": "XGBRegressor",
-        "hyperparameters": xgb_params,
+        "champion": champion,
+        "hyperparameters": XGB_PARAMS,
         "n_training_samples": len(X_train),
         "n_test_samples": len(X_test),
         "n_total_samples": len(df),
@@ -169,14 +290,7 @@ def train_and_save():
         "feature_names": feature_cols,
         "target": TARGET,
         "residual_std": round(overall_residual_std, 4),
-        "backtest_metrics": {
-            "mae": round(overall_mae, 2),
-            "rmse": round(overall_rmse, 2),
-            "r2": round(overall_r2, 4),
-            "directional_accuracy": round(overall_da, 4),
-            "n_predictions": len(backtest_df),
-            "n_folds": 5,
-        },
+        "backtest_metrics": {**overall_metrics, "n_predictions": len(backtest_df), "n_folds": 5},
         "trained_at": datetime.now().isoformat(),
         "feature_ranges": {
             col: {
@@ -190,11 +304,11 @@ def train_and_save():
         },
     }
 
-    with open(METADATA_FILE, "w") as f:
+    with open(DATA_DIR / "model_metadata.json", "w") as f:
         json.dump(metadata, f, indent=2, default=str)
-    print(f"Metadata saved: {METADATA_FILE}")
 
-    print("\nTraining complete.")
+    print(f"\nAll files saved to {DATA_DIR}/")
+    print("Training complete.")
 
 
 if __name__ == "__main__":

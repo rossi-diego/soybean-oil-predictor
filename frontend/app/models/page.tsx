@@ -1,124 +1,329 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, isDemoMode, ModelInfo } from "@/lib/api";
+import {
+  api,
+  isDemoMode,
+  ModelComparisonResponse,
+  ChampionDiagnosticsResponse,
+  FeatureImportanceResponse,
+  LearningCurvesResponse,
+  WalkForwardResponse,
+} from "@/lib/api";
 import { DemoBanner } from "@/components/layout/demo-banner";
+import {
+  BarChart, Bar, LineChart, Line, ScatterChart, Scatter,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Legend, Cell, ReferenceLine,
+} from "recharts";
+
+const COLORS = ["#22c55e", "#3b82f6", "#eab308", "#ef4444", "#8b5cf6"];
+const MODEL_COLORS: Record<string, string> = {
+  xgboost: "#22c55e", ridge: "#3b82f6", lasso: "#eab308",
+  elasticnet: "#ef4444", linear: "#8b5cf6",
+};
+
+const FEATURE_LABELS: Record<string, string> = {
+  smc1: "Soybean Meal", sc1: "Soybeans", lcoc1: "Brent Crude",
+  hoc1: "Heating Oil", fcpoc1: "Palm Oil", rsc1: "Wheat",
+  "so-premp-c1": "Oil Premium", "brl=": "BRL/USD",
+};
+
+function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-[#1e1e22] rounded ${className}`} />;
+}
+
+function Section({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+  return (
+    <div className="glass-card p-5">
+      <h2 className="text-sm font-semibold">{title}</h2>
+      {sub && <p className="text-[11px] text-zinc-500 mt-0.5 mb-4">{sub}</p>}
+      {!sub && <div className="mb-4" />}
+      {children}
+    </div>
+  );
+}
 
 export default function ModelsPage() {
-  const [models, setModels] = useState<ModelInfo[]>([]);
-  const [activeModel, setActiveModel] = useState<string>("");
+  const [comp, setComp] = useState<ModelComparisonResponse | null>(null);
+  const [diag, setDiag] = useState<ChampionDiagnosticsResponse | null>(null);
+  const [imp, setImp] = useState<FeatureImportanceResponse | null>(null);
+  const [lc, setLc] = useState<LearningCurvesResponse | null>(null);
+  const [wf, setWf] = useState<WalkForwardResponse | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [sortKey, setSortKey] = useState("mae");
 
   useEffect(() => {
-    api
-      .listModels()
-      .then((data) => {
-        setModels(data.models);
-        setActiveModel(data.active_model);
-      })
-      .finally(() => setLoaded(true));
+    Promise.all([
+      api.modelsComparison().then(setComp).catch(() => {}),
+      api.championDiagnostics().then(setDiag).catch(() => {}),
+      api.featureImportanceAll().then(setImp).catch(() => {}),
+      api.learningCurves().then(setLc).catch(() => {}),
+      api.walkForward().then(setWf).catch(() => {}),
+    ]).finally(() => setLoaded(true));
   }, []);
 
   const demo = loaded && isDemoMode();
+  const sorted = comp ? [...comp.models].sort((a, b) => {
+    const va = (a as any)[sortKey], vb = (b as any)[sortKey];
+    return sortKey === "r2" || sortKey === "directional_accuracy" ? vb - va : va - vb;
+  }) : [];
+
+  const bestPerMetric: Record<string, string> = {};
+  if (comp) {
+    ["mae", "rmse", "r2", "directional_accuracy", "train_time_s"].forEach((k) => {
+      const best = [...comp.models].sort((a, b) => {
+        const va = (a as any)[k], vb = (b as any)[k];
+        return k === "r2" || k === "directional_accuracy" ? vb - va : va - vb;
+      })[0];
+      bestPerMetric[k] = best.model;
+    });
+  }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold gradient-text">Model Comparison</h1>
-        <p className="text-gray-400 mt-2">
-          Compare trained models side-by-side. Per quant best practices,
-          we always start with an XGBoost baseline and compare against
-          linear and time-series alternatives.
+    <div className="space-y-6">
+      <section>
+        <h1 className="text-2xl font-bold tracking-tight">Model Comparison</h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          5 models trained on the same data. Champion selected by lowest MAE on holdout set.
         </p>
-      </div>
+      </section>
 
       {demo && <DemoBanner />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {models.map((model) => (
-          <div
-            key={model.name}
-            className={`glass-card p-6 ${
-              model.name === activeModel
-                ? "border-brand-500/40 bg-brand-500/5"
-                : ""
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">{model.name}</h3>
-              {model.name === activeModel && (
-                <span className="text-xs bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded-full">
-                  Active
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-gray-400 mb-4">{model.model_type}</p>
+      {/* 1. Comparison Table */}
+      <Section title="Performance Comparison" sub="Click column headers to sort. Green = best in column.">
+        {!comp ? <Skeleton className="h-48" /> : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="border-b border-[#1e1e22] text-zinc-500">
+                  <th className="text-left py-2 px-3 font-medium">Model</th>
+                  {[
+                    { key: "mae", label: "MAE" },
+                    { key: "rmse", label: "RMSE" },
+                    { key: "r2", label: "R\u00B2" },
+                    { key: "directional_accuracy", label: "Dir. Acc." },
+                    { key: "train_time_s", label: "Time (s)" },
+                  ].map(({ key, label }) => (
+                    <th
+                      key={key}
+                      className="text-right py-2 px-3 font-medium cursor-pointer hover:text-zinc-300 transition-colors"
+                      onClick={() => setSortKey(key)}
+                    >
+                      {label} {sortKey === key && "\u25BC"}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map((m) => (
+                  <tr key={m.model} className="border-b border-[#1e1e22]/50 hover:bg-white/[0.02]">
+                    <td className="py-2 px-3 font-medium">
+                      <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ background: MODEL_COLORS[m.model] }} />
+                      {m.model}
+                      {m.model === comp.champion && (
+                        <span className="ml-2 text-[9px] text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">champion</span>
+                      )}
+                    </td>
+                    {["mae", "rmse", "r2", "directional_accuracy", "train_time_s"].map((k) => {
+                      const val = (m as any)[k];
+                      const isBest = bestPerMetric[k] === m.model;
+                      return (
+                        <td key={k} className={`py-2 px-3 text-right tabular-nums ${isBest ? "text-green-400 font-medium" : "text-zinc-400"}`}>
+                          {k === "directional_accuracy" ? `${(val * 100).toFixed(1)}%` : val?.toFixed(k === "r2" ? 4 : 2)}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Section>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Features</span>
-                <span>{model.n_features}</span>
+      {/* 2. Residual Diagnostics */}
+      <Section title="Residual Diagnostics" sub={`Champion model: ${diag?.model ?? "loading"}`}>
+        {!diag ? <Skeleton className="h-48" /> : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Predicted vs Actual */}
+            <div>
+              <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">Predicted vs Actual</h3>
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                    <XAxis type="number" dataKey="actual" name="Actual" stroke="#3f3f46" fontSize={9} />
+                    <YAxis type="number" dataKey="predicted" name="Predicted" stroke="#3f3f46" fontSize={9} />
+                    <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} />
+                    <Scatter data={diag.points} fill="#3b82f6" opacity={0.4} />
+                  </ScatterChart>
+                </ResponsiveContainer>
               </div>
-              {Object.entries(model.metrics).map(([key, value]) => (
-                <div key={key} className="flex justify-between text-sm">
-                  <span className="text-gray-500">{key.toUpperCase()}</span>
-                  <span>
-                    {key === "directional_accuracy"
-                      ? `${(value * 100).toFixed(0)}%`
-                      : value.toFixed(4)}
-                  </span>
-                </div>
-              ))}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Trained</span>
-                <span className="text-gray-400">
-                  {model.trained_at
-                    ? new Date(model.trained_at).toLocaleDateString()
-                    : "Unknown"}
-                </span>
+            </div>
+            {/* Residual histogram */}
+            <div>
+              <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">Residual Distribution</h3>
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={diag.residual_histogram}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                    <XAxis dataKey="x" stroke="#3f3f46" fontSize={9} />
+                    <YAxis stroke="#3f3f46" fontSize={9} />
+                    <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} />
+                    <ReferenceLine x={0} stroke="#3f3f46" />
+                    <Bar dataKey="count" fill="#3b82f6" opacity={0.7} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            {/* Residual stats */}
+            <div>
+              <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">Residual Statistics</h3>
+              <div className="text-[12px] space-y-1.5 mt-2">
+                <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums">{diag.residual_stats.mean.toFixed(4)}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">Std Dev</span><span className="tabular-nums">{diag.residual_stats.std.toFixed(4)}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">Skewness</span><span className="tabular-nums">{diag.residual_stats.skew.toFixed(4)}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">Kurtosis</span><span className="tabular-nums">{diag.residual_stats.kurtosis.toFixed(4)}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">N points</span><span className="tabular-nums">{diag.points.length}</span></div>
+              </div>
+              {/* Residuals over time */}
+              <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mt-4 mb-2">Residuals Over Time</h3>
+              <div className="h-24">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={diag.points}>
+                    <XAxis dataKey="index" hide />
+                    <YAxis stroke="#3f3f46" fontSize={9} />
+                    <ReferenceLine y={0} stroke="#3f3f46" />
+                    <Line type="monotone" dataKey="residual" stroke="#ef4444" strokeWidth={1} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+        )}
+      </Section>
 
-      <div className="glass-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Evaluation Methodology</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-400">
-          <div>
-            <h3 className="text-gray-200 font-medium mb-2">
-              Metrics Reported
-            </h3>
-            <ul className="space-y-1">
-              <li>
-                <strong>MAE</strong> — Mean Absolute Error (interpretable, in
-                cents/lb)
-              </li>
-              <li>
-                <strong>RMSE</strong> — Root Mean Squared Error (penalizes
-                large errors)
-              </li>
-              <li>
-                <strong>R2</strong> — Coefficient of determination (explained
-                variance)
-              </li>
-              <li>
-                <strong>Directional Accuracy</strong> — % of correct up/down
-                predictions (key for trading)
-              </li>
-            </ul>
+      {/* 3. Feature Importance */}
+      <Section title="Feature Importance" sub="XGBoost native gain-based importance">
+        {!imp ? <Skeleton className="h-48" /> : (
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={imp.models?.xgboost ?? []} layout="vertical" margin={{ left: 80 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                <XAxis type="number" stroke="#3f3f46" fontSize={10} />
+                <YAxis
+                  type="category" dataKey="feature" stroke="#3f3f46" fontSize={10}
+                  tickFormatter={(f: string) => FEATURE_LABELS[f] ?? f}
+                />
+                <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} />
+                <Bar dataKey="importance" radius={[0, 3, 3, 0]}>
+                  {(imp.models?.xgboost ?? []).map((_, i) => (
+                    <Cell key={i} fill={i === 0 ? "#22c55e" : i < 3 ? "#4ade80" : "#52525b"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <div>
-            <h3 className="text-gray-200 font-medium mb-2">Validation</h3>
-            <ul className="space-y-1">
-              <li>Walk-forward validation (no look-ahead bias)</li>
-              <li>TimeSeriesSplit for temporal ordering</li>
-              <li>All metrics on out-of-sample data only</li>
-              <li>SHAP explainability for feature contribution</li>
-            </ul>
+        )}
+      </Section>
+
+      {/* 4. Learning Curves */}
+      <Section title="Learning Curves" sub="Training vs validation MAE as function of training set size">
+        {!lc ? <Skeleton className="h-48" /> : (
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                <XAxis
+                  dataKey="size" type="number" stroke="#3f3f46" fontSize={10}
+                  domain={["auto", "auto"]} label={{ value: "Training samples", position: "insideBottom", offset: -5, fontSize: 10, fill: "#52525b" }}
+                />
+                <YAxis stroke="#3f3f46" fontSize={10} label={{ value: "MAE", angle: -90, position: "insideLeft", fontSize: 10, fill: "#52525b" }} />
+                <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} />
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                {Object.entries(lc.models).map(([name, data]) => {
+                  const chartData = data.train_sizes.map((s, i) => ({
+                    size: s,
+                    [`${name}_train`]: data.train_mae[i],
+                    [`${name}_val`]: data.val_mae[i],
+                  }));
+                  return [
+                    <Line
+                      key={`${name}-train`}
+                      data={chartData}
+                      type="monotone"
+                      dataKey={`${name}_train`}
+                      stroke={MODEL_COLORS[name]}
+                      strokeWidth={1}
+                      dot={{ r: 2 }}
+                      name={`${name} (train)`}
+                    />,
+                    <Line
+                      key={`${name}-val`}
+                      data={chartData}
+                      type="monotone"
+                      dataKey={`${name}_val`}
+                      stroke={MODEL_COLORS[name]}
+                      strokeWidth={1.5}
+                      strokeDasharray="4 2"
+                      dot={{ r: 2 }}
+                      name={`${name} (val)`}
+                    />,
+                  ];
+                })}
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-        </div>
-      </div>
+        )}
+      </Section>
+
+      {/* 5. Walk-Forward Folds */}
+      <Section title="Walk-Forward Performance by Fold" sub="Does the model break down in specific periods?">
+        {!wf ? <Skeleton className="h-48" /> : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr className="border-b border-[#1e1e22] text-zinc-500">
+                  <th className="text-left py-1.5 px-2 font-medium">Fold</th>
+                  <th className="text-right py-1.5 px-2 font-medium">Train</th>
+                  <th className="text-right py-1.5 px-2 font-medium">Test</th>
+                  {wf.models.map((m) => (
+                    <th key={m} className="text-right py-1.5 px-2 font-medium" style={{ color: MODEL_COLORS[m] }}>
+                      {m} MAE
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {wf.folds.map((f) => (
+                  <tr key={f.fold} className="border-b border-[#1e1e22]/50 hover:bg-white/[0.02]">
+                    <td className="py-1.5 px-2 font-medium">Fold {f.fold}</td>
+                    <td className="py-1.5 px-2 text-right tabular-nums text-zinc-500">{f.n_train}</td>
+                    <td className="py-1.5 px-2 text-right tabular-nums text-zinc-500">{f.n_test}</td>
+                    {wf.models.map((m) => {
+                      const val = f[`${m}_mae`];
+                      const worst = Math.max(...wf.folds.map((ff) => ff[`${m}_mae`] as number));
+                      return (
+                        <td
+                          key={m}
+                          className={`py-1.5 px-2 text-right tabular-nums ${val === worst ? "text-red-400" : "text-zinc-400"}`}
+                        >
+                          {typeof val === "number" ? val.toFixed(2) : "—"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-[10px] text-zinc-600 mt-2">
+              Red = worst fold per model. Large fold-to-fold variance indicates regime sensitivity.
+            </p>
+          </div>
+        )}
+      </Section>
     </div>
   );
 }
