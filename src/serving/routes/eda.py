@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
-
 import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException
@@ -220,13 +218,12 @@ async def eda_seasonality() -> dict:
 @router.get("/eda/stationarity")
 async def eda_stationarity() -> dict:
     """Returns distribution, ADF tests, and ACF/PACF for time series analysis."""
-    from scipy.stats import norm
 
     df = _load_data()
     cols = [c for c in LABELS if c in df.columns]
 
     # ADF tests
-    from statsmodels.tsa.stattools import adfuller, acf, pacf
+    from statsmodels.tsa.stattools import acf, adfuller, pacf
 
     adf_results = {}
     for col in cols:

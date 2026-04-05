@@ -285,8 +285,9 @@ async def get_price_history(days: int = 90) -> dict:
     Fetches daily closing prices from Yahoo Finance and runs the model
     on each day's feature set to produce a predicted vs actual chart.
     """
-    from src.serving.model_cache import get_model
     import numpy as np
+
+    from src.serving.model_cache import get_model
 
     days = min(days, 365)
 
