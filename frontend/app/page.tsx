@@ -5,7 +5,6 @@ import {
   api,
   isDemoMode,
   HealthResponse,
-  ModelInfo,
   LivePrice,
   LivePredictionResponse,
   SpreadSignal,
@@ -65,7 +64,7 @@ const SIGNAL_TEXT: Record<string, string> = {
 
 export default function DashboardPage() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [models, setModels] = useState<ModelInfo[]>([]);
+  const [comp, setComp] = useState<{ models: any[]; champion: string } | null>(null);
   const [prices, setPrices] = useState<LivePrice[]>([]);
   const [livePred, setLivePred] = useState<LivePredictionResponse | null>(null);
   const [backtest, setBacktest] = useState<BacktestResponse | null>(null);
@@ -75,7 +74,7 @@ export default function DashboardPage() {
   useEffect(() => {
     Promise.all([
       api.health().then(setHealth),
-      api.listModels().then((d) => setModels(d.models)),
+      api.modelsComparison().then(setComp).catch(() => api.listModels().then((d) => setComp({ models: d.models, champion: d.active_model })).catch(() => {})),
       api.livePrices().then((d) => setPrices(d.prices)),
       api.predictLive().then(setLivePred),
       api.backtest().then(setBacktest),
@@ -414,7 +413,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Model table */}
-      {models.length > 0 && (
+      {comp && comp.models.length > 0 && (
         <div className="glass-card p-5">
           <h2 className="text-sm font-semibold mb-3">Model Performance</h2>
           <div className="overflow-x-auto">
@@ -422,40 +421,38 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-[#1e1e22] text-zinc-500">
                   <th className="text-left py-2 px-3 font-medium">Model</th>
-                  <th className="text-right py-2 px-3 font-medium">R&sup2;</th>
                   <th className="text-right py-2 px-3 font-medium">MAE</th>
                   <th className="text-right py-2 px-3 font-medium">RMSE</th>
-                  <th className="text-right py-2 px-3 font-medium">
-                    Dir. Acc.
-                  </th>
+                  <th className="text-right py-2 px-3 font-medium">R&sup2;</th>
+                  <th className="text-right py-2 px-3 font-medium">Dir. Acc.</th>
                 </tr>
               </thead>
               <tbody>
-                {models.map((m, i) => (
+                {comp.models.map((m: any) => (
                   <tr
-                    key={m.name}
+                    key={m.model ?? m.name}
                     className="border-b border-[#1e1e22]/50 hover:bg-white/[0.02]"
                   >
                     <td className="py-2 px-3 font-medium">
-                      {m.name}
-                      {i === 0 && (
+                      {m.model ?? m.name}
+                      {(m.model ?? m.name) === comp.champion && (
                         <span className="ml-2 text-[10px] text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">
-                          active
+                          champion
                         </span>
                       )}
                     </td>
+                    <td className="py-2 px-3 text-right tabular-nums text-zinc-400">
+                      {(m.mae ?? m.metrics?.mae)?.toFixed(2) ?? "-"}
+                    </td>
+                    <td className="py-2 px-3 text-right tabular-nums text-zinc-400">
+                      {(m.rmse ?? m.metrics?.rmse)?.toFixed(2) ?? "-"}
+                    </td>
                     <td className="py-2 px-3 text-right tabular-nums">
-                      {m.metrics.r2?.toFixed(4) ?? "-"}
+                      {(m.r2 ?? m.metrics?.r2)?.toFixed(4) ?? "-"}
                     </td>
                     <td className="py-2 px-3 text-right tabular-nums text-zinc-400">
-                      {m.metrics.mae?.toFixed(2) ?? "-"}
-                    </td>
-                    <td className="py-2 px-3 text-right tabular-nums text-zinc-400">
-                      {m.metrics.rmse?.toFixed(2) ?? "-"}
-                    </td>
-                    <td className="py-2 px-3 text-right tabular-nums text-zinc-400">
-                      {m.metrics.directional_accuracy
-                        ? `${(m.metrics.directional_accuracy * 100).toFixed(0)}%`
+                      {(m.directional_accuracy ?? m.metrics?.directional_accuracy)
+                        ? `${((m.directional_accuracy ?? m.metrics?.directional_accuracy) * 100).toFixed(0)}%`
                         : "-"}
                     </td>
                   </tr>
