@@ -120,10 +120,11 @@ async def get_latest_prices() -> LivePricesResponse:
 async def predict_live() -> dict:
     """Predict BOC1 using the latest live commodity prices.
 
-    Fetches current market prices, feeds them to the model,
-    and returns the prediction alongside the input prices.
+    Fetches current market prices, computes stationary features
+    from recent history, and feeds the full feature vector to the model.
     """
     from src.serving.model_cache import get_model
+    from src.serving.routes.predict import _build_input
 
     model, model_name = get_model()
     if model is None:
@@ -141,7 +142,8 @@ async def predict_live() -> dict:
 
     import numpy as np
 
-    input_data = pd.DataFrame([{col: prices[col] for col in feature_cols}])
+    raw_prices = {col: prices[col] for col in feature_cols}
+    input_data = _build_input(raw_prices)
 
     try:
         prediction = model.predict(input_data)
