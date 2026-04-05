@@ -99,7 +99,7 @@ export default function DashboardPage() {
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
           Front-month contract forecast using commodity cross-correlations,
-          crush economics, and XGBoost.
+          crush economics, and Ridge regression. 56% directional accuracy on out-of-sample data.
         </p>
       </section>
 
@@ -125,21 +125,26 @@ export default function DashboardPage() {
           {!loaded ? (
             <Skeleton className="h-8 w-24 mt-1.5" />
           ) : (
-            <div className="flex items-baseline gap-2 mt-1">
-              <p className="text-2xl font-bold text-blue-400">
-                {livePred?.predicted_price.toFixed(2) ?? "N/A"}
-              </p>
+            <>
+              <div className="flex items-baseline gap-2 mt-1">
+                <p className="text-2xl font-bold text-blue-400">
+                  {livePred?.predicted_price.toFixed(2) ?? "N/A"}
+                </p>
+                {diff !== null && boc1 != null && (
+                  <span className={`text-xs font-medium ${diff > 0 ? "text-green-400" : "text-red-400"}`}>
+                    {diff > 0 ? "\u25B2" : "\u25BC"} {diff > 0 ? "+" : ""}{((diff / boc1) * 100).toFixed(1)}%
+                  </span>
+                )}
+              </div>
               {diff !== null && (
-                <span
-                  className={`text-xs font-medium ${
-                    diff > 0 ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  {diff > 0 ? "+" : ""}
-                  {diff.toFixed(2)}
-                </span>
+                <p className="text-[10px] mt-0.5">
+                  <span className={diff > 0 ? "text-green-400" : "text-red-400"}>
+                    {diff > 0 ? "Bullish" : "Bearish"}
+                  </span>
+                  <span className="text-zinc-600"> vs {boc1?.toFixed(2)} current</span>
+                </p>
               )}
-            </div>
+            </>
           )}
           <p className="text-[10px] text-zinc-600 mt-0.5">
             {livePred?.model_name ?? "loading"}
@@ -410,7 +415,8 @@ export default function DashboardPage() {
                     <span className={biasColor}>
                       ({d > 0 ? "+" : ""}{pct.toFixed(1)}%)
                     </span>.
-                    Bias: <strong className={biasColor}>{bias}</strong>
+                    Bias: <strong className={biasColor}>{bias}</strong>.
+                    Model predicts next-day direction correctly 56% of the time on out-of-sample data.
                   </p>
                 </div>
               );

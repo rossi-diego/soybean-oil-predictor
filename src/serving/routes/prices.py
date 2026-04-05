@@ -266,9 +266,11 @@ async def get_backtest() -> dict:
     rmse = float(np.sqrt(np.mean(residuals ** 2)))
     r2 = float(1 - np.sum(residuals ** 2) / np.sum((actual - actual.mean()) ** 2))
 
-    true_dir = np.sign(np.diff(actual))
-    pred_dir = np.sign(np.diff(predicted))
-    dir_acc = float((true_dir == pred_dir).sum() / len(true_dir)) if len(true_dir) > 0 else 0.0
+    # True directional accuracy: does model predict if TOMORROW is above/below TODAY?
+    # sign(predicted[t+1] - actual[t]) vs sign(actual[t+1] - actual[t])
+    model_dir = np.sign(predicted[1:] - actual[:-1])
+    actual_dir = np.sign(actual[1:] - actual[:-1])
+    dir_acc = float((model_dir == actual_dir).sum() / len(model_dir)) if len(model_dir) > 0 else 0.0
 
     points = []
     for _, row in df.iterrows():

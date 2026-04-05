@@ -185,12 +185,15 @@ export default function PredictPage() {
                 </p>
               )}
               {diff !== null && boc1 != null && (
-                <div className="mt-2 pt-2 border-t border-[#1e1e22] text-[12px]">
-                  <span className="text-zinc-500">Current: {boc1.toFixed(2)} c/lb</span>
-                  <span className="mx-2 text-zinc-700">|</span>
-                  <span className={diff > 0 ? "text-green-400" : "text-red-400"}>
-                    {diff > 0 ? "Upside" : "Downside"} ({diff > 0 ? "+" : ""}{((diff / boc1) * 100).toFixed(1)}%)
-                  </span>
+                <div className="mt-2 pt-2 border-t border-[#1e1e22]">
+                  <div className="flex items-center gap-2 text-[13px]">
+                    <span className={`font-semibold ${diff > 0 ? "text-green-400" : "text-red-400"}`}>
+                      {diff > 0 ? "\u25B2 UP" : "\u25BC DOWN"} ({diff > 0 ? "+" : ""}{((diff / boc1) * 100).toFixed(1)}%)
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    vs current {boc1.toFixed(2)} c/lb ({diff > 0 ? "+" : ""}{diff.toFixed(2)} c/lb)
+                  </p>
                 </div>
               )}
               <p className="text-[9px] text-zinc-600 mt-2">Model: {result.model_name}</p>
