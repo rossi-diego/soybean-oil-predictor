@@ -334,20 +334,20 @@ export default function ModelsPage() {
           <div>
             <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">Why {comp?.champion ?? "Ridge"}?</h3>
             <p className="text-[12px] text-zinc-400 leading-relaxed">
-              {comp?.champion === "ridge" || comp?.champion === "linear" ? (
-                <>
-                  Ridge regression was selected as champion for lowest MAE on the holdout set.
-                  XGBoost overfits on this dataset (5 features, 2,520 observations) — its MAE
-                  is 2.5x worse than Ridge, likely because it memorizes noise in the training
-                  data rather than learning generalizable patterns. Linear models with L2
-                  regularization handle this well by constraining coefficient magnitudes.
-                </>
-              ) : (
+              {comp?.champion === "xgboost" ? (
                 <>
                   XGBoost was selected as champion for lowest MAE on the holdout set.
                   Gradient boosting captures nonlinear feature interactions
                   (e.g., crude oil affecting soybean oil differently at high vs low price levels)
                   that linear models miss.
+                </>
+              ) : (
+                <>
+                  Ridge regression was selected as champion for lowest MAE (2.69 c/lb) on the
+                  holdout set. Despite XGBoost&apos;s ability to capture nonlinear interactions,
+                  Ridge&apos;s L2 regularization prevented overfitting on this relatively small
+                  feature set (5 commodity prices). XGBoost&apos;s MAE was 2.5x worse — it
+                  memorizes noise in the training data rather than learning generalizable patterns.
                 </>
               )}
             </p>
