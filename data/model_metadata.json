@@ -39,7 +39,11 @@
     "r2": 0.9468,
     "directional_accuracy": 0.8643,
     "n_predictions": 2050,
-    "n_folds": 5
+    "n_folds": 5,
+    "directional_accuracy_level": 0.8643,
+    "directional_accuracy_true": 0.5603,
+    "note": "directional_accuracy_true measures real next-day direction prediction; directional_accuracy_level is autocorrelated and inflated",
+    "strategy_sharpe": 3.03
   },
   "trained_at": "2026-04-05T20:39:37.043407",
   "train_start": "2013-10-17",
