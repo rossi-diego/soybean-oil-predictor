@@ -390,48 +390,73 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Two columns: context + models */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Market Intelligence Brief */}
+      {loaded && (
         <div className="glass-card p-5">
-          <h2 className="text-sm font-semibold mb-2">Why This Matters</h2>
-          <p className="text-[13px] text-zinc-400 leading-relaxed">
-            Soybean oil (BOC1) is the global vegetable oil benchmark.
-            The <strong className="text-zinc-300">crush spread</strong>{" "}
-            measures processor margins. The{" "}
-            <strong className="text-zinc-300">oil/palm spread</strong>{" "}
-            captures substitution dynamics between the two most traded
-            vegetable oils. Traders use these signals to time hedging
-            decisions on physical positions.
-          </p>
-          <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
-            A 1% improvement in hedge timing on 10,000 MT ={" "}
-            <strong className="text-green-400">~$50,000</strong> in value.
-          </p>
-        </div>
+          <h2 className="text-sm font-semibold mb-3">Market Intelligence</h2>
+          <div className="space-y-2.5">
+            {/* 1. Forecast vs current */}
+            {livePred && boc1 != null && (() => {
+              const d = livePred.predicted_price - boc1;
+              const pct = (d / boc1) * 100;
+              const bias = Math.abs(pct) < 2 ? "Neutral" : pct > 0 ? "Bullish" : "Bearish";
+              const biasColor = bias === "Bullish" ? "text-green-400" : bias === "Bearish" ? "text-red-400" : "text-zinc-400";
+              return (
+                <div className="flex items-start gap-2 text-[13px]">
+                  <span className={`shrink-0 mt-0.5 ${biasColor}`}>{bias === "Bullish" ? "\u25B2" : bias === "Bearish" ? "\u25BC" : "\u25B6"}</span>
+                  <p className="text-zinc-400">
+                    Model forecast: <strong className="text-zinc-200">{livePred.predicted_price.toFixed(2)} c/lb</strong> vs
+                    current <strong className="text-zinc-200">{boc1.toFixed(2)}</strong>{" "}
+                    <span className={biasColor}>
+                      ({d > 0 ? "+" : ""}{pct.toFixed(1)}%)
+                    </span>.
+                    Bias: <strong className={biasColor}>{bias}</strong>
+                  </p>
+                </div>
+              );
+            })()}
 
-        <div className="glass-card p-5">
-          <h2 className="text-sm font-semibold mb-2">Data Pipeline</h2>
-          <div className="space-y-1.5 text-[13px]">
-            {[
-              ["Ingest", "yfinance, USDA WASDE, FRED", "text-green-400"],
-              ["Bronze", "Raw Parquet, append-only", "text-yellow-500"],
-              ["Silver", "dbt-core + DuckDB, cleaned", "text-blue-400"],
-              ["Gold", "Feature engineering", "text-purple-400"],
-              ["Model", "XGBoost, Ridge, statsforecast", "text-red-400"],
-              ["Serve", "FastAPI on Render", "text-cyan-400"],
-            ].map(([stage, desc, color]) => (
-              <div key={stage} className="flex items-center gap-3">
-                <span
-                  className={`text-[11px] font-mono font-semibold w-14 ${color}`}
-                >
-                  {stage}
-                </span>
-                <span className="text-zinc-500">{desc}</span>
+            {/* 2. Spread context */}
+            {spreads.length > 0 && spreads.map((s) => (
+              <div key={s.name} className="flex items-start gap-2 text-[13px]">
+                <span className={`shrink-0 mt-0.5 ${SIGNAL_TEXT[s.signal]}`}>{TREND_ICON[s.trend]}</span>
+                <p className="text-zinc-400">{s.interpretation}</p>
               </div>
             ))}
+
+            {/* 3. Risk flag — if BOC1 is far from training mean */}
+            {boc1 != null && backtest && (() => {
+              const mae = backtest.metrics.mae;
+              const farFromMean = Math.abs(boc1 - 41) / 41 > 0.5;
+              if (farFromMean) {
+                return (
+                  <div className="flex items-start gap-2 text-[13px]">
+                    <span className="shrink-0 mt-0.5 text-yellow-500">!</span>
+                    <p className="text-yellow-500/80">
+                      Current BOC1 ({boc1.toFixed(0)} c/lb) is {((boc1 - 41) / 41 * 100).toFixed(0)}% above training
+                      mean. Model accuracy may be lower in this regime (training MAE: {mae} c/lb).
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            {/* 4. Pipeline summary (compact) */}
+            <div className="flex items-start gap-2 text-[13px]">
+              <span className="shrink-0 mt-0.5 text-zinc-600">&bull;</span>
+              <p className="text-zinc-600">
+                Pipeline: yfinance &rarr; Parquet &rarr; dbt + DuckDB &rarr; Ridge model &rarr; FastAPI on Render
+              </p>
+            </div>
           </div>
+
+          {/* Footnote */}
+          <p className="text-[10px] text-zinc-700 mt-3 pt-2 border-t border-[#1e1e22]">
+            A 1% improvement in hedge timing on a 10,000 MT soybean oil position is worth ~$50,000.
+          </p>
         </div>
-      </div>
+      )}
 
       {/* Model table */}
       {comp && comp.models.length > 0 && (
