@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { href: "/predict", label: "Forecast" },
   { href: "/eda", label: "Analysis" },
   { href: "/models", label: "Models" },
-  { href: "/monitoring", label: "Monitoring" },
 ];
 
 export function Navbar() {
