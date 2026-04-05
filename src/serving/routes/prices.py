@@ -10,7 +10,7 @@ import yfinance as yf
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from src.config import DATA_FOLDER, TICKERS
+from src.config import DATA_FOLDER, FEATURE_COLUMNS, TICKERS
 from src.log import get_logger
 
 logger = get_logger(__name__)
@@ -117,7 +117,7 @@ async def predict_live() -> dict:
 
     prices = _fetch_live_prices()
 
-    feature_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
+    feature_cols = FEATURE_COLUMNS
     missing = [c for c in feature_cols if c not in prices]
     if missing:
         raise HTTPException(
@@ -312,7 +312,7 @@ async def get_price_history(days: int = 90) -> dict:
     model, model_name = get_model()
 
     result = []
-    feature_cols = ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"]
+    feature_cols = FEATURE_COLUMNS
 
     for date, row in boc1_hist.iterrows():
         actual = float(row["Close"])

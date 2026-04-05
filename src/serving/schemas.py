@@ -12,8 +12,7 @@ class PredictionRequest(BaseModel):
     sc1: float = Field(..., gt=0, description="Soybean futures price (cents/bushel)")
     lcoc1: float = Field(..., gt=0, description="Brent Crude Oil futures price ($/barrel)")
     hoc1: float = Field(..., gt=0, description="Heating Oil futures price ($/gallon)")
-    fcpoc1: float = Field(..., gt=0, description="Crude Palm Oil futures price (MYR/tonne)")
-    rsc1: float = Field(..., gt=0, description="Rapeseed/Canola futures price (CAD/tonne)")
+    rsc1: float = Field(..., gt=0, description="Wheat futures price (cents/bushel)")
     month: int = Field(default=1, ge=1, le=12, description="Month of the year (1-12)")
 
     model_config = {"json_schema_extra": {
@@ -23,7 +22,6 @@ class PredictionRequest(BaseModel):
                 "sc1": 1100.0,
                 "lcoc1": 75.0,
                 "hoc1": 2.20,
-                "fcpoc1": 3200.0,
                 "rsc1": 600.0,
                 "month": 3,
             }

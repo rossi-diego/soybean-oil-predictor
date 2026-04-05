@@ -50,14 +50,16 @@ TICKERS = {
     "zc1": "ZC=F",        # Corn front-month (CBOT)
     "lcoc1": "BZ=F",      # Brent crude front-month (ICE)
     "hoc1": "HO=F",       # Heating oil front-month (NYMEX)
-    "fcpoc1": "PALM.L",   # Palm oil ETF proxy (London, yfinance available)
-    "rsc1": "ZW=F",       # Wheat front-month (CBOT, proxy for canola)
+    "rsc1": "ZW=F",       # Wheat front-month (CBOT)
 }
+# NOTE: Palm oil (fcpoc1) removed — PALM.L returns GBp ETF price (~78),
+# but training data uses MYR/tonne (~3000-7000). No reliable yfinance source
+# for FCPO in the correct unit. Model retrained without it.
 
 TARGET_COLUMN = "boc1"
 
 FEATURE_COLUMNS = [
-    "smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1",
+    "smc1", "sc1", "lcoc1", "hoc1", "rsc1",
 ]
 
 

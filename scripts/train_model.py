@@ -64,7 +64,11 @@ def train_and_save():
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_parquet(DATA_FILE)
-    feature_cols = [c for c in df.columns if c != TARGET]
+    # Only use features that have reliable live yfinance sources.
+    # Excluded: fcpoc1 (PALM.L is GBp ETF, training data is MYR/tonne),
+    #           so-premp-c1 (no live source), brl= (no live source)
+    LIVE_FEATURES = ["smc1", "sc1", "lcoc1", "hoc1", "rsc1"]
+    feature_cols = [c for c in LIVE_FEATURES if c in df.columns]
     X = df[feature_cols]
     y = df[TARGET]
 

@@ -32,7 +32,6 @@ const FIELDS: {
   { key: "sc1", label: "Soybeans", unit: "c/bu", why: "Feedstock cost — soybeans are crushed into oil and meal. Higher bean prices increase production costs." },
   { key: "lcoc1", label: "Brent Crude", unit: "$/bbl", why: "Biodiesel demand — soybean oil competes as a biodiesel feedstock. Crude prices drive renewable fuel economics." },
   { key: "hoc1", label: "Heating Oil", unit: "$/gal", why: "Energy correlation — heating oil tracks energy-vegetable oil substitution and refining margins." },
-  { key: "fcpoc1", label: "Palm Oil", unit: "GBp", why: "Substitution benchmark — palm oil is the closest substitute. Price gaps drive buyer switching." },
   { key: "rsc1", label: "Wheat", unit: "c/bu", why: "Grain complex — wheat reflects broader agricultural market sentiment and planting competition." },
 ];
 

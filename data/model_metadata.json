@@ -1,6 +1,6 @@
 {
   "algorithm": "XGBRegressor",
-  "champion": "xgboost",
+  "champion": "ridge",
   "hyperparameters": {
     "n_estimators": 500,
     "max_depth": 6,
@@ -16,28 +16,25 @@
   "n_training_samples": 2016,
   "n_test_samples": 504,
   "n_total_samples": 2520,
-  "n_features": 8,
+  "n_features": 5,
   "feature_names": [
     "smc1",
     "sc1",
     "lcoc1",
     "hoc1",
-    "fcpoc1",
-    "rsc1",
-    "so-premp-c1",
-    "brl="
+    "rsc1"
   ],
   "target": "boc1",
-  "residual_std": 5.7098,
+  "residual_std": 3.1467,
   "backtest_metrics": {
-    "mae": 3.83,
-    "rmse": 6.16,
-    "r2": 0.8266,
-    "directional_accuracy": 0.6189,
+    "mae": 2.43,
+    "rmse": 3.46,
+    "r2": 0.9454,
+    "directional_accuracy": 0.7742,
     "n_predictions": 2100,
     "n_folds": 5
   },
-  "trained_at": "2026-04-05T13:02:46.865684",
+  "trained_at": "2026-04-05T14:15:45.699057",
   "feature_ranges": {
     "smc1": {
       "min": 257.2,
@@ -67,33 +64,12 @@
       "p5": 1.14,
       "p95": 3.41
     },
-    "fcpoc1": {
-      "min": 1759.0,
-      "max": 7821.0,
-      "mean": 3166.84,
-      "p5": 2020.0,
-      "p95": 5217.35
-    },
     "rsc1": {
       "min": 394.0,
       "max": 1226.0,
       "mean": 591.19,
       "p5": 439.09,
       "p95": 996.93
-    },
-    "so-premp-c1": {
-      "min": -2380.0,
-      "max": 1000.0,
-      "mean": -54.42,
-      "p5": -1020.25,
-      "p95": 600.0
-    },
-    "brl=": {
-      "min": 2.15,
-      "max": 6.29,
-      "mean": 4.17,
-      "p5": 2.3,
-      "p95": 5.69
     }
   }
 }

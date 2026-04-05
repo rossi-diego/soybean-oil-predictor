@@ -10,7 +10,6 @@ export interface PredictionRequest {
   sc1: number;
   lcoc1: number;
   hoc1: number;
-  fcpoc1: number;
   rsc1: number;
   month?: number;
 }
@@ -262,7 +261,7 @@ const MOCK_MODEL_METADATA: ModelMetadata = {
   n_training_samples: 2016,
   n_total_samples: 2520,
   n_features: 8,
-  feature_names: ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1", "so-premp-c1", "brl="],
+  feature_names: ["smc1", "sc1", "lcoc1", "hoc1", "rsc1"],
   residual_std: 5.87,
   trained_at: "2025-03-15T14:30:00",
   backtest_metrics: {
@@ -284,7 +283,6 @@ const MOCK_MODEL_METADATA: ModelMetadata = {
     sc1: { min: 791.0, max: 1769.0, mean: 1119.44, p5: 856.99, p95: 1544.11 },
     lcoc1: { min: 19.99, max: 127.98, mean: 69.91, p5: 39.84, p95: 108.84 },
     hoc1: { min: 0.61, max: 5.14, mean: 2.15, p5: 1.14, p95: 3.41 },
-    fcpoc1: { min: 1759.0, max: 7821.0, mean: 3166.84, p5: 2020.0, p95: 5217.35 },
     rsc1: { min: 394.0, max: 1226.0, mean: 591.19, p5: 439.09, p95: 996.93 },
   },
 };
@@ -350,8 +348,7 @@ const MOCK_LIVE_PRICES: LivePricesResponse = {
     { name: "smc1", ticker: "ZM=F", price: 362.80, currency: "USD", timestamp: new Date().toISOString() },
     { name: "lcoc1", ticker: "BZ=F", price: 72.15, currency: "USD", timestamp: new Date().toISOString() },
     { name: "hoc1", ticker: "HO=F", price: 2.18, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "fcpoc1", ticker: "FCPO=F", price: 3420.00, currency: "USD", timestamp: new Date().toISOString() },
-    { name: "rsc1", ticker: "RS=F", price: 615.20, currency: "USD", timestamp: new Date().toISOString() },
+    { name: "rsc1", ticker: "ZW=F", price: 615.20, currency: "USD", timestamp: new Date().toISOString() },
   ],
   cached: true,
   fetched_at: new Date().toISOString(),
@@ -360,7 +357,7 @@ const MOCK_LIVE_PRICES: LivePricesResponse = {
 const MOCK_LIVE_PREDICTION: LivePredictionResponse = {
   predicted_price: 43.12,
   model_name: "xgboost_baseline (demo)",
-  input_prices: { smc1: 362.80, sc1: 1142.50, lcoc1: 72.15, hoc1: 2.18, fcpoc1: 3420.00, rsc1: 615.20 },
+  input_prices: { smc1: 362.80, sc1: 1142.50, lcoc1: 72.15, hoc1: 2.18, rsc1: 615.20 },
   cached: true,
   fetched_at: new Date().toISOString(),
 };
@@ -394,7 +391,6 @@ const MOCK_FEATURE_STATS = {
     sc1:    { mean: 1119.44, std: 237.51, min: 791.00, max: 1769.00 },
     lcoc1:  { mean: 69.91, std: 20.72, min: 19.99, max: 127.98 },
     hoc1:   { mean: 2.15, std: 0.70, min: 0.61, max: 5.14 },
-    fcpoc1: { mean: 3166.84, std: 1105.07, min: 1759.00, max: 7821.00 },
     rsc1:   { mean: 591.19, std: 178.30, min: 394.00, max: 1226.00 },
   },
 };
@@ -403,7 +399,6 @@ const MOCK_IMPORTANCES: FeatureImportance[] = [
   { feature: "smc1", importance: 0.284 },
   { feature: "hoc1", importance: 0.197 },
   { feature: "lcoc1", importance: 0.143 },
-  { feature: "fcpoc1", importance: 0.121 },
   { feature: "sc1", importance: 0.098 },
   { feature: "rsc1", importance: 0.067 },
   { feature: "crush_spread", importance: 0.042 },
@@ -451,19 +446,18 @@ async function fetchApi<T>(
 
 function mockPredict(data: PredictionRequest): PredictionResponse {
   const base = 0.08 * data.smc1 + 0.005 * data.sc1 + 0.12 * data.lcoc1
-    + 8.5 * data.hoc1 + 0.002 * data.fcpoc1 + 0.01 * data.rsc1;
+    + 8.5 * data.hoc1 + 0.01 * data.rsc1;
   const noise = (Math.sin(data.month || 1) * 2);
   const price = Math.round((base / 6 + noise) * 100) / 100;
   return {
     predicted_price: price,
     model_name: "xgboost_baseline (demo)",
     confidence: { lower: Math.round((price - 11.5) * 100) / 100, upper: Math.round((price + 11.5) * 100) / 100 },
-    features_used: ["smc1", "sc1", "lcoc1", "hoc1", "fcpoc1", "rsc1"],
+    features_used: ["smc1", "sc1", "lcoc1", "hoc1", "rsc1"],
     feature_contributions: [
       { feature: "hoc1", contribution: 4.82 },
       { feature: "smc1", contribution: 3.15 },
       { feature: "lcoc1", contribution: -2.41 },
-      { feature: "fcpoc1", contribution: 1.87 },
       { feature: "sc1", contribution: -1.23 },
       { feature: "rsc1", contribution: 0.64 },
     ],

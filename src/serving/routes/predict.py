@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 
-from src.config import DATA_FOLDER
+from src.config import DATA_FOLDER, FEATURE_COLUMNS
 from src.log import get_logger
 from src.serving.model_cache import get_model
 from src.serving.schemas import PredictionRequest, PredictionResponse
@@ -70,14 +70,8 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
     if model is None:
         raise HTTPException(status_code=503, detail="No trained model loaded")
 
-    input_data = pd.DataFrame([{
-        "smc1": request.smc1,
-        "sc1": request.sc1,
-        "lcoc1": request.lcoc1,
-        "hoc1": request.hoc1,
-        "fcpoc1": request.fcpoc1,
-        "rsc1": request.rsc1,
-    }])
+    raw = request.model_dump()
+    input_data = pd.DataFrame([{k: raw[k] for k in FEATURE_COLUMNS if k in raw}])
 
     try:
         prediction = model.predict(input_data)
