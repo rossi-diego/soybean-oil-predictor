@@ -6,9 +6,10 @@ import json
 
 import numpy as np
 import pandas as pd
+import yfinance as yf
 from fastapi import APIRouter, HTTPException
 
-from src.config import DATA_FOLDER, FEATURE_COLUMNS
+from src.config import DATA_FOLDER, FEATURE_COLUMNS, TICKERS
 from src.log import get_logger
 from src.serving.model_cache import get_model
 from src.serving.schemas import PredictionRequest, PredictionResponse
@@ -18,10 +19,10 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 _metadata_cache: dict | None = None
+_history_cache: dict | None = None
 
 
 def _load_metadata() -> dict:
-    """Load model metadata (cached after first read)."""
     global _metadata_cache
     if _metadata_cache is not None:
         return _metadata_cache
@@ -34,12 +35,79 @@ def _load_metadata() -> dict:
     return _metadata_cache
 
 
-def _compute_contributions(model, input_data: pd.DataFrame) -> list[dict]:
-    """Extract per-feature contributions using XGBoost's built-in SHAP.
+def _fetch_recent_history(days: int = 90) -> pd.DataFrame | None:
+    """Fetch recent price history for computing stationary features."""
+    import time
 
-    XGBoost's predict with pred_contribs=True returns SHAP-like values
-    without requiring the shap library.
+    global _history_cache
+    now = time.time()
+    if _history_cache and (now - _history_cache.get("_ts", 0)) < 900:
+        return _history_cache.get("df")
+
+    price_cols = ["boc1", "smc1", "sc1", "lcoc1", "hoc1", "rsc1"]
+    data = {}
+    for name in price_cols:
+        symbol = TICKERS.get(name)
+        if not symbol:
+            continue
+        try:
+            hist = yf.Ticker(symbol).history(period=f"{days}d")
+            if not hist.empty:
+                data[name] = hist["Close"]
+        except Exception:
+            logger.warning("history_fetch_failed", ticker=name)
+
+    if not data:
+        return None
+
+    df = pd.DataFrame(data).dropna()
+    _history_cache = {"df": df, "_ts": now}
+    return df
+
+
+def _compute_stationary_features(hist: pd.DataFrame) -> dict:
+    """Compute stationary features from recent price history.
+
+    Returns a dict of feature values for the most recent row.
     """
+    from src.features.stationary import (
+        compute_momentum_features,
+        compute_spread_features,
+    )
+
+    enhanced = compute_spread_features(hist)
+    enhanced = compute_momentum_features(enhanced, "boc1")
+
+    last = enhanced.iloc[-1]
+    stationary_cols = [c for c in enhanced.columns if c not in hist.columns]
+    return {col: float(last[col]) if pd.notna(last[col]) else 0.0 for col in stationary_cols}
+
+
+def _build_input(raw_prices: dict) -> pd.DataFrame:
+    """Build full feature input (prices + stationary features)."""
+    metadata = _load_metadata()
+    expected_features = metadata.get("feature_names", FEATURE_COLUMNS)
+
+    # Start with raw prices
+    row = {k: raw_prices.get(k, 0) for k in FEATURE_COLUMNS if k in raw_prices}
+
+    # Add stationary features if model expects them
+    stationary_needed = [f for f in expected_features if f not in row]
+    if stationary_needed:
+        hist = _fetch_recent_history()
+        if hist is not None:
+            stat_features = _compute_stationary_features(hist)
+            for f in stationary_needed:
+                row[f] = stat_features.get(f, 0.0)
+        else:
+            for f in stationary_needed:
+                row[f] = 0.0
+
+    return pd.DataFrame([{f: row.get(f, 0) for f in expected_features}])
+
+
+def _compute_contributions(model, input_data: pd.DataFrame) -> list[dict]:
+    """Extract per-feature contributions using XGBoost's built-in SHAP."""
     try:
         import xgboost as xgb
 
@@ -71,7 +139,7 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
         raise HTTPException(status_code=503, detail="No trained model loaded")
 
     raw = request.model_dump()
-    input_data = pd.DataFrame([{k: raw[k] for k in FEATURE_COLUMNS if k in raw}])
+    input_data = _build_input(raw)
 
     try:
         prediction = model.predict(input_data)
@@ -82,7 +150,6 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
             status_code=500, detail=f"Prediction failed: {e}"
         ) from e
 
-    # Confidence interval from stored residual std
     metadata = _load_metadata()
     residual_std = metadata.get("residual_std", 0)
     confidence = {}
@@ -92,7 +159,6 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
             "upper": round(predicted_price + 1.96 * residual_std, 2),
         }
 
-    # Feature contributions (XGBoost native SHAP)
     contributions = _compute_contributions(model, input_data)
 
     logger.info("prediction_made", model=model_name, price=predicted_price)

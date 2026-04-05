@@ -64,13 +64,29 @@ def train_and_save():
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_parquet(DATA_FILE)
-    # Only use features that have reliable live yfinance sources.
-    # Excluded: fcpoc1 (PALM.L is GBp ETF, training data is MYR/tonne),
-    #           so-premp-c1 (no live source), brl= (no live source)
+
+    # Use level prices as primary features (captures cross-sectional relationships)
+    # plus stationary technical indicators for regime awareness.
+    sys.path.insert(0, str(PROJECT_ROOT))
+    from src.features.stationary import (
+        compute_momentum_features,
+        compute_spread_features,
+    )
+
     LIVE_FEATURES = ["smc1", "sc1", "lcoc1", "hoc1", "rsc1"]
-    feature_cols = [c for c in LIVE_FEATURES if c in df.columns]
-    X = df[feature_cols]
-    y = df[TARGET]
+
+    # Add stationary features alongside levels
+    enhanced = df.copy()
+    enhanced = compute_spread_features(enhanced)
+    enhanced = compute_momentum_features(enhanced, TARGET)
+
+    # Combine: raw prices + spread z-scores + momentum
+    stationary_cols = [c for c in enhanced.columns if c not in df.columns]
+    feature_cols = [c for c in LIVE_FEATURES if c in df.columns] + stationary_cols
+
+    # Drop NaN rows from rolling windows
+    X = enhanced[feature_cols].dropna()
+    y = df[TARGET].loc[X.index]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, shuffle=False, random_state=RANDOM_STATE

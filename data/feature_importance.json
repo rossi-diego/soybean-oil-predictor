@@ -3,131 +3,299 @@
     "xgboost": [
       {
         "feature": "rsc1",
-        "importance": 0.7622
+        "importance": 0.5577
       },
       {
         "feature": "sc1",
-        "importance": 0.1445
+        "importance": 0.2201
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.1133
       },
       {
         "feature": "hoc1",
-        "importance": 0.0537
+        "importance": 0.0425
       },
       {
         "feature": "lcoc1",
-        "importance": 0.0266
+        "importance": 0.035
+      },
+      {
+        "feature": "boc1_mean_rev",
+        "importance": 0.012
       },
       {
         "feature": "smc1",
-        "importance": 0.0129
+        "importance": 0.0111
+      },
+      {
+        "feature": "crush_zscore",
+        "importance": 0.0029
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.0022
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.0017
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 0.0012
+      },
+      {
+        "feature": "boc1_bb_pos",
+        "importance": 0.0003
       }
     ],
     "ridge": [
       {
         "feature": "sc1",
-        "importance": 17.459,
-        "coefficient": 17.459
-      },
-      {
-        "feature": "smc1",
-        "importance": 7.3484,
-        "coefficient": -7.3484
+        "importance": 15.4324,
+        "coefficient": 15.4324
       },
       {
         "feature": "hoc1",
-        "importance": 6.1159,
-        "coefficient": 6.1159
+        "importance": 5.8646,
+        "coefficient": 5.8646
+      },
+      {
+        "feature": "smc1",
+        "importance": 5.4481,
+        "coefficient": -5.4481
       },
       {
         "feature": "lcoc1",
-        "importance": 4.9074,
-        "coefficient": -4.9074
+        "importance": 5.0603,
+        "coefficient": -5.0603
       },
       {
         "feature": "rsc1",
-        "importance": 1.9421,
-        "coefficient": 1.9421
+        "importance": 2.0244,
+        "coefficient": 2.0244
+      },
+      {
+        "feature": "crush_zscore",
+        "importance": 1.5918,
+        "coefficient": 1.5918
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 1.2993,
+        "coefficient": 1.2993
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.6793,
+        "coefficient": -0.6793
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.5523,
+        "coefficient": 0.5523
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.2429,
+        "coefficient": 0.2429
+      },
+      {
+        "feature": "boc1_mean_rev",
+        "importance": 0.0963,
+        "coefficient": 0.0963
+      },
+      {
+        "feature": "boc1_bb_pos",
+        "importance": 0.008,
+        "coefficient": 0.008
       }
     ],
     "lasso": [
       {
         "feature": "sc1",
-        "importance": 12.0858,
-        "coefficient": 12.0858
-      },
-      {
-        "feature": "smc1",
-        "importance": 4.0628,
-        "coefficient": -4.0628
+        "importance": 10.338,
+        "coefficient": 10.338
       },
       {
         "feature": "hoc1",
-        "importance": 3.2284,
-        "coefficient": 3.2284
+        "importance": 3.1152,
+        "coefficient": 3.1152
       },
       {
         "feature": "rsc1",
-        "importance": 2.6068,
-        "coefficient": 2.6068
+        "importance": 2.6411,
+        "coefficient": 2.6411
+      },
+      {
+        "feature": "smc1",
+        "importance": 2.6269,
+        "coefficient": -2.6269
       },
       {
         "feature": "lcoc1",
-        "importance": 1.4669,
-        "coefficient": -1.4669
+        "importance": 1.5567,
+        "coefficient": -1.5567
+      },
+      {
+        "feature": "crush_zscore",
+        "importance": 1.3586,
+        "coefficient": 1.3586
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 0.508,
+        "coefficient": 0.508
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.4992,
+        "coefficient": 0.4992
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.3706,
+        "coefficient": 0.3706
+      },
+      {
+        "feature": "boc1_mean_rev",
+        "importance": 0.3312,
+        "coefficient": 0.3312
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.2765,
+        "coefficient": 0.2765
+      },
+      {
+        "feature": "boc1_bb_pos",
+        "importance": 0.0,
+        "coefficient": 0.0
       }
     ],
     "elasticnet": [
       {
         "feature": "sc1",
-        "importance": 5.4807,
-        "coefficient": 5.4807
+        "importance": 4.8847,
+        "coefficient": 4.8847
       },
       {
         "feature": "rsc1",
-        "importance": 3.2988,
-        "coefficient": 3.2988
+        "importance": 3.1405,
+        "coefficient": 3.1405
       },
       {
         "feature": "hoc1",
-        "importance": 2.4382,
-        "coefficient": 2.4382
+        "importance": 2.4484,
+        "coefficient": 2.4484
+      },
+      {
+        "feature": "crush_zscore",
+        "importance": 1.2515,
+        "coefficient": 1.2515
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.9681,
+        "coefficient": 0.9681
+      },
+      {
+        "feature": "boc1_mean_rev",
+        "importance": 0.7737,
+        "coefficient": 0.7737
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.4855,
+        "coefficient": 0.4855
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 0.4495,
+        "coefficient": 0.4495
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.3027,
+        "coefficient": 0.3027
       },
       {
         "feature": "lcoc1",
-        "importance": 0.3163,
-        "coefficient": -0.3163
+        "importance": 0.2562,
+        "coefficient": -0.2562
       },
       {
         "feature": "smc1",
-        "importance": 0.2636,
-        "coefficient": -0.2636
+        "importance": 0.0,
+        "coefficient": -0.0
+      },
+      {
+        "feature": "boc1_bb_pos",
+        "importance": 0.0,
+        "coefficient": 0.0
       }
     ],
     "linear": [
       {
         "feature": "sc1",
-        "importance": 17.8455,
-        "coefficient": 17.8455
-      },
-      {
-        "feature": "smc1",
-        "importance": 7.5848,
-        "coefficient": -7.5848
+        "importance": 15.7876,
+        "coefficient": 15.7876
       },
       {
         "feature": "hoc1",
-        "importance": 6.2122,
-        "coefficient": 6.2122
+        "importance": 5.9629,
+        "coefficient": 5.9629
+      },
+      {
+        "feature": "smc1",
+        "importance": 5.6414,
+        "coefficient": -5.6414
       },
       {
         "feature": "lcoc1",
-        "importance": 5.0271,
-        "coefficient": -5.0271
+        "importance": 5.1989,
+        "coefficient": -5.1989
       },
       {
         "feature": "rsc1",
-        "importance": 1.8994,
-        "coefficient": 1.8994
+        "importance": 1.9888,
+        "coefficient": 1.9888
+      },
+      {
+        "feature": "crush_zscore",
+        "importance": 1.5927,
+        "coefficient": 1.5927
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 1.3359,
+        "coefficient": 1.3359
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.7302,
+        "coefficient": -0.7302
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.5649,
+        "coefficient": 0.5649
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.2173,
+        "coefficient": 0.2173
+      },
+      {
+        "feature": "boc1_mean_rev",
+        "importance": 0.0663,
+        "coefficient": 0.0663
+      },
+      {
+        "feature": "boc1_bb_pos",
+        "importance": 0.0071,
+        "coefficient": 0.0071
       }
     ]
   }
