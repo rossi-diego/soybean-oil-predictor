@@ -94,7 +94,7 @@ export default function EDAPage() {
   }, []);
 
   useEffect(() => { api.edaPrices(period).then(setPrices).catch(() => {}); }, [period]);
-  useEffect(() => { api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}); }, [corrMethod, corrPeriod]);
+  useEffect(() => { setCorr(null); api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}); }, [corrMethod, corrPeriod]);
   useEffect(() => { api.edaDistributions(distWindow).then(setDist).catch(() => {}); }, [distWindow]);
 
   const demo = loaded && isDemoMode();
@@ -189,7 +189,7 @@ export default function EDAPage() {
       </Section>
 
       {/* 2. Correlation Heatmap */}
-      <Section title="Correlation Heatmap" sub={`Pearson: linear relationships. Spearman: monotonic (rank-based).${(corr as any)?.n_days ? ` ${(corr as any).start} to ${(corr as any).end} (${(corr as any).n_days} days).` : ""}`}>
+      <Section title="Correlation Heatmap" sub={`Pearson: linear relationships. Spearman: monotonic (rank-based).${corr?.n_days ? ` ${corr.start} to ${corr.end} (${corr.n_days} days).` : ""}`}>
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {["pearson", "spearman"].map((m) => (
             <button key={m} onClick={() => setCorrMethod(m)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium capitalize transition-colors ${corrMethod === m ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{m}</button>
@@ -199,9 +199,9 @@ export default function EDAPage() {
             <button key={p} onClick={() => setCorrPeriod(p)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-colors ${corrPeriod === p ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{p}</button>
           ))}
         </div>
-        {!corr ? <Skeleton className="h-64" /> : (corr as any).error ? (
-          <div className="flex items-center justify-center h-32 text-zinc-500 text-sm">{(corr as any).error}</div>
-        ) : !corr.matrix.length ? (
+        {!corr ? <Skeleton className="h-64" /> : corr.error ? (
+          <div className="flex items-center justify-center h-32 text-zinc-500 text-sm">{corr.error}</div>
+        ) : !corr.matrix?.length ? (
           <div className="flex items-center justify-center h-32 text-zinc-500 text-sm">Not enough data for this period. Select a longer window.</div>
         ) : (() => {
           const SHORT: Record<string, string> = {
@@ -210,8 +210,9 @@ export default function EDAPage() {
           };
           const shortLabel = (f: string) => SHORT[f] ?? corr.labels[f] ?? f;
 
-          const cellColor = (v: number, diag: boolean): [string, string] => {
+          const cellColor = (v: number | null, diag: boolean): [string, string] => {
             if (diag) return ["#404040", "#71717a"];
+            if (v == null || isNaN(v)) return ["#1e1e22", "#555"];
             if (v >= 0.8) return ["#67000D", "#fff"];
             if (v >= 0.6) return ["#CB181D", "#fff"];
             if (v >= 0.4) return ["#FB6A4A", "#fff"];
@@ -238,13 +239,13 @@ export default function EDAPage() {
                     {corr.matrix[i].map((val, j) => {
                       const isDiag = i === j;
                       const [bg, fg] = cellColor(val, isDiag);
-                      const strong = Math.abs(val) > 0.7 && !isDiag;
+                      const strong = val != null && Math.abs(val) > 0.7 && !isDiag;
                       return (
                         <td key={j}
                           className={`p-1 text-center font-mono tabular-nums rounded-sm ${strong ? "ring-1 ring-white/40" : ""}`}
                           style={{ background: bg, color: fg, minWidth: 48 }}
-                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val.toFixed(4)} (${corrMethod})`}
-                        >{isDiag ? "—" : val.toFixed(2)}</td>
+                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val != null ? val.toFixed(4) : "N/A"} (${corrMethod})`}
+                        >{isDiag ? "—" : val != null ? val.toFixed(2) : "—"}</td>
                       );
                     })}
                   </tr>
@@ -305,7 +306,7 @@ export default function EDAPage() {
       })()}
 
       {/* 3. Distribution Analysis */}
-      <Section title="Distribution Analysis" sub={`Blue = training data (${(dist as any)?.training_start ?? ""} to ${(dist as any)?.training_end ?? ""}). Yellow = recent ${distWindow}. Orange line = current live price. Values outside the training range reduce prediction reliability.`}>
+      <Section title="Distribution Analysis" sub={`Blue = training data (${dist?.training_start ?? ""} to ${dist?.training_end ?? ""}). Yellow = recent ${distWindow}. Orange line = current live price. Values outside the training range reduce prediction reliability.`}>
         {!dist ? <Skeleton className="h-48" /> : (
           <>
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -321,8 +322,8 @@ export default function EDAPage() {
             {dist.features[selectedFeature] && (() => {
               const feat = dist.features[selectedFeature];
               const skewLabel = feat.mean > feat.quartiles.median + 0.5 ? "Right-skewed" : feat.mean < feat.quartiles.median - 0.5 ? "Left-skewed" : "Approx. normal";
-              const cur = (feat as any).current;
-              const pctl = (feat as any).percentile;
+              const cur = feat.current;
+              const pctl = feat.percentile;
               // Color code: green = Q1-Q3, amber = outside IQR but in range, red = outside training range
               const curColor = cur == null ? "text-zinc-400"
                 : (cur < feat.quartiles.min || cur > feat.quartiles.max) ? "text-red-400"
@@ -350,11 +351,11 @@ export default function EDAPage() {
                   </div>
                   <div className="text-[12px] space-y-1">
                     {(() => {
-                      const hasRecent = (feat as any).recent_quartiles != null;
+                      const hasRecent = feat.recent_quartiles != null;
                       const showRecent = hasRecent;
-                      const statsQ = showRecent ? (feat as any).recent_quartiles : feat.quartiles;
-                      const statsMean = showRecent ? (feat as any).recent_mean : feat.mean;
-                      const statsStd = showRecent ? (feat as any).recent_std : feat.std;
+                      const statsQ = showRecent ? feat.recent_quartiles! : feat.quartiles;
+                      const statsMean = showRecent ? feat.recent_mean : feat.mean;
+                      const statsStd = showRecent ? feat.recent_std : feat.std;
                       const statsLabel = showRecent ? `Statistics (recent ${distWindow})` : "Statistics (full training)";
                       return (
                         <>

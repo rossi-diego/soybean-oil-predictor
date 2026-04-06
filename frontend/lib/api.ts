@@ -114,9 +114,14 @@ export interface EdaPricesResponse {
 
 export interface EdaCorrelationsResponse {
   features: string[];
-  matrix: number[][];
+  matrix: (number | null)[][];
   method: string;
   labels: Record<string, string>;
+  n_days?: number;
+  start?: string;
+  end?: string;
+  period?: string;
+  error?: string;
 }
 
 export interface EdaDistributionBin { x: number; x_end: number; count: number; recent_count: number }
@@ -127,10 +132,15 @@ export interface EdaFeatureDistribution {
   recent_quartiles: EdaQuartiles | null;
   mean: number; std: number; n: number; recent_n: number;
   recent_mean: number | null; recent_std: number | null;
+  current: number | null;
+  percentile: number | null;
 }
 export interface EdaDistributionsResponse {
   features: Record<string, EdaFeatureDistribution>;
   labels: Record<string, string>;
+  training_start?: string;
+  training_end?: string;
+  recent_window?: string;
 }
 
 export interface EdaSpreadSeries {
