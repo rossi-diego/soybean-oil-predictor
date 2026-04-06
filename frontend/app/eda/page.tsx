@@ -349,30 +349,62 @@ export default function EDAPage() {
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="text-[12px] space-y-1">
+                  <div className="text-[12px]">
                     {(() => {
-                      const hasRecent = feat.recent_quartiles != null;
-                      const showRecent = hasRecent;
-                      const statsQ = showRecent ? feat.recent_quartiles! : feat.quartiles;
-                      const statsMean = showRecent ? feat.recent_mean : feat.mean;
-                      const statsStd = showRecent ? feat.recent_std : feat.std;
-                      const statsLabel = showRecent ? `Statistics (recent ${distWindow})` : "Statistics (full training)";
+                      const rq = feat.recent_quartiles;
+                      const hasRecent = rq != null;
+                      const driftColor = (train: number, recent: number) => {
+                        if (feat.std === 0) return "";
+                        return Math.abs(recent - train) > feat.std ? "text-yellow-500" : "";
+                      };
+                      const rows: { label: string; train: number; recent?: number }[] = [
+                        { label: "Min", train: feat.quartiles.min, recent: rq?.min },
+                        { label: "Q1", train: feat.quartiles.q1, recent: rq?.q1 },
+                        { label: "Median", train: feat.quartiles.median, recent: rq?.median },
+                        { label: "Q3", train: feat.quartiles.q3, recent: rq?.q3 },
+                        { label: "Max", train: feat.quartiles.max, recent: rq?.max },
+                        { label: "Mean", train: feat.mean, recent: feat.recent_mean ?? undefined },
+                        { label: "Std", train: feat.std, recent: feat.recent_std ?? undefined },
+                      ];
                       return (
                         <>
-                          <p className="text-zinc-300 font-medium text-[11px] mb-2">{dist.labels[selectedFeature]} <span className="text-zinc-600">| {statsLabel}</span></p>
+                          <p className="text-zinc-300 font-medium text-[11px] mb-2">
+                            {dist.labels[selectedFeature]} <span className="text-zinc-600">| {skewLabel}</span>
+                          </p>
                           {cur != null && (
-                            <div className="flex justify-between">
+                            <div className="flex justify-between mb-1">
                               <span className="text-zinc-500">Current</span>
                               <span className={`tabular-nums font-medium ${curColor}`}>{cur}{pctl != null && ` (${pctl}th pctl)`}</span>
                             </div>
                           )}
-                          {curLabel && <p className={`text-[9px] ${curColor}`}>{curLabel}</p>}
-                          {Object.entries(statsQ).map(([k, v]: [string, any]) => (
-                            <div key={k} className="flex justify-between"><span className="text-zinc-500 capitalize">{k}</span><span className="tabular-nums">{v}</span></div>
-                          ))}
-                          <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums text-green-400">{statsMean}</span></div>
-                          <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{statsStd}</span></div>
-                          <div className="flex justify-between"><span className="text-zinc-500">N (train / recent)</span><span className="tabular-nums">{feat.n} / {feat.recent_n}</span></div>
+                          {curLabel && <p className={`text-[9px] ${curColor} mb-1`}>{curLabel}</p>}
+                          <table className="w-full text-[11px]">
+                            <thead>
+                              <tr className="text-zinc-600">
+                                <th className="text-left font-medium pb-1"></th>
+                                <th className="text-right font-medium pb-1">Train</th>
+                                {hasRecent && <th className="text-right font-medium pb-1 text-yellow-600">{distWindow}</th>}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rows.map((r) => (
+                                <tr key={r.label}>
+                                  <td className="text-zinc-500 py-[1px]">{r.label}</td>
+                                  <td className={`text-right tabular-nums py-[1px] ${r.label === "Mean" ? "text-green-400" : ""}`}>{r.train}</td>
+                                  {hasRecent && (
+                                    <td className={`text-right tabular-nums py-[1px] ${r.recent != null ? driftColor(r.train, r.recent) : ""}`}>
+                                      {r.recent ?? "—"}
+                                    </td>
+                                  )}
+                                </tr>
+                              ))}
+                              <tr>
+                                <td className="text-zinc-500 py-[1px]">N</td>
+                                <td className="text-right tabular-nums py-[1px]">{feat.n}</td>
+                                {hasRecent && <td className="text-right tabular-nums py-[1px]">{feat.recent_n}</td>}
+                              </tr>
+                            </tbody>
+                          </table>
                         </>
                       );
                     })()}
