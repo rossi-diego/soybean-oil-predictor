@@ -191,24 +191,41 @@ export default function EDAPage() {
         </div>
         {!corr ? <Skeleton className="h-64" /> : (
           <div className="overflow-x-auto">
-            <table className="text-[11px]">
-              <thead><tr><th className="p-1" />{corr.features.map((f) => (<th key={f} className="p-1 text-zinc-500 font-medium text-center min-w-[56px]">{corr.labels[f]?.slice(0, 8) ?? f}</th>))}</tr></thead>
+            <table className="text-[11px] border-separate" style={{ borderSpacing: 2 }}>
+              <thead><tr><th className="p-1" />{corr.features.map((f) => (
+                <th key={f} className="p-1 text-zinc-500 font-medium text-center min-w-[52px] -rotate-45 origin-bottom-left h-16 align-bottom">
+                  <span className="inline-block">{corr.labels[f]?.split(" ")[0]?.slice(0, 7) ?? f}</span>
+                </th>
+              ))}</tr></thead>
               <tbody>
                 {corr.features.map((row, i) => (
                   <tr key={row}>
-                    <td className="p-1 text-zinc-500 font-medium pr-2 text-right whitespace-nowrap">{corr.labels[row] ?? row}</td>
+                    <td className="p-1 text-zinc-500 font-medium pr-2 text-right whitespace-nowrap">{corr.labels[row]?.split(" ")[0]?.slice(0, 7) ?? row}</td>
                     {corr.matrix[i].map((val, j) => {
-                      const abs = Math.abs(val);
-                      // Diverging: positive=red/warm, negative=blue/cool, zero=neutral
-                      const hue = val > 0 ? 0 : 220;
-                      const sat = abs * 70;
-                      const light = 20 + (1 - abs) * 15;
-                      const strong = abs > 0.7 && i !== j;
+                      const isDiag = i === j;
+                      // Diverging color scale: blue(-1) → gray(0) → red(+1)
+                      let bg: string;
+                      let fg: string;
+                      if (isDiag) {
+                        bg = "#27272a"; fg = "#71717a";
+                      } else if (val > 0.5) {
+                        bg = "#B2182B"; fg = "#fff";
+                      } else if (val > 0.2) {
+                        bg = "#EF8A62"; fg = "#fff";
+                      } else if (val > -0.2) {
+                        bg = "#2a2a2d"; fg = "#a1a1aa";
+                      } else if (val > -0.5) {
+                        bg = "#67A9CF"; fg = "#fff";
+                      } else {
+                        bg = "#2166AC"; fg = "#fff";
+                      }
+                      const strong = Math.abs(val) > 0.7 && !isDiag;
                       return (
-                        <td key={j} className={`p-1 text-center font-mono tabular-nums ${strong ? "ring-1 ring-white/30" : ""}`}
-                          style={{ background: `hsl(${hue}, ${sat}%, ${light}%)` }}
-                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: ${val.toFixed(4)}`}
-                        >{val.toFixed(2)}</td>
+                        <td key={j}
+                          className={`p-1 text-center font-mono tabular-nums rounded-sm ${strong ? "ring-1 ring-white/40" : ""}`}
+                          style={{ background: bg, color: fg, minWidth: 48 }}
+                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val.toFixed(4)}`}
+                        >{isDiag ? "1.00" : val.toFixed(2)}</td>
                       );
                     })}
                   </tr>
