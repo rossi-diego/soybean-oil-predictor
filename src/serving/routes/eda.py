@@ -261,14 +261,18 @@ async def eda_stationarity() -> dict:
             "count": int(ret_counts[i]),
         })
 
-    # ACF / PACF for BOC1
-    acf_vals = acf(boc1, nlags=30, fft=True)
-    pacf_vals = pacf(boc1, nlags=30)
-    n = len(boc1)
-    ci = 1.96 / np.sqrt(n)
+    # ACF / PACF for BOC1 returns (not levels — levels are autocorrelated by definition)
+    try:
+        acf_vals = acf(returns, nlags=30, fft=True)
+        pacf_vals = pacf(returns, nlags=30)
+    except Exception:
+        acf_vals = np.zeros(31)
+        pacf_vals = np.zeros(31)
+    n = len(returns)
+    ci = 1.96 / np.sqrt(n) if n > 0 else 0
 
-    acf_data = [{"lag": i, "value": round(float(acf_vals[i]), 4)} for i in range(len(acf_vals))]
-    pacf_data = [{"lag": i, "value": round(float(pacf_vals[i]), 4)} for i in range(len(pacf_vals))]
+    acf_data = [{"lag": i, "value": round(float(v), 4)} for i, v in enumerate(acf_vals)]
+    pacf_data = [{"lag": i, "value": round(float(v), 4)} for i, v in enumerate(pacf_vals)]
 
     return {
         "adf_tests": adf_results,
