@@ -579,6 +579,10 @@ export const api = {
   edaPrices: (period = "all") =>
     fetchApi<EdaPricesResponse>(`/api/v1/eda/prices?period=${period}`),
 
+  edaRollingCorrelations: (window = 60) =>
+    fetchApi<{ dates: string[]; series: Record<string, (number | null)[]>; window: number; labels: Record<string, string> }>(
+      `/api/v1/eda/rolling-correlations?window=${window}`),
+
   edaCorrelations: (method = "pearson") =>
     fetchApi<EdaCorrelationsResponse>(`/api/v1/eda/correlations?method=${method}`),
 

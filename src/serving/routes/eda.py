@@ -92,6 +92,34 @@ async def eda_correlations(method: str = "pearson") -> dict:
     }
 
 
+@router.get("/eda/rolling-correlations")
+async def eda_rolling_correlations(window: int = 60) -> dict:
+    """Rolling correlation between BOC1 and each other commodity."""
+    df = _load_data()
+    target = "boc1"
+    cols = [c for c in LABELS if c in df.columns and c != target]
+    window = min(max(window, 20), 252)
+
+    dates = []
+    series: dict[str, list] = {c: [] for c in cols}
+
+    sub = df[[target] + cols].dropna()
+    for i in range(window, len(sub)):
+        chunk = sub.iloc[i - window : i]
+        dates.append(chunk.index[-1].strftime("%Y-%m-%d"))
+        for c in cols:
+            r = float(chunk[target].corr(chunk[c]))
+            series[c].append(round(r, 4) if pd.notna(r) else None)
+
+    return {
+        "dates": dates,
+        "series": series,
+        "window": window,
+        "target": target,
+        "labels": {c: LABELS[c] for c in cols},
+    }
+
+
 @router.get("/eda/distributions")
 async def eda_distributions() -> dict:
     """Histogram and quartile data for each feature, plus recent 30-day window."""

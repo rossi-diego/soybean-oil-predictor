@@ -69,6 +69,7 @@ export default function EDAPage() {
   const [spreads, setSpreads] = useState<EdaSpreadsResponse | null>(null);
   const [season, setSeason] = useState<EdaSeasonalityResponse | null>(null);
   const [station, setStation] = useState<EdaStationarityResponse | null>(null);
+  const [rollingCorr, setRollingCorr] = useState<{ dates: string[]; series: Record<string, (number | null)[]>; labels: Record<string, string> } | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   const [period, setPeriod] = useState("3Y");
@@ -82,6 +83,7 @@ export default function EDAPage() {
     Promise.all([
       api.edaCorrelations(corrMethod).then(setCorr).catch(() => {}),
       api.edaDistributions().then(setDist).catch(() => {}),
+      api.edaRollingCorrelations().then(setRollingCorr).catch(() => {}),
       api.edaSpreads().then(setSpreads).catch(() => {}),
       api.edaSeasonality().then(setSeason).catch(() => {}),
       api.edaStationarity().then(setStation).catch(() => {}),
@@ -189,43 +191,48 @@ export default function EDAPage() {
             <button key={m} onClick={() => setCorrMethod(m)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium capitalize transition-colors ${corrMethod === m ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{m}</button>
           ))}
         </div>
-        {!corr ? <Skeleton className="h-64" /> : (
+        {!corr ? <Skeleton className="h-64" /> : (() => {
+          const SHORT: Record<string, string> = {
+            boc1: "Soy Oil", smc1: "Soy Meal", sc1: "Soybeans",
+            lcoc1: "Brent", hoc1: "Heat Oil", fcpoc1: "Palm Oil", rsc1: "Wheat",
+          };
+          const shortLabel = (f: string) => SHORT[f] ?? corr.labels[f] ?? f;
+
+          const cellColor = (v: number, diag: boolean): [string, string] => {
+            if (diag) return ["#404040", "#71717a"];
+            if (v >= 0.8) return ["#67000D", "#fff"];
+            if (v >= 0.6) return ["#CB181D", "#fff"];
+            if (v >= 0.4) return ["#FB6A4A", "#fff"];
+            if (v >= 0.2) return ["#FCBBA1", "#333"];
+            if (v >= 0.0) return ["#2a2a2d", "#a1a1aa"];
+            if (v >= -0.2) return ["#C6DBEF", "#333"];
+            if (v >= -0.4) return ["#6BAED6", "#fff"];
+            if (v >= -0.6) return ["#2171B5", "#fff"];
+            return ["#08306B", "#fff"];
+          };
+
+          return (
           <div className="overflow-x-auto">
-            <table className="text-[11px] border-separate" style={{ borderSpacing: 2 }}>
+            <table className="text-[11px] border-separate" style={{ borderSpacing: 1 }}>
               <thead><tr><th className="p-1" />{corr.features.map((f) => (
-                <th key={f} className="p-1 text-zinc-500 font-medium text-center min-w-[52px] -rotate-45 origin-bottom-left h-16 align-bottom">
-                  <span className="inline-block">{corr.labels[f]?.split(" ")[0]?.slice(0, 7) ?? f}</span>
+                <th key={f} className="p-1 text-zinc-500 font-medium text-center min-w-[54px] -rotate-45 origin-bottom-left h-16 align-bottom">
+                  <span className="inline-block">{shortLabel(f)}</span>
                 </th>
               ))}</tr></thead>
               <tbody>
                 {corr.features.map((row, i) => (
                   <tr key={row}>
-                    <td className="p-1 text-zinc-500 font-medium pr-2 text-right whitespace-nowrap">{corr.labels[row]?.split(" ")[0]?.slice(0, 7) ?? row}</td>
+                    <td className="p-1 text-zinc-500 font-medium pr-2 text-right whitespace-nowrap">{shortLabel(row)}</td>
                     {corr.matrix[i].map((val, j) => {
                       const isDiag = i === j;
-                      // Diverging color scale: blue(-1) → gray(0) → red(+1)
-                      let bg: string;
-                      let fg: string;
-                      if (isDiag) {
-                        bg = "#27272a"; fg = "#71717a";
-                      } else if (val > 0.5) {
-                        bg = "#B2182B"; fg = "#fff";
-                      } else if (val > 0.2) {
-                        bg = "#EF8A62"; fg = "#fff";
-                      } else if (val > -0.2) {
-                        bg = "#2a2a2d"; fg = "#a1a1aa";
-                      } else if (val > -0.5) {
-                        bg = "#67A9CF"; fg = "#fff";
-                      } else {
-                        bg = "#2166AC"; fg = "#fff";
-                      }
+                      const [bg, fg] = cellColor(val, isDiag);
                       const strong = Math.abs(val) > 0.7 && !isDiag;
                       return (
                         <td key={j}
                           className={`p-1 text-center font-mono tabular-nums rounded-sm ${strong ? "ring-1 ring-white/40" : ""}`}
                           style={{ background: bg, color: fg, minWidth: 48 }}
-                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val.toFixed(4)}`}
-                        >{isDiag ? "1.00" : val.toFixed(2)}</td>
+                          title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val.toFixed(4)} (${corrMethod})`}
+                        >{isDiag ? "\u2014" : val.toFixed(2)}</td>
                       );
                     })}
                   </tr>
@@ -233,8 +240,34 @@ export default function EDAPage() {
               </tbody>
             </table>
           </div>
-        )}
+          );
+        })()}
       </Section>
+
+      {/* 2b. Rolling Correlation */}
+      {rollingCorr && rollingCorr.dates.length > 0 && (
+        <Section title="Rolling Correlation (60-day)" sub="How the correlation between Soy Oil and each commodity evolves over time. Relationships that were strong in 2020 may be weak in 2025. Post-2020, soy oil became more correlated with crude oil due to biodiesel demand expansion.">
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rollingCorr.dates.map((d, i) => {
+                const row: Record<string, any> = { date: d };
+                Object.keys(rollingCorr.series).forEach((k) => { row[k] = rollingCorr.series[k][i]; });
+                return row;
+              })}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                <XAxis dataKey="date" stroke="#3f3f46" fontSize={10} tickFormatter={(d: string) => d.slice(0, 7)} />
+                <YAxis stroke="#3f3f46" fontSize={10} domain={[-0.2, 1]} tickFormatter={(v: number) => v.toFixed(1)} />
+                <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} formatter={(v: number) => v?.toFixed(3)} />
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                <ReferenceLine y={0} stroke="#3f3f46" />
+                {Object.keys(rollingCorr.labels).map((k, i) => (
+                  <Line key={k} type="monotone" dataKey={k} stroke={COLORS[i % COLORS.length]} strokeWidth={1.2} dot={false} name={rollingCorr.labels[k]} />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Section>
+      )}
 
       {/* 3. Distribution Analysis */}
       <Section title="Distribution Analysis" sub="Distributions show whether current prices are typical or extreme. Values near the tails may reduce model accuracy. Blue = training data. Yellow = recent 30 days.">
