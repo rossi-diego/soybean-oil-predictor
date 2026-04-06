@@ -3,170 +3,170 @@
     "xgboost": [
       {
         "feature": "rsc1",
-        "importance": 0.5507
+        "importance": 0.544
       },
       {
         "feature": "sc1",
-        "importance": 0.2263
+        "importance": 0.2532
       },
       {
         "feature": "boc1_vol20d",
-        "importance": 0.1145
+        "importance": 0.0957
       },
       {
         "feature": "hoc1",
-        "importance": 0.0405
+        "importance": 0.0356
       },
       {
         "feature": "lcoc1",
-        "importance": 0.0363
+        "importance": 0.0301
       },
       {
         "feature": "boc1_mean_rev",
-        "importance": 0.0118
+        "importance": 0.015
       },
       {
         "feature": "smc1",
-        "importance": 0.0106
-      },
-      {
-        "feature": "boc1_ho_zscore",
-        "importance": 0.0033
-      },
-      {
-        "feature": "boc1_mom20d",
-        "importance": 0.0022
+        "importance": 0.0133
       },
       {
         "feature": "crush_zscore",
-        "importance": 0.0018
+        "importance": 0.0065
       },
       {
         "feature": "boc1_crude_zscore",
-        "importance": 0.0017
+        "importance": 0.0034
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.0016
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 0.0011
       },
       {
         "feature": "boc1_bb_pos",
-        "importance": 0.0004
+        "importance": 0.0005
       }
     ],
     "ridge": [
       {
         "feature": "sc1",
-        "importance": 17.247,
-        "coefficient": 17.247
-      },
-      {
-        "feature": "smc1",
-        "importance": 7.6018,
-        "coefficient": -7.6018
+        "importance": 20.6714,
+        "coefficient": 20.6714
       },
       {
         "feature": "hoc1",
-        "importance": 5.8481,
-        "coefficient": 5.8481
+        "importance": 9.5144,
+        "coefficient": 9.5144
+      },
+      {
+        "feature": "smc1",
+        "importance": 8.1184,
+        "coefficient": -8.1184
       },
       {
         "feature": "lcoc1",
-        "importance": 4.3501,
-        "coefficient": -4.3501
+        "importance": 6.3993,
+        "coefficient": -6.3993
       },
       {
         "feature": "rsc1",
-        "importance": 1.7995,
-        "coefficient": 1.7995
+        "importance": 6.3527,
+        "coefficient": 6.3527
       },
       {
         "feature": "crush_zscore",
-        "importance": 1.5857,
-        "coefficient": 1.5857
+        "importance": 1.6974,
+        "coefficient": 1.6974
       },
       {
         "feature": "boc1_ho_zscore",
-        "importance": 1.0729,
-        "coefficient": 1.0729
-      },
-      {
-        "feature": "boc1_mom20d",
-        "importance": 0.6983,
-        "coefficient": 0.6983
-      },
-      {
-        "feature": "boc1_vol20d",
-        "importance": 0.4809,
-        "coefficient": 0.4809
+        "importance": 1.5439,
+        "coefficient": 1.5439
       },
       {
         "feature": "boc1_crude_zscore",
-        "importance": 0.2571,
-        "coefficient": -0.2571
+        "importance": 0.9593,
+        "coefficient": -0.9593
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.5313,
+        "coefficient": 0.5313
       },
       {
         "feature": "boc1_mean_rev",
-        "importance": 0.1021,
-        "coefficient": -0.1021
+        "importance": 0.4246,
+        "coefficient": 0.4246
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.3429,
+        "coefficient": 0.3429
       },
       {
         "feature": "boc1_bb_pos",
-        "importance": 0.0642,
-        "coefficient": -0.0642
+        "importance": 0.238,
+        "coefficient": -0.238
       }
     ],
     "lasso": [
       {
         "feature": "sc1",
-        "importance": 11.4171,
-        "coefficient": 11.4171
-      },
-      {
-        "feature": "smc1",
-        "importance": 4.1759,
-        "coefficient": -4.1759
-      },
-      {
-        "feature": "hoc1",
-        "importance": 3.0526,
-        "coefficient": 3.0526
+        "importance": 12.7522,
+        "coefficient": 12.7522
       },
       {
         "feature": "rsc1",
-        "importance": 2.5162,
-        "coefficient": 2.5162
+        "importance": 8.817,
+        "coefficient": 8.817
+      },
+      {
+        "feature": "hoc1",
+        "importance": 5.4503,
+        "coefficient": 5.4503
+      },
+      {
+        "feature": "smc1",
+        "importance": 3.5441,
+        "coefficient": -3.5441
       },
       {
         "feature": "lcoc1",
-        "importance": 0.9124,
-        "coefficient": -0.9124
-      },
-      {
-        "feature": "crush_zscore",
-        "importance": 0.899,
-        "coefficient": 0.899
+        "importance": 2.1468,
+        "coefficient": -2.1468
       },
       {
         "feature": "boc1_vol20d",
-        "importance": 0.7001,
-        "coefficient": 0.7001
+        "importance": 1.0059,
+        "coefficient": 1.0059
       },
       {
-        "feature": "boc1_crude_zscore",
-        "importance": 0.6133,
-        "coefficient": 0.6133
-      },
-      {
-        "feature": "boc1_mom20d",
-        "importance": 0.5242,
-        "coefficient": 0.5242
-      },
-      {
-        "feature": "boc1_ho_zscore",
-        "importance": 0.2608,
-        "coefficient": 0.2608
+        "feature": "crush_zscore",
+        "importance": 0.9229,
+        "coefficient": 0.9229
       },
       {
         "feature": "boc1_mean_rev",
-        "importance": 0.1141,
-        "coefficient": 0.1141
+        "importance": 0.6591,
+        "coefficient": 0.6591
+      },
+      {
+        "feature": "boc1_ho_zscore",
+        "importance": 0.6144,
+        "coefficient": 0.6144
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.1591,
+        "coefficient": 0.1591
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.0,
+        "coefficient": 0.0
       },
       {
         "feature": "boc1_bb_pos",
@@ -176,126 +176,126 @@
     ],
     "elasticnet": [
       {
-        "feature": "sc1",
-        "importance": 4.8349,
-        "coefficient": 4.8349
+        "feature": "rsc1",
+        "importance": 9.1825,
+        "coefficient": 9.1825
       },
       {
-        "feature": "rsc1",
-        "importance": 3.1299,
-        "coefficient": 3.1299
+        "feature": "sc1",
+        "importance": 6.0446,
+        "coefficient": 6.0446
       },
       {
         "feature": "hoc1",
-        "importance": 2.5759,
-        "coefficient": 2.5759
+        "importance": 4.1604,
+        "coefficient": 4.1604
       },
       {
         "feature": "boc1_vol20d",
-        "importance": 1.1145,
-        "coefficient": 1.1145
+        "importance": 2.1673,
+        "coefficient": 2.1673
       },
       {
         "feature": "boc1_mean_rev",
-        "importance": 0.6521,
-        "coefficient": 0.6521
-      },
-      {
-        "feature": "smc1",
-        "importance": 0.5639,
-        "coefficient": -0.5639
-      },
-      {
-        "feature": "boc1_crude_zscore",
-        "importance": 0.5436,
-        "coefficient": 0.5436
+        "importance": 1.179,
+        "coefficient": 1.179
       },
       {
         "feature": "crush_zscore",
-        "importance": 0.5029,
-        "coefficient": 0.5029
-      },
-      {
-        "feature": "boc1_mom20d",
-        "importance": 0.4112,
-        "coefficient": 0.4112
+        "importance": 0.5466,
+        "coefficient": 0.5466
       },
       {
         "feature": "boc1_ho_zscore",
-        "importance": 0.3854,
-        "coefficient": 0.3854
+        "importance": 0.3492,
+        "coefficient": 0.3492
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.1974,
+        "coefficient": 0.1974
       },
       {
         "feature": "lcoc1",
+        "importance": 0.1803,
+        "coefficient": -0.1803
+      },
+      {
+        "feature": "boc1_crude_zscore",
+        "importance": 0.1403,
+        "coefficient": 0.1403
+      },
+      {
+        "feature": "smc1",
         "importance": 0.0,
         "coefficient": -0.0
       },
       {
         "feature": "boc1_bb_pos",
         "importance": 0.0,
-        "coefficient": 0.0
+        "coefficient": -0.0
       }
     ],
     "linear": [
       {
         "feature": "sc1",
-        "importance": 17.6945,
-        "coefficient": 17.6945
-      },
-      {
-        "feature": "smc1",
-        "importance": 7.8552,
-        "coefficient": -7.8552
+        "importance": 21.3892,
+        "coefficient": 21.3892
       },
       {
         "feature": "hoc1",
-        "importance": 5.9431,
-        "coefficient": 5.9431
+        "importance": 9.7005,
+        "coefficient": 9.7005
+      },
+      {
+        "feature": "smc1",
+        "importance": 8.5022,
+        "coefficient": -8.5022
       },
       {
         "feature": "lcoc1",
-        "importance": 4.4838,
-        "coefficient": -4.4838
+        "importance": 6.6187,
+        "coefficient": -6.6187
       },
       {
         "feature": "rsc1",
-        "importance": 1.7541,
-        "coefficient": 1.7541
+        "importance": 6.1482,
+        "coefficient": 6.1482
       },
       {
         "feature": "crush_zscore",
-        "importance": 1.6192,
-        "coefficient": 1.6192
+        "importance": 1.7474,
+        "coefficient": 1.7474
       },
       {
         "feature": "boc1_ho_zscore",
-        "importance": 1.103,
-        "coefficient": 1.103
-      },
-      {
-        "feature": "boc1_mom20d",
-        "importance": 0.7099,
-        "coefficient": 0.7099
-      },
-      {
-        "feature": "boc1_vol20d",
-        "importance": 0.454,
-        "coefficient": 0.454
+        "importance": 1.5734,
+        "coefficient": 1.5734
       },
       {
         "feature": "boc1_crude_zscore",
-        "importance": 0.2952,
-        "coefficient": -0.2952
+        "importance": 1.0002,
+        "coefficient": -1.0002
+      },
+      {
+        "feature": "boc1_vol20d",
+        "importance": 0.4847,
+        "coefficient": 0.4847
       },
       {
         "feature": "boc1_mean_rev",
-        "importance": 0.1361,
-        "coefficient": -0.1361
+        "importance": 0.386,
+        "coefficient": 0.386
+      },
+      {
+        "feature": "boc1_mom20d",
+        "importance": 0.3489,
+        "coefficient": 0.3489
       },
       {
         "feature": "boc1_bb_pos",
-        "importance": 0.0643,
-        "coefficient": -0.0643
+        "importance": 0.235,
+        "coefficient": -0.235
       }
     ]
   }

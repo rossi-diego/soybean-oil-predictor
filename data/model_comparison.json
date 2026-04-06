@@ -1,45 +1,45 @@
 {
   "models": [
     {
-      "model": "ridge",
-      "mae": 2.38,
-      "rmse": 3.11,
-      "r2": 0.8484,
-      "directional_accuracy": 0.8659,
-      "train_time_s": 0.004
-    },
-    {
       "model": "linear",
-      "mae": 2.4,
-      "rmse": 3.12,
-      "r2": 0.8477,
-      "directional_accuracy": 0.8679,
+      "mae": 4.05,
+      "rmse": 5.04,
+      "r2": 0.2658,
+      "directional_accuracy": 0.8407,
       "train_time_s": 0.004
     },
     {
-      "model": "lasso",
-      "mae": 2.7,
-      "rmse": 3.47,
-      "r2": 0.8119,
-      "directional_accuracy": 0.8557,
+      "model": "ridge",
+      "mae": 4.15,
+      "rmse": 5.19,
+      "r2": 0.2201,
+      "directional_accuracy": 0.8389,
       "train_time_s": 0.005
     },
     {
+      "model": "lasso",
+      "mae": 5.99,
+      "rmse": 7.74,
+      "r2": -0.7359,
+      "directional_accuracy": 0.8,
+      "train_time_s": 0.004
+    },
+    {
       "model": "elasticnet",
-      "mae": 2.9,
-      "rmse": 3.67,
-      "r2": 0.7891,
-      "directional_accuracy": 0.8374,
+      "mae": 6.9,
+      "rmse": 9.08,
+      "r2": -1.3876,
+      "directional_accuracy": 0.7944,
       "train_time_s": 0.004
     },
     {
       "model": "xgboost",
-      "mae": 5.97,
-      "rmse": 6.64,
-      "r2": 0.3109,
-      "directional_accuracy": 0.7642,
-      "train_time_s": 0.641
+      "mae": 10.3,
+      "rmse": 12.2,
+      "r2": -3.3101,
+      "directional_accuracy": 0.6889,
+      "train_time_s": 0.503
     }
   ],
-  "champion": "ridge"
+  "champion": "linear"
 }
