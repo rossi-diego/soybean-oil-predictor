@@ -178,7 +178,7 @@ async def get_spread_signals() -> dict:
         "sc1": TICKERS.get("sc1", "ZS=F"),
         "smc1": TICKERS.get("smc1", "ZM=F"),
         "zc1": TICKERS.get("zc1", "ZC=F"),
-        "cpo": TICKERS.get("cpo", "CPO=F"),
+        "palm_oil": TICKERS.get("palm_oil", "CPO=F"),
     }
 
     history_data: dict[str, list[float]] = {}
@@ -217,12 +217,11 @@ async def get_spread_signals() -> dict:
             **interp,
         })
 
-    # BOPO spread: soy oil USD/mt - palm oil USD/mt
-    # boc1 c/lb * 22.0462 = USD/mt, cpo already in USD/mt
-    if all(k in history_data for k in ("boc1", "cpo")):
-        min_len = min(len(history_data["boc1"]), len(history_data["cpo"]))
+    # BOPO spread: soy oil USD/mt - palm oil USD/mt (both already USD)
+    if all(k in history_data for k in ("boc1", "palm_oil")):
+        min_len = min(len(history_data["boc1"]), len(history_data["palm_oil"]))
         bopo_series = [
-            (history_data["boc1"][i] * 22.0462) - history_data["cpo"][i]
+            (history_data["boc1"][i] * 22.0462) - history_data["palm_oil"][i]
             for i in range(min_len)
         ]
         current = bopo_series[-1] if bopo_series else 0

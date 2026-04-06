@@ -35,7 +35,7 @@ def sample_prices():
         "sc1": np.random.uniform(900, 1500, n),
         "smc1": np.random.uniform(280, 450, n),
         "zc1": np.random.uniform(400, 700, n),
-        "fcpoc1": np.random.uniform(2000, 5000, n),
+        "palm_oil": np.random.uniform(2000, 5000, n),
         "lcoc1": np.random.uniform(50, 100, n),
         "hoc1": np.random.uniform(1.5, 3.5, n),
         "rsc1": np.random.uniform(400, 800, n),
@@ -49,7 +49,7 @@ class TestSpreads:
         assert result.name == "crush_spread"
 
     def test_oil_palm_spread(self, sample_prices):
-        result = oil_palm_spread(sample_prices["boc1"], sample_prices["fcpoc1"])
+        result = oil_palm_spread(sample_prices["boc1"], sample_prices["palm_oil"])
         assert len(result) == len(sample_prices)
         assert result.name == "oil_palm_spread"
 

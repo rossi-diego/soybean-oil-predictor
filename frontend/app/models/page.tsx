@@ -26,7 +26,7 @@ const MODEL_COLORS: Record<string, string> = {
 
 const FEATURE_LABELS: Record<string, string> = {
   smc1: "Soybean Meal", sc1: "Soybeans", lcoc1: "Brent Crude",
-  hoc1: "Heating Oil", fcpoc1: "Palm Oil", rsc1: "Wheat",
+  hoc1: "Heating Oil", palm_oil: "Palm Oil", rsc1: "Wheat",
   "so-premp-c1": "Oil Premium", "brl=": "BRL/USD",
 };
 

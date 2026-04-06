@@ -13,7 +13,7 @@ with pivoted as (
         max(case when commodity = 'zc1' then close_price end) as zc1,
         max(case when commodity = 'lcoc1' then close_price end) as lcoc1,
         max(case when commodity = 'hoc1' then close_price end) as hoc1,
-        max(case when commodity = 'fcpoc1' then close_price end) as fcpoc1,
+        max(case when commodity = 'palm_oil' then close_price end) as palm_oil,
         max(case when commodity = 'rsc1' then close_price end) as rsc1
     from {{ ref('silver_futures_daily') }}
     group by trade_date
@@ -25,7 +25,7 @@ with_spreads as (
         -- Crush spread: (11 * oil + meal) - soybeans
         (11 * boc1 + smc1 - sc1) as crush_spread,
         -- Oil / palm spread
-        (boc1 - fcpoc1) as oil_palm_spread,
+        (boc1 - palm_oil) as oil_palm_spread,
         -- Soy / corn ratio
         case when zc1 > 0 then sc1 / zc1 else null end as soy_corn_ratio,
         -- Oil share

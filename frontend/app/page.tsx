@@ -31,7 +31,7 @@ const LABELS: Record<string, string> = {
   smc1: "Soybean Meal",
   lcoc1: "Brent Crude",
   hoc1: "Heating Oil",
-  fcpoc1: "Palm Oil",
+  palm_oil: "Palm Oil",
   rsc1: "Wheat",
   zc1: "Corn",
 };
@@ -42,7 +42,7 @@ const UNITS: Record<string, string> = {
   smc1: "$/ton",
   lcoc1: "$/bbl",
   hoc1: "$/gal",
-  fcpoc1: "GBp",
+  palm_oil: "USD/mt",
   rsc1: "c/bu",
   zc1: "c/bu",
 };

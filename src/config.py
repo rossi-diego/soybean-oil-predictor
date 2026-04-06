@@ -51,7 +51,7 @@ TICKERS = {
     "lcoc1": "BZ=F",      # Brent crude front-month (ICE, $/bbl)
     "hoc1": "HO=F",       # Heating oil front-month (NYMEX, $/gal)
     "rsc1": "ZW=F",       # Wheat front-month (CBOT, c/bu)
-    "cpo": "CPO=F",       # Crude palm oil (CME, USD/mt)
+    "palm_oil": "CPO=F",  # CME USD Malaysian Crude Palm Oil Calendar (USD/mt)
 }
 
 TARGET_COLUMN = "boc1"

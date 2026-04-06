@@ -115,7 +115,7 @@ def compute_all_spreads(df: pd.DataFrame) -> pd.DataFrame:
     """Add all spread features to a DataFrame.
 
     Expects columns: boc1 (soybean oil), sc1 (soybeans), smc1 (meal),
-    zc1 (corn), fcpoc1 (palm oil).
+    zc1 (corn), palm_oil (palm oil).
 
     Args:
         df: DataFrame with commodity price columns.
@@ -129,8 +129,8 @@ def compute_all_spreads(df: pd.DataFrame) -> pd.DataFrame:
         result["crush_spread"] = crush_spread(df["sc1"], df["boc1"], df["smc1"])
         logger.info("feature_added", feature="crush_spread")
 
-    if all(c in df.columns for c in ["boc1", "fcpoc1"]):
-        result["oil_palm_spread"] = oil_palm_spread(df["boc1"], df["fcpoc1"])
+    if all(c in df.columns for c in ["boc1", "palm_oil"]):
+        result["oil_palm_spread"] = oil_palm_spread(df["boc1"], df["palm_oil"])
         logger.info("feature_added", feature="oil_palm_spread")
 
     if all(c in df.columns for c in ["sc1", "zc1"]):

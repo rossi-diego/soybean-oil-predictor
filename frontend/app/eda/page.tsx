@@ -206,7 +206,7 @@ export default function EDAPage() {
         ) : (() => {
           const SHORT: Record<string, string> = {
             boc1: "Soy Oil", smc1: "Soy Meal", sc1: "Soybeans",
-            lcoc1: "Brent", hoc1: "Heat Oil", fcpoc1: "Palm Oil", rsc1: "Wheat",
+            lcoc1: "Brent", hoc1: "Heat Oil", palm_oil: "Palm Oil", rsc1: "Wheat",
           };
           const shortLabel = (f: string) => SHORT[f] ?? corr.labels[f] ?? f;
 

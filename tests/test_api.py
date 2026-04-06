@@ -33,7 +33,7 @@ class TestPredictionEndpoints:
             "sc1": 1100.0,
             "lcoc1": 75.0,
             "hoc1": 2.20,
-            "fcpoc1": 3200.0,
+            "palm_oil": 3200.0,
             "rsc1": 600.0,
             "month": 3,
         }
@@ -53,7 +53,7 @@ class TestPredictionEndpoints:
             "sc1": 1100.0,
             "lcoc1": 75.0,
             "hoc1": 2.20,
-            "fcpoc1": 3200.0,
+            "palm_oil": 3200.0,
             "rsc1": 600.0,
         }
         response = client.post("/api/v1/predict", json=payload)

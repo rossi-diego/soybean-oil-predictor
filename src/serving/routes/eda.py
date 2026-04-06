@@ -19,7 +19,7 @@ LABELS = {
     "sc1": "Soybeans",
     "lcoc1": "Brent Crude",
     "hoc1": "Heating Oil",
-    "fcpoc1": "Palm Oil",
+    "palm_oil": "Palm Oil",
     "rsc1": "Wheat",
 }
 
@@ -240,13 +240,10 @@ async def eda_spreads() -> dict:
             "mean": round(float(crush.mean()), 2),
         }
 
-    # BOPO: soy oil USD/mt - palm oil (fcpoc1 is MYR/mt in training data,
-    # approximate conversion to USD/mt using historical avg ~4.3 MYR/USD)
-    if all(c in df.columns for c in ["boc1", "fcpoc1"]):
-        boc1_usd_mt = df["boc1"] * 22.0462
-        # fcpoc1 in training data is MYR/mt, convert to USD/mt (~4.3 MYR/USD avg)
-        cpo_usd_mt = df["fcpoc1"] / 4.3
-        bopo = boc1_usd_mt - cpo_usd_mt
+    # BOPO: soy oil USD/mt - palm oil USD/mt (both already in USD)
+    if all(c in df.columns for c in ["boc1", "palm_oil"]):
+        boc1_usd_mt = df["boc1"] * 22.0462  # c/lb -> USD/mt
+        bopo = boc1_usd_mt - df["palm_oil"]  # both USD/mt
         p10, p90 = float(bopo.quantile(0.1)), float(bopo.quantile(0.9))
         result["spreads"]["bopo"] = {
             "values": [round(v, 0) if pd.notna(v) else None for v in bopo],
