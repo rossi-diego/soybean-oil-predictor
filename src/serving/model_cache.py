@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
+
 import joblib
 
-from src.config import LINEAR_REGRESSION_MODEL, XGBOOST_MODEL
+from src.config import DATA_FOLDER, MODEL_FOLDER
 from src.log import get_logger
 
 logger = get_logger(__name__)
@@ -14,30 +16,41 @@ _model_name: str = "none"
 
 
 def load_models() -> None:
-    """Load the best available model into memory.
+    """Load the champion model into memory.
 
-    Called once during app lifespan startup. XGBoost preferred,
-    linear regression as fallback.
+    Reads model_metadata.json to determine which model is champion,
+    then loads that specific joblib file. Falls back to any available
+    model if metadata is missing.
     """
     global _model, _model_name
 
-    if XGBOOST_MODEL.exists():
+    # Try to load the champion from metadata
+    metadata_path = DATA_FOLDER / "model_metadata.json"
+    if metadata_path.exists():
         try:
-            _model = joblib.load(XGBOOST_MODEL)
-            _model_name = "xgboost_baseline"
-            logger.info("model_loaded", name=_model_name, path=str(XGBOOST_MODEL))
-            return
+            with open(metadata_path) as f:
+                meta = json.load(f)
+            champion = meta.get("champion", "ridge")
+            champion_path = MODEL_FOLDER / f"{champion}.joblib"
+            if champion_path.exists():
+                _model = joblib.load(champion_path)
+                _model_name = champion
+                logger.info("champion_loaded", name=champion, path=str(champion_path))
+                return
         except Exception:
-            logger.exception("xgboost_load_failed")
+            logger.exception("champion_load_failed")
 
-    if LINEAR_REGRESSION_MODEL.exists():
-        try:
-            _model = joblib.load(LINEAR_REGRESSION_MODEL)
-            _model_name = "linear_regression"
-            logger.info("model_loaded", name=_model_name, path=str(LINEAR_REGRESSION_MODEL))
-            return
-        except Exception:
-            logger.exception("linear_model_load_failed")
+    # Fallback: try any model file
+    for name in ["ridge", "xgboost", "linear", "lasso", "elasticnet"]:
+        path = MODEL_FOLDER / f"{name}.joblib"
+        if path.exists():
+            try:
+                _model = joblib.load(path)
+                _model_name = name
+                logger.info("fallback_model_loaded", name=name, path=str(path))
+                return
+            except Exception:
+                logger.exception("model_load_failed", name=name)
 
     logger.warning("no_model_available")
 
