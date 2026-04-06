@@ -301,7 +301,7 @@ export default function EDAPage() {
       })()}
 
       {/* 3. Distribution Analysis */}
-      <Section title="Distribution Analysis" sub={`Values near the tails may reduce model accuracy. Blue = training data (${(dist as any)?.training_start ?? ""} to ${(dist as any)?.training_end ?? ""}). Yellow = recent ${distWindow}.`}>
+      <Section title="Distribution Analysis" sub={`Blue = training data (${(dist as any)?.training_start ?? ""} to ${(dist as any)?.training_end ?? ""}). Yellow = recent ${distWindow}. Orange line = current live price. Values outside the training range reduce prediction reliability.`}>
         {!dist ? <Skeleton className="h-48" /> : (
           <>
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -319,6 +319,15 @@ export default function EDAPage() {
               const skewLabel = feat.mean > feat.quartiles.median + 0.5 ? "Right-skewed" : feat.mean < feat.quartiles.median - 0.5 ? "Left-skewed" : "Approx. normal";
               const cur = (feat as any).current;
               const pctl = (feat as any).percentile;
+              // Color code: green = Q1-Q3, amber = outside IQR but in range, red = outside training range
+              const curColor = cur == null ? "text-zinc-400"
+                : (cur < feat.quartiles.min || cur > feat.quartiles.max) ? "text-red-400"
+                : (cur < feat.quartiles.q1 || cur > feat.quartiles.q3) ? "text-yellow-500"
+                : "text-green-400";
+              const curLabel = cur == null ? ""
+                : (cur < feat.quartiles.min || cur > feat.quartiles.max) ? "Outside training range"
+                : (cur < feat.quartiles.q1 || cur > feat.quartiles.q3) ? "Outside IQR"
+                : "Normal range";
               return (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2 h-48">
@@ -331,15 +340,19 @@ export default function EDAPage() {
                         <Bar dataKey="count" fill="#3b82f6" opacity={0.5} name="Training" />
                         <Bar dataKey="recent_count" fill="#eab308" opacity={0.7} name={`Recent ${distWindow}`} />
                         <ReferenceLine x={feat.mean} stroke="#22c55e" strokeDasharray="3 3" />
-                        {cur != null && <ReferenceLine x={cur} stroke="#f97316" strokeWidth={2} label={{ value: "Now", fill: "#f97316", fontSize: 9 }} />}
+                        {cur != null && <ReferenceLine x={cur} stroke="#f97316" strokeWidth={2} label={{ value: `Now: ${cur}`, fill: "#f97316", fontSize: 9 }} />}
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                   <div className="text-[12px] space-y-1">
                     <p className="text-zinc-300 font-medium text-[11px] mb-2">{dist.labels[selectedFeature]} <span className="text-zinc-600">| {skewLabel}</span></p>
                     {cur != null && (
-                      <div className="flex justify-between"><span className="text-zinc-500">Current</span><span className="tabular-nums text-orange-400">{cur}{pctl != null && ` (${pctl}th pctl)`}</span></div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Current</span>
+                        <span className={`tabular-nums font-medium ${curColor}`}>{cur}{pctl != null && ` (${pctl}th pctl)`}</span>
+                      </div>
                     )}
+                    {curLabel && <p className={`text-[9px] ${curColor}`}>{curLabel}</p>}
                     {Object.entries(feat.quartiles).map(([k, v]) => (
                       <div key={k} className="flex justify-between"><span className="text-zinc-500 capitalize">{k}</span><span className="tabular-nums">{v}</span></div>
                     ))}
