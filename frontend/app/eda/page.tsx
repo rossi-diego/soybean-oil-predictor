@@ -78,6 +78,7 @@ export default function EDAPage() {
   const [visibleSeries, setVisibleSeries] = useState<Set<string>>(VISIBLE_DEFAULT);
   const [corrMethod, setCorrMethod] = useState("pearson");
   const [corrPeriod, setCorrPeriod] = useState("1Y");
+  const [rollPair, setRollPair] = useState("lcoc1");
   const [selectedFeature, setSelectedFeature] = useState("boc1");
 
   useEffect(() => {
@@ -250,29 +251,52 @@ export default function EDAPage() {
       </Section>
 
       {/* 2b. Rolling Correlation */}
-      {rollingCorr && rollingCorr.dates.length > 0 && (
-        <Section title="Rolling Correlation (60-day)" sub="How the correlation between Soy Oil and each commodity evolves over time. Relationships that were strong in 2020 may be weak in 2025. Post-2020, soy oil became more correlated with crude oil due to biodiesel demand expansion.">
-          <div className="h-52">
+      {rollingCorr && rollingCorr.dates.length > 0 && (() => {
+        const pairData = rollingCorr.series[rollPair] ?? [];
+        const currentVal = pairData[pairData.length - 1];
+        const pairLabel = rollingCorr.labels[rollPair] ?? rollPair;
+        let interp = "";
+        if (currentVal != null) {
+          if (currentVal > 0.7) interp = "Strong positive — these commodities are moving together.";
+          else if (currentVal > 0.3) interp = "Moderate positive — some co-movement.";
+          else if (currentVal > -0.3) interp = "Weak — prices are moving independently.";
+          else interp = "Inverse relationship — they tend to move in opposite directions.";
+        }
+
+        return (
+        <Section title={`Soy Oil vs ${pairLabel} — 60-day Rolling Correlation`} sub="How the relationship evolves over time. Commodity correlations are not static — regime changes (biodiesel policy, supply shocks) shift them.">
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {Object.keys(rollingCorr.labels).map((k) => (
+              <button key={k} onClick={() => setRollPair(k)} className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${rollPair === k ? "bg-white/10 text-white" : "text-zinc-600 hover:text-zinc-400"}`}>
+                {rollingCorr.labels[k]}
+              </button>
+            ))}
+          </div>
+          <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={rollingCorr.dates.map((d, i) => {
-                const row: Record<string, any> = { date: d };
-                Object.keys(rollingCorr.series).forEach((k) => { row[k] = rollingCorr.series[k][i]; });
-                return row;
-              })}>
+              <ComposedChart data={rollingCorr.dates.map((d, i) => ({ date: d, value: pairData[i] }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
                 <XAxis dataKey="date" stroke="#3f3f46" fontSize={10} tickFormatter={(d: string) => d.slice(0, 7)} />
-                <YAxis stroke="#3f3f46" fontSize={10} domain={[-0.2, 1]} tickFormatter={(v: number) => v.toFixed(1)} />
-                <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} formatter={(v: number) => v?.toFixed(3)} />
-                <Legend wrapperStyle={{ fontSize: 10 }} />
-                <ReferenceLine y={0} stroke="#3f3f46" />
-                {Object.keys(rollingCorr.labels).map((k, i) => (
-                  <Line key={k} type="monotone" dataKey={k} stroke={COLORS[i % COLORS.length]} strokeWidth={1.2} dot={false} name={rollingCorr.labels[k]} />
-                ))}
-              </LineChart>
+                <YAxis stroke="#3f3f46" fontSize={10} domain={[-1, 1]} tickFormatter={(v: number) => v.toFixed(1)} />
+                <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} formatter={(v: number) => [v?.toFixed(3), "Correlation"]} />
+                <Area type="monotone" dataKey={() => 0.3} stroke="none" fill="#22c55e" fillOpacity={0.03} />
+                <Area type="monotone" dataKey={() => -0.3} stroke="none" fill="#09090b" fillOpacity={1} />
+                <ReferenceLine y={0} stroke="#3f3f46" strokeDasharray="4 2" />
+                <ReferenceLine y={0.7} stroke="#22c55e" strokeDasharray="3 3" opacity={0.3} />
+                <ReferenceLine y={-0.3} stroke="#ef4444" strokeDasharray="3 3" opacity={0.3} />
+                <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={1.8} dot={false} name={pairLabel} />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
+          <div className="flex items-baseline gap-3 mt-2">
+            {currentVal != null && (
+              <span className="text-[13px] font-semibold tabular-nums">Current: {currentVal.toFixed(3)}</span>
+            )}
+            <span className="text-[11px] text-zinc-500">{interp}</span>
+          </div>
         </Section>
-      )}
+        );
+      })()}
 
       {/* 3. Distribution Analysis */}
       <Section title="Distribution Analysis" sub="Distributions show whether current prices are typical or extreme. Values near the tails may reduce model accuracy. Blue = training data. Yellow = recent 30 days.">
