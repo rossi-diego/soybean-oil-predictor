@@ -25,10 +25,10 @@ def crush_spread(
     oil and meal. It is the primary profitability indicator for soybean
     processors (e.g., Oleoplan, Bunge, Cargill).
 
-    Formula: (oil_value + meal_value) - soybean_cost
-    Simplified: 11 * oil_price + meal_price - soybean_price
+    CME Board Crush formula:
+    (meal_$/ton * 0.022) + (oil_c/lb * 0.11) - (beans_c/bu / 100)
 
-    (11 lbs of oil per bushel of soybeans is the standard yield assumption)
+    Result in $/bushel. Positive = profitable to crush soybeans.
 
     Args:
         soybeans: Soybean futures price (cents/bushel).
@@ -36,9 +36,9 @@ def crush_spread(
         soybean_meal: Soybean meal futures price ($/short ton).
 
     Returns:
-        Crush spread series.
+        Crush spread series in $/bushel.
     """
-    spread = (11 * soybean_oil) + soybean_meal - soybeans
+    spread = (soybean_meal * 0.022) + (soybean_oil * 0.11) - (soybeans / 100)
     spread.name = "crush_spread"
     return spread
 

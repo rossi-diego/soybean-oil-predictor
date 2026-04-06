@@ -3,2042 +3,2042 @@
   "points": [
     {
       "actual": 63.25,
-      "predicted": 61.13,
-      "residual": 2.12,
+      "predicted": 60.39,
+      "residual": 2.86,
       "index": 0
     },
     {
       "actual": 63.84,
-      "predicted": 62.9,
-      "residual": 0.94,
+      "predicted": 61.64,
+      "residual": 2.2,
       "index": 1
     },
     {
       "actual": 64.12,
-      "predicted": 62.53,
-      "residual": 1.59,
+      "predicted": 61.28,
+      "residual": 2.84,
       "index": 2
     },
     {
       "actual": 63.15,
-      "predicted": 62.45,
-      "residual": 0.7,
+      "predicted": 60.99,
+      "residual": 2.16,
       "index": 3
     },
     {
       "actual": 61.97,
-      "predicted": 62.34,
-      "residual": -0.37,
+      "predicted": 60.78,
+      "residual": 1.19,
       "index": 4
     },
     {
       "actual": 60.54,
-      "predicted": 61.13,
-      "residual": -0.59,
+      "predicted": 59.52,
+      "residual": 1.02,
       "index": 5
     },
     {
       "actual": 60.79,
-      "predicted": 61.53,
-      "residual": -0.74,
+      "predicted": 59.97,
+      "residual": 0.82,
       "index": 6
     },
     {
       "actual": 60.62,
-      "predicted": 60.24,
-      "residual": 0.38,
+      "predicted": 58.49,
+      "residual": 2.13,
       "index": 7
     },
     {
       "actual": 61.32,
-      "predicted": 60.29,
-      "residual": 1.03,
+      "predicted": 58.54,
+      "residual": 2.78,
       "index": 8
     },
     {
       "actual": 62.33,
-      "predicted": 61.62,
-      "residual": 0.71,
+      "predicted": 59.95,
+      "residual": 2.38,
       "index": 9
     },
     {
       "actual": 60.94,
-      "predicted": 59.15,
-      "residual": 1.79,
+      "predicted": 57.36,
+      "residual": 3.58,
       "index": 10
     },
     {
       "actual": 59.06,
-      "predicted": 58.09,
-      "residual": 0.97,
+      "predicted": 56.12,
+      "residual": 2.94,
       "index": 11
     },
     {
       "actual": 60.89,
-      "predicted": 59.43,
-      "residual": 1.46,
+      "predicted": 57.62,
+      "residual": 3.27,
       "index": 12
     },
     {
       "actual": 60.58,
-      "predicted": 59.09,
-      "residual": 1.49,
+      "predicted": 57.24,
+      "residual": 3.34,
       "index": 13
     },
     {
       "actual": 59.04,
-      "predicted": 57.57,
-      "residual": 1.47,
+      "predicted": 55.67,
+      "residual": 3.37,
       "index": 14
     },
     {
       "actual": 60.54,
-      "predicted": 58.64,
-      "residual": 1.9,
+      "predicted": 56.82,
+      "residual": 3.72,
       "index": 15
     },
     {
       "actual": 60.14,
-      "predicted": 58.38,
-      "residual": 1.76,
+      "predicted": 56.57,
+      "residual": 3.57,
       "index": 16
     },
     {
       "actual": 60.4,
-      "predicted": 58.77,
-      "residual": 1.63,
+      "predicted": 57.03,
+      "residual": 3.37,
       "index": 17
     },
     {
       "actual": 61.24,
-      "predicted": 58.69,
-      "residual": 2.55,
+      "predicted": 56.98,
+      "residual": 4.26,
       "index": 18
     },
     {
       "actual": 61.9,
-      "predicted": 58.7,
-      "residual": 3.2,
+      "predicted": 57.01,
+      "residual": 4.89,
       "index": 19
     },
     {
       "actual": 61.51,
-      "predicted": 58.63,
-      "residual": 2.88,
+      "predicted": 56.82,
+      "residual": 4.69,
       "index": 20
     },
     {
       "actual": 62.83,
-      "predicted": 60.01,
-      "residual": 2.82,
+      "predicted": 58.26,
+      "residual": 4.57,
       "index": 21
     },
     {
       "actual": 62.04,
-      "predicted": 59.06,
-      "residual": 2.98,
+      "predicted": 57.26,
+      "residual": 4.78,
       "index": 22
     },
     {
       "actual": 61.11,
-      "predicted": 58.77,
-      "residual": 2.34,
+      "predicted": 57.04,
+      "residual": 4.07,
       "index": 23
     },
     {
       "actual": 60.04,
-      "predicted": 58.51,
-      "residual": 1.53,
+      "predicted": 56.8,
+      "residual": 3.24,
       "index": 24
     },
     {
       "actual": 59.75,
-      "predicted": 58.25,
-      "residual": 1.5,
+      "predicted": 56.51,
+      "residual": 3.24,
       "index": 25
     },
     {
       "actual": 60.54,
-      "predicted": 59.03,
-      "residual": 1.51,
+      "predicted": 57.35,
+      "residual": 3.19,
       "index": 26
     },
     {
       "actual": 61.39,
-      "predicted": 59.83,
-      "residual": 1.56,
+      "predicted": 58.11,
+      "residual": 3.28,
       "index": 27
     },
     {
       "actual": 59.88,
-      "predicted": 58.65,
-      "residual": 1.23,
+      "predicted": 57.01,
+      "residual": 2.87,
       "index": 28
     },
     {
       "actual": 58.16,
-      "predicted": 57.42,
-      "residual": 0.74,
+      "predicted": 55.56,
+      "residual": 2.6,
       "index": 29
     },
     {
       "actual": 58.49,
-      "predicted": 57.55,
-      "residual": 0.94,
+      "predicted": 55.66,
+      "residual": 2.83,
       "index": 30
     },
     {
       "actual": 56.57,
-      "predicted": 56.1,
-      "residual": 0.47,
+      "predicted": 54.13,
+      "residual": 2.44,
       "index": 31
     },
     {
       "actual": 56.1,
-      "predicted": 55.4,
-      "residual": 0.7,
+      "predicted": 53.44,
+      "residual": 2.66,
       "index": 32
     },
     {
       "actual": 55.34,
-      "predicted": 55.04,
-      "residual": 0.3,
+      "predicted": 53.03,
+      "residual": 2.31,
       "index": 33
     },
     {
       "actual": 55.84,
-      "predicted": 55.34,
-      "residual": 0.5,
+      "predicted": 53.46,
+      "residual": 2.38,
       "index": 34
     },
     {
       "actual": 56.34,
-      "predicted": 54.95,
-      "residual": 1.39,
+      "predicted": 52.94,
+      "residual": 3.4,
       "index": 35
     },
     {
       "actual": 57.46,
-      "predicted": 56.26,
-      "residual": 1.2,
+      "predicted": 54.29,
+      "residual": 3.17,
       "index": 36
     },
     {
       "actual": 57.99,
-      "predicted": 56.41,
-      "residual": 1.58,
+      "predicted": 54.51,
+      "residual": 3.48,
       "index": 37
     },
     {
       "actual": 56.24,
-      "predicted": 54.82,
-      "residual": 1.42,
+      "predicted": 52.9,
+      "residual": 3.34,
       "index": 38
     },
     {
       "actual": 54.64,
-      "predicted": 53.86,
-      "residual": 0.78,
+      "predicted": 51.94,
+      "residual": 2.7,
       "index": 39
     },
     {
       "actual": 52.17,
-      "predicted": 53.12,
-      "residual": -0.95,
+      "predicted": 51.2,
+      "residual": 0.97,
       "index": 40
     },
     {
       "actual": 53.27,
-      "predicted": 53.88,
-      "residual": -0.61,
+      "predicted": 52.04,
+      "residual": 1.23,
       "index": 41
     },
     {
       "actual": 54.55,
-      "predicted": 55.09,
-      "residual": -0.54,
+      "predicted": 53.43,
+      "residual": 1.12,
       "index": 42
     },
     {
       "actual": 55.05,
-      "predicted": 55.66,
-      "residual": -0.61,
+      "predicted": 54.16,
+      "residual": 0.89,
       "index": 43
     },
     {
       "actual": 55.38,
-      "predicted": 55.89,
-      "residual": -0.51,
+      "predicted": 54.42,
+      "residual": 0.96,
       "index": 44
     },
     {
       "actual": 54.37,
-      "predicted": 54.91,
-      "residual": -0.54,
+      "predicted": 53.48,
+      "residual": 0.89,
       "index": 45
     },
     {
       "actual": 55.49,
-      "predicted": 56.07,
-      "residual": -0.58,
+      "predicted": 54.84,
+      "residual": 0.65,
       "index": 46
     },
     {
       "actual": 56.68,
-      "predicted": 56.55,
-      "residual": 0.13,
+      "predicted": 55.34,
+      "residual": 1.34,
       "index": 47
     },
     {
       "actual": 55.74,
-      "predicted": 56.54,
-      "residual": -0.8,
+      "predicted": 55.47,
+      "residual": 0.27,
       "index": 48
     },
     {
       "actual": 55.22,
-      "predicted": 56.54,
-      "residual": -1.32,
+      "predicted": 55.68,
+      "residual": -0.46,
       "index": 49
     },
     {
       "actual": 54.53,
-      "predicted": 55.55,
-      "residual": -1.02,
+      "predicted": 54.46,
+      "residual": 0.07,
       "index": 50
     },
     {
       "actual": 54.48,
-      "predicted": 56.05,
-      "residual": -1.57,
+      "predicted": 55.01,
+      "residual": -0.53,
       "index": 51
     },
     {
       "actual": 54.89,
-      "predicted": 55.83,
-      "residual": -0.94,
+      "predicted": 54.81,
+      "residual": 0.08,
       "index": 52
     },
     {
       "actual": 54.0,
-      "predicted": 55.53,
-      "residual": -1.53,
+      "predicted": 54.67,
+      "residual": -0.67,
       "index": 53
     },
     {
       "actual": 53.72,
-      "predicted": 55.15,
-      "residual": -1.43,
+      "predicted": 54.23,
+      "residual": -0.51,
       "index": 54
     },
     {
       "actual": 53.66,
-      "predicted": 54.86,
-      "residual": -1.2,
+      "predicted": 53.97,
+      "residual": -0.31,
       "index": 55
     },
     {
       "actual": 54.57,
-      "predicted": 55.73,
-      "residual": -1.16,
+      "predicted": 54.78,
+      "residual": -0.21,
       "index": 56
     },
     {
       "actual": 55.36,
-      "predicted": 56.51,
-      "residual": -1.15,
+      "predicted": 55.53,
+      "residual": -0.17,
       "index": 57
     },
     {
       "actual": 55.02,
-      "predicted": 56.32,
-      "residual": -1.3,
+      "predicted": 55.34,
+      "residual": -0.32,
       "index": 58
     },
     {
       "actual": 54.43,
-      "predicted": 55.72,
-      "residual": -1.29,
+      "predicted": 54.78,
+      "residual": -0.35,
       "index": 59
     },
     {
       "actual": 51.71,
-      "predicted": 54.36,
-      "residual": -2.65,
+      "predicted": 53.36,
+      "residual": -1.65,
       "index": 60
     },
     {
       "actual": 52.08,
-      "predicted": 54.46,
-      "residual": -2.38,
+      "predicted": 53.41,
+      "residual": -1.33,
       "index": 61
     },
     {
       "actual": 50.78,
-      "predicted": 52.63,
-      "residual": -1.85,
+      "predicted": 51.58,
+      "residual": -0.8,
       "index": 62
     },
     {
       "actual": 51.61,
-      "predicted": 53.51,
-      "residual": -1.9,
+      "predicted": 52.46,
+      "residual": -0.85,
       "index": 63
     },
     {
       "actual": 51.39,
-      "predicted": 53.98,
-      "residual": -2.59,
+      "predicted": 52.92,
+      "residual": -1.53,
       "index": 64
     },
     {
       "actual": 52.37,
-      "predicted": 55.32,
-      "residual": -2.95,
+      "predicted": 54.33,
+      "residual": -1.96,
       "index": 65
     },
     {
       "actual": 54.09,
-      "predicted": 56.95,
-      "residual": -2.86,
+      "predicted": 56.03,
+      "residual": -1.94,
       "index": 66
     },
     {
       "actual": 53.34,
-      "predicted": 56.46,
-      "residual": -3.12,
+      "predicted": 55.69,
+      "residual": -2.35,
       "index": 67
     },
     {
       "actual": 52.72,
-      "predicted": 56.39,
-      "residual": -3.67,
+      "predicted": 55.67,
+      "residual": -2.95,
       "index": 68
     },
     {
       "actual": 51.85,
-      "predicted": 55.53,
-      "residual": -3.68,
+      "predicted": 54.76,
+      "residual": -2.91,
       "index": 69
     },
     {
       "actual": 50.91,
-      "predicted": 54.66,
-      "residual": -3.75,
+      "predicted": 53.96,
+      "residual": -3.05,
       "index": 70
     },
     {
       "actual": 49.89,
-      "predicted": 53.58,
-      "residual": -3.69,
+      "predicted": 52.88,
+      "residual": -2.99,
       "index": 71
     },
     {
       "actual": 49.69,
-      "predicted": 51.84,
-      "residual": -2.15,
+      "predicted": 50.76,
+      "residual": -1.07,
       "index": 72
     },
     {
       "actual": 47.45,
-      "predicted": 50.13,
-      "residual": -2.68,
+      "predicted": 48.95,
+      "residual": -1.5,
       "index": 73
     },
     {
       "actual": 46.41,
-      "predicted": 48.62,
-      "residual": -2.21,
+      "predicted": 47.3,
+      "residual": -0.89,
       "index": 74
     },
     {
       "actual": 47.29,
-      "predicted": 49.32,
-      "residual": -2.03,
+      "predicted": 48.13,
+      "residual": -0.84,
       "index": 75
     },
     {
       "actual": 47.27,
-      "predicted": 48.63,
-      "residual": -1.36,
+      "predicted": 47.11,
+      "residual": 0.16,
       "index": 76
     },
     {
       "actual": 47.76,
-      "predicted": 49.19,
-      "residual": -1.43,
+      "predicted": 47.84,
+      "residual": -0.08,
       "index": 77
     },
     {
       "actual": 48.0,
-      "predicted": 49.46,
-      "residual": -1.46,
+      "predicted": 48.26,
+      "residual": -0.26,
       "index": 78
     },
     {
       "actual": 48.52,
-      "predicted": 49.78,
-      "residual": -1.26,
+      "predicted": 48.61,
+      "residual": -0.09,
       "index": 79
     },
     {
       "actual": 48.82,
-      "predicted": 50.31,
-      "residual": -1.49,
+      "predicted": 49.19,
+      "residual": -0.37,
       "index": 80
     },
     {
       "actual": 46.2,
-      "predicted": 47.81,
-      "residual": -1.61,
+      "predicted": 46.71,
+      "residual": -0.51,
       "index": 81
     },
     {
       "actual": 46.2,
-      "predicted": 47.81,
-      "residual": -1.61,
+      "predicted": 46.77,
+      "residual": -0.57,
       "index": 82
     },
     {
       "actual": 47.86,
-      "predicted": 49.0,
-      "residual": -1.14,
+      "predicted": 48.09,
+      "residual": -0.23,
       "index": 83
     },
     {
       "actual": 49.5,
-      "predicted": 50.7,
-      "residual": -1.2,
+      "predicted": 50.04,
+      "residual": -0.54,
       "index": 84
     },
     {
       "actual": 50.92,
-      "predicted": 51.93,
-      "residual": -1.01,
+      "predicted": 51.04,
+      "residual": -0.12,
       "index": 85
     },
     {
       "actual": 50.47,
-      "predicted": 51.26,
-      "residual": -0.79,
+      "predicted": 50.29,
+      "residual": 0.18,
       "index": 86
     },
     {
       "actual": 53.98,
-      "predicted": 55.16,
-      "residual": -1.18,
+      "predicted": 54.09,
+      "residual": -0.11,
       "index": 87
     },
     {
       "actual": 55.43,
-      "predicted": 56.66,
-      "residual": -1.23,
+      "predicted": 55.88,
+      "residual": -0.45,
       "index": 88
     },
     {
       "actual": 55.96,
-      "predicted": 57.01,
-      "residual": -1.05,
+      "predicted": 56.15,
+      "residual": -0.19,
       "index": 89
     },
     {
       "actual": 58.43,
-      "predicted": 59.63,
-      "residual": -1.2,
+      "predicted": 59.12,
+      "residual": -0.69,
       "index": 90
     },
     {
       "actual": 59.69,
-      "predicted": 60.84,
-      "residual": -1.15,
+      "predicted": 60.56,
+      "residual": -0.87,
       "index": 91
     },
     {
       "actual": 59.63,
-      "predicted": 61.21,
-      "residual": -1.58,
+      "predicted": 61.04,
+      "residual": -1.41,
       "index": 92
     },
     {
       "actual": 55.63,
-      "predicted": 59.01,
-      "residual": -3.38,
+      "predicted": 59.67,
+      "residual": -4.04,
       "index": 93
     },
     {
       "actual": 55.77,
-      "predicted": 59.44,
-      "residual": -3.67,
+      "predicted": 59.91,
+      "residual": -4.14,
       "index": 94
     },
     {
       "actual": 57.94,
-      "predicted": 60.65,
-      "residual": -2.71,
+      "predicted": 60.91,
+      "residual": -2.97,
       "index": 95
     },
     {
       "actual": 59.51,
-      "predicted": 62.24,
-      "residual": -2.73,
+      "predicted": 62.63,
+      "residual": -3.12,
       "index": 96
     },
     {
       "actual": 60.55,
-      "predicted": 62.42,
-      "residual": -1.87,
+      "predicted": 62.58,
+      "residual": -2.03,
       "index": 97
     },
     {
       "actual": 59.62,
-      "predicted": 60.42,
-      "residual": -0.8,
+      "predicted": 60.4,
+      "residual": -0.78,
       "index": 98
     },
     {
       "actual": 65.01,
-      "predicted": 65.31,
-      "residual": -0.3,
+      "predicted": 66.02,
+      "residual": -1.01,
       "index": 99
     },
     {
       "actual": 68.58,
-      "predicted": 67.46,
-      "residual": 1.12,
+      "predicted": 68.22,
+      "residual": 0.36,
       "index": 100
     },
     {
       "actual": 66.55,
-      "predicted": 65.8,
-      "residual": 0.75,
+      "predicted": 66.5,
+      "residual": 0.05,
       "index": 101
     },
     {
       "actual": 69.22,
-      "predicted": 67.53,
-      "residual": 1.69,
+      "predicted": 68.49,
+      "residual": 0.73,
       "index": 102
     },
     {
       "actual": 68.53,
-      "predicted": 66.59,
-      "residual": 1.94,
+      "predicted": 67.67,
+      "residual": 0.86,
       "index": 103
     },
     {
       "actual": 68.68,
-      "predicted": 66.34,
-      "residual": 2.34,
+      "predicted": 67.26,
+      "residual": 1.42,
       "index": 104
     },
     {
       "actual": 69.67,
-      "predicted": 66.88,
-      "residual": 2.79,
+      "predicted": 67.77,
+      "residual": 1.9,
       "index": 105
     },
     {
       "actual": 67.89,
-      "predicted": 65.93,
-      "residual": 1.96,
+      "predicted": 66.69,
+      "residual": 1.2,
       "index": 106
     },
     {
       "actual": 64.76,
-      "predicted": 63.82,
-      "residual": 0.94,
+      "predicted": 64.27,
+      "residual": 0.49,
       "index": 107
     },
     {
       "actual": 64.05,
-      "predicted": 63.21,
-      "residual": 0.84,
+      "predicted": 63.59,
+      "residual": 0.46,
       "index": 108
     },
     {
       "actual": 67.64,
-      "predicted": 65.32,
-      "residual": 2.32,
+      "predicted": 65.68,
+      "residual": 1.96,
       "index": 109
     },
     {
       "actual": 69.4,
-      "predicted": 65.3,
-      "residual": 4.1,
+      "predicted": 65.57,
+      "residual": 3.83,
       "index": 110
     },
     {
       "actual": 71.99,
-      "predicted": 66.3,
-      "residual": 5.69,
+      "predicted": 66.51,
+      "residual": 5.48,
       "index": 111
     },
     {
       "actual": 72.56,
-      "predicted": 65.5,
-      "residual": 7.06,
+      "predicted": 65.54,
+      "residual": 7.02,
       "index": 112
     },
     {
       "actual": 70.27,
-      "predicted": 66.06,
-      "residual": 4.21,
+      "predicted": 66.17,
+      "residual": 4.1,
       "index": 113
     },
     {
       "actual": 68.61,
-      "predicted": 65.08,
-      "residual": 3.53,
+      "predicted": 65.18,
+      "residual": 3.43,
       "index": 114
     },
     {
       "actual": 67.6,
-      "predicted": 63.29,
-      "residual": 4.31,
+      "predicted": 63.19,
+      "residual": 4.41,
       "index": 115
     },
     {
       "actual": 65.58,
-      "predicted": 60.78,
-      "residual": 4.8,
+      "predicted": 60.57,
+      "residual": 5.01,
       "index": 116
     },
     {
       "actual": 67.09,
-      "predicted": 61.0,
-      "residual": 6.09,
+      "predicted": 60.65,
+      "residual": 6.44,
       "index": 117
     },
     {
       "actual": 67.31,
-      "predicted": 60.76,
-      "residual": 6.55,
+      "predicted": 60.35,
+      "residual": 6.96,
       "index": 118
     },
     {
       "actual": 66.99,
-      "predicted": 60.12,
-      "residual": 6.87,
+      "predicted": 59.39,
+      "residual": 7.6,
       "index": 119
     },
     {
       "actual": 68.0,
-      "predicted": 60.97,
-      "residual": 7.03,
+      "predicted": 60.19,
+      "residual": 7.81,
       "index": 120
     },
     {
       "actual": 66.58,
-      "predicted": 60.78,
-      "residual": 5.8,
+      "predicted": 60.21,
+      "residual": 6.37,
       "index": 121
     },
     {
       "actual": 66.79,
-      "predicted": 61.06,
-      "residual": 5.73,
+      "predicted": 60.59,
+      "residual": 6.2,
       "index": 122
     },
     {
       "actual": 66.6,
-      "predicted": 59.98,
-      "residual": 6.62,
+      "predicted": 59.35,
+      "residual": 7.25,
       "index": 123
     },
     {
       "actual": 66.34,
-      "predicted": 58.5,
-      "residual": 7.84,
+      "predicted": 57.74,
+      "residual": 8.6,
       "index": 124
     },
     {
       "actual": 66.32,
-      "predicted": 56.76,
-      "residual": 9.56,
+      "predicted": 55.43,
+      "residual": 10.89,
       "index": 125
     },
     {
       "actual": 65.9,
-      "predicted": 57.7,
-      "residual": 8.2,
+      "predicted": 56.91,
+      "residual": 8.99,
       "index": 126
     },
     {
       "actual": 66.77,
-      "predicted": 58.98,
-      "residual": 7.79,
+      "predicted": 58.21,
+      "residual": 8.56,
       "index": 127
     },
     {
       "actual": 67.76,
-      "predicted": 60.07,
-      "residual": 7.69,
+      "predicted": 59.44,
+      "residual": 8.32,
       "index": 128
     },
     {
       "actual": 68.29,
-      "predicted": 60.77,
-      "residual": 7.52,
+      "predicted": 60.03,
+      "residual": 8.26,
       "index": 129
     },
     {
       "actual": 67.99,
-      "predicted": 60.39,
-      "residual": 7.6,
+      "predicted": 59.51,
+      "residual": 8.48,
       "index": 130
     },
     {
       "actual": 65.21,
-      "predicted": 58.84,
-      "residual": 6.37,
+      "predicted": 58.0,
+      "residual": 7.21,
       "index": 131
     },
     {
       "actual": 66.15,
-      "predicted": 59.27,
-      "residual": 6.88,
+      "predicted": 58.31,
+      "residual": 7.84,
       "index": 132
     },
     {
       "actual": 65.54,
-      "predicted": 59.13,
-      "residual": 6.41,
+      "predicted": 58.11,
+      "residual": 7.43,
       "index": 133
     },
     {
       "actual": 66.73,
-      "predicted": 60.91,
-      "residual": 5.82,
+      "predicted": 60.01,
+      "residual": 6.72,
       "index": 134
     },
     {
       "actual": 66.9,
-      "predicted": 60.55,
-      "residual": 6.35,
+      "predicted": 59.68,
+      "residual": 7.22,
       "index": 135
     },
     {
       "actual": 66.56,
-      "predicted": 60.42,
-      "residual": 6.14,
+      "predicted": 59.61,
+      "residual": 6.95,
       "index": 136
     },
     {
       "actual": 65.54,
-      "predicted": 58.86,
-      "residual": 6.68,
+      "predicted": 57.95,
+      "residual": 7.59,
       "index": 137
     },
     {
       "actual": 66.55,
-      "predicted": 58.52,
-      "residual": 8.03,
+      "predicted": 57.61,
+      "residual": 8.94,
       "index": 138
     },
     {
       "actual": 66.0,
-      "predicted": 58.62,
-      "residual": 7.38,
+      "predicted": 57.91,
+      "residual": 8.09,
       "index": 139
     },
     {
       "actual": 65.35,
-      "predicted": 58.29,
-      "residual": 7.06,
+      "predicted": 57.6,
+      "residual": 7.75,
       "index": 140
     },
     {
       "actual": 63.15,
-      "predicted": 57.63,
-      "residual": 5.52,
+      "predicted": 57.02,
+      "residual": 6.13,
       "index": 141
     },
     {
       "actual": 63.15,
-      "predicted": 57.8,
-      "residual": 5.35,
+      "predicted": 57.23,
+      "residual": 5.92,
       "index": 142
     },
     {
       "actual": 62.72,
-      "predicted": 56.53,
-      "residual": 6.19,
+      "predicted": 55.99,
+      "residual": 6.73,
       "index": 143
     },
     {
       "actual": 64.43,
-      "predicted": 58.22,
-      "residual": 6.21,
+      "predicted": 57.79,
+      "residual": 6.64,
       "index": 144
     },
     {
       "actual": 64.43,
-      "predicted": 58.65,
-      "residual": 5.78,
+      "predicted": 58.26,
+      "residual": 6.17,
       "index": 145
     },
     {
       "actual": 63.38,
-      "predicted": 58.23,
-      "residual": 5.15,
+      "predicted": 57.92,
+      "residual": 5.46,
       "index": 146
     },
     {
       "actual": 62.39,
-      "predicted": 55.92,
-      "residual": 6.47,
+      "predicted": 55.59,
+      "residual": 6.8,
       "index": 147
     },
     {
       "actual": 61.76,
-      "predicted": 55.96,
-      "residual": 5.8,
+      "predicted": 55.62,
+      "residual": 6.14,
       "index": 148
     },
     {
       "actual": 60.68,
-      "predicted": 55.32,
-      "residual": 5.36,
+      "predicted": 54.91,
+      "residual": 5.77,
       "index": 149
     },
     {
       "actual": 59.65,
-      "predicted": 54.65,
-      "residual": 5.0,
+      "predicted": 54.27,
+      "residual": 5.38,
       "index": 150
     },
     {
       "actual": 60.85,
-      "predicted": 54.78,
-      "residual": 6.07,
+      "predicted": 54.45,
+      "residual": 6.4,
       "index": 151
     },
     {
       "actual": 58.75,
-      "predicted": 53.39,
-      "residual": 5.36,
+      "predicted": 53.07,
+      "residual": 5.68,
       "index": 152
     },
     {
       "actual": 58.86,
-      "predicted": 53.2,
-      "residual": 5.66,
+      "predicted": 52.88,
+      "residual": 5.98,
       "index": 153
     },
     {
       "actual": 59.61,
-      "predicted": 54.05,
-      "residual": 5.56,
+      "predicted": 53.73,
+      "residual": 5.88,
       "index": 154
     },
     {
       "actual": 57.44,
-      "predicted": 53.37,
-      "residual": 4.07,
+      "predicted": 53.15,
+      "residual": 4.29,
       "index": 155
     },
     {
       "actual": 59.45,
-      "predicted": 54.42,
-      "residual": 5.03,
+      "predicted": 54.22,
+      "residual": 5.23,
       "index": 156
     },
     {
       "actual": 58.43,
-      "predicted": 53.28,
-      "residual": 5.15,
+      "predicted": 52.95,
+      "residual": 5.48,
       "index": 157
     },
     {
       "actual": 57.86,
-      "predicted": 52.18,
-      "residual": 5.68,
+      "predicted": 51.73,
+      "residual": 6.13,
       "index": 158
     },
     {
       "actual": 57.29,
-      "predicted": 52.02,
-      "residual": 5.27,
+      "predicted": 51.5,
+      "residual": 5.79,
       "index": 159
     },
     {
       "actual": 53.99,
-      "predicted": 51.09,
-      "residual": 2.9,
+      "predicted": 50.85,
+      "residual": 3.14,
       "index": 160
     },
     {
       "actual": 53.52,
-      "predicted": 50.59,
-      "residual": 2.93,
+      "predicted": 50.24,
+      "residual": 3.28,
       "index": 161
     },
     {
       "actual": 55.35,
-      "predicted": 52.51,
-      "residual": 2.84,
+      "predicted": 52.34,
+      "residual": 3.01,
       "index": 162
     },
     {
       "actual": 55.9,
-      "predicted": 52.59,
-      "residual": 3.31,
+      "predicted": 52.43,
+      "residual": 3.47,
       "index": 163
     },
     {
       "actual": 55.35,
-      "predicted": 52.02,
-      "residual": 3.33,
+      "predicted": 51.86,
+      "residual": 3.49,
       "index": 164
     },
     {
       "actual": 54.86,
-      "predicted": 50.74,
-      "residual": 4.12,
+      "predicted": 50.68,
+      "residual": 4.18,
       "index": 165
     },
     {
       "actual": 53.11,
-      "predicted": 49.36,
-      "residual": 3.75,
+      "predicted": 49.5,
+      "residual": 3.61,
       "index": 166
     },
     {
       "actual": 53.39,
-      "predicted": 49.19,
-      "residual": 4.2,
+      "predicted": 49.24,
+      "residual": 4.15,
       "index": 167
     },
     {
       "actual": 51.94,
-      "predicted": 47.97,
-      "residual": 3.97,
+      "predicted": 48.08,
+      "residual": 3.86,
       "index": 168
     },
     {
       "actual": 51.32,
-      "predicted": 47.26,
-      "residual": 4.06,
+      "predicted": 47.39,
+      "residual": 3.93,
       "index": 169
     },
     {
       "actual": 52.6,
-      "predicted": 47.57,
-      "residual": 5.03,
+      "predicted": 47.66,
+      "residual": 4.94,
       "index": 170
     },
     {
       "actual": 51.74,
-      "predicted": 47.04,
-      "residual": 4.7,
+      "predicted": 47.05,
+      "residual": 4.69,
       "index": 171
     },
     {
       "actual": 52.27,
-      "predicted": 47.31,
-      "residual": 4.96,
+      "predicted": 47.37,
+      "residual": 4.9,
       "index": 172
     },
     {
       "actual": 52.39,
-      "predicted": 47.23,
-      "residual": 5.16,
+      "predicted": 47.27,
+      "residual": 5.12,
       "index": 173
     },
     {
       "actual": 51.42,
-      "predicted": 46.47,
-      "residual": 4.95,
+      "predicted": 46.64,
+      "residual": 4.78,
       "index": 174
     },
     {
       "actual": 49.9,
-      "predicted": 46.23,
-      "residual": 3.67,
+      "predicted": 46.58,
+      "residual": 3.32,
       "index": 175
     },
     {
       "actual": 49.36,
-      "predicted": 46.32,
-      "residual": 3.04,
+      "predicted": 46.68,
+      "residual": 2.68,
       "index": 176
     },
     {
       "actual": 50.8,
-      "predicted": 48.16,
-      "residual": 2.64,
+      "predicted": 48.51,
+      "residual": 2.29,
       "index": 177
     },
     {
       "actual": 49.49,
-      "predicted": 47.4,
-      "residual": 2.09,
+      "predicted": 47.62,
+      "residual": 1.87,
       "index": 178
     },
     {
       "actual": 49.95,
-      "predicted": 47.44,
-      "residual": 2.51,
+      "predicted": 47.5,
+      "residual": 2.45,
       "index": 179
     },
     {
       "actual": 50.45,
-      "predicted": 46.85,
-      "residual": 3.6,
+      "predicted": 46.73,
+      "residual": 3.72,
       "index": 180
     },
     {
       "actual": 51.2,
-      "predicted": 47.76,
-      "residual": 3.44,
+      "predicted": 47.62,
+      "residual": 3.58,
       "index": 181
     },
     {
       "actual": 52.75,
-      "predicted": 48.82,
-      "residual": 3.93,
+      "predicted": 48.66,
+      "residual": 4.09,
       "index": 182
     },
     {
       "actual": 51.63,
-      "predicted": 49.02,
-      "residual": 2.61,
+      "predicted": 48.7,
+      "residual": 2.93,
       "index": 183
     },
     {
       "actual": 52.01,
-      "predicted": 48.77,
-      "residual": 3.24,
+      "predicted": 48.44,
+      "residual": 3.57,
       "index": 184
     },
     {
       "actual": 53.11,
-      "predicted": 50.43,
-      "residual": 2.68,
+      "predicted": 50.19,
+      "residual": 2.92,
       "index": 185
     },
     {
       "actual": 54.19,
-      "predicted": 51.95,
-      "residual": 2.24,
+      "predicted": 51.77,
+      "residual": 2.42,
       "index": 186
     },
     {
       "actual": 53.6,
-      "predicted": 50.8,
-      "residual": 2.8,
+      "predicted": 50.59,
+      "residual": 3.01,
       "index": 187
     },
     {
       "actual": 51.53,
-      "predicted": 49.04,
-      "residual": 2.49,
+      "predicted": 48.86,
+      "residual": 2.67,
       "index": 188
     },
     {
       "actual": 51.91,
-      "predicted": 49.55,
-      "residual": 2.36,
+      "predicted": 49.36,
+      "residual": 2.55,
       "index": 189
     },
     {
       "actual": 53.34,
-      "predicted": 51.12,
-      "residual": 2.22,
+      "predicted": 50.9,
+      "residual": 2.44,
       "index": 190
     },
     {
       "actual": 52.68,
-      "predicted": 50.75,
-      "residual": 1.93,
+      "predicted": 50.5,
+      "residual": 2.18,
       "index": 191
     },
     {
       "actual": 52.29,
-      "predicted": 50.22,
-      "residual": 2.07,
+      "predicted": 49.89,
+      "residual": 2.4,
       "index": 192
     },
     {
       "actual": 51.38,
-      "predicted": 49.37,
-      "residual": 2.01,
+      "predicted": 48.82,
+      "residual": 2.56,
       "index": 193
     },
     {
       "actual": 51.19,
-      "predicted": 49.15,
-      "residual": 2.04,
+      "predicted": 48.58,
+      "residual": 2.61,
       "index": 194
     },
     {
       "actual": 50.22,
-      "predicted": 48.06,
-      "residual": 2.16,
+      "predicted": 47.62,
+      "residual": 2.6,
       "index": 195
     },
     {
       "actual": 49.29,
-      "predicted": 47.56,
-      "residual": 1.73,
+      "predicted": 47.03,
+      "residual": 2.26,
       "index": 196
     },
     {
       "actual": 51.11,
-      "predicted": 49.13,
-      "residual": 1.98,
+      "predicted": 48.57,
+      "residual": 2.54,
       "index": 197
     },
     {
       "actual": 50.15,
-      "predicted": 48.41,
-      "residual": 1.74,
+      "predicted": 47.84,
+      "residual": 2.31,
       "index": 198
     },
     {
       "actual": 51.06,
-      "predicted": 49.73,
-      "residual": 1.33,
+      "predicted": 49.23,
+      "residual": 1.83,
       "index": 199
     },
     {
       "actual": 50.39,
-      "predicted": 48.88,
-      "residual": 1.51,
+      "predicted": 48.32,
+      "residual": 2.07,
       "index": 200
     },
     {
       "actual": 49.82,
-      "predicted": 48.43,
-      "residual": 1.39,
+      "predicted": 47.74,
+      "residual": 2.08,
       "index": 201
     },
     {
       "actual": 49.28,
-      "predicted": 47.71,
-      "residual": 1.57,
+      "predicted": 46.91,
+      "residual": 2.37,
       "index": 202
     },
     {
       "actual": 49.99,
-      "predicted": 48.88,
-      "residual": 1.11,
+      "predicted": 48.06,
+      "residual": 1.93,
       "index": 203
     },
     {
       "actual": 50.64,
-      "predicted": 49.33,
-      "residual": 1.31,
+      "predicted": 48.67,
+      "residual": 1.97,
       "index": 204
     },
     {
       "actual": 50.73,
-      "predicted": 49.13,
-      "residual": 1.6,
+      "predicted": 48.4,
+      "residual": 2.33,
       "index": 205
     },
     {
       "actual": 50.56,
-      "predicted": 49.06,
-      "residual": 1.5,
+      "predicted": 48.27,
+      "residual": 2.29,
       "index": 206
     },
     {
       "actual": 49.04,
-      "predicted": 48.2,
-      "residual": 0.84,
+      "predicted": 47.51,
+      "residual": 1.53,
       "index": 207
     },
     {
       "actual": 48.53,
-      "predicted": 48.0,
-      "residual": 0.53,
+      "predicted": 47.38,
+      "residual": 1.15,
       "index": 208
     },
     {
       "actual": 47.49,
-      "predicted": 47.65,
-      "residual": -0.16,
+      "predicted": 47.11,
+      "residual": 0.38,
       "index": 209
     },
     {
       "actual": 47.88,
-      "predicted": 46.82,
-      "residual": 1.06,
+      "predicted": 46.13,
+      "residual": 1.75,
       "index": 210
     },
     {
       "actual": 47.17,
-      "predicted": 46.36,
-      "residual": 0.81,
+      "predicted": 45.85,
+      "residual": 1.32,
       "index": 211
     },
     {
       "actual": 47.44,
-      "predicted": 46.53,
-      "residual": 0.91,
+      "predicted": 46.03,
+      "residual": 1.41,
       "index": 212
     },
     {
       "actual": 48.12,
-      "predicted": 47.52,
-      "residual": 0.6,
+      "predicted": 47.11,
+      "residual": 1.01,
       "index": 213
     },
     {
       "actual": 47.86,
-      "predicted": 47.11,
-      "residual": 0.75,
+      "predicted": 46.69,
+      "residual": 1.17,
       "index": 214
     },
     {
       "actual": 48.37,
-      "predicted": 47.85,
-      "residual": 0.52,
+      "predicted": 47.51,
+      "residual": 0.86,
       "index": 215
     },
     {
       "actual": 47.75,
-      "predicted": 47.6,
-      "residual": 0.15,
+      "predicted": 47.14,
+      "residual": 0.61,
       "index": 216
     },
     {
       "actual": 47.25,
-      "predicted": 46.94,
-      "residual": 0.31,
+      "predicted": 46.36,
+      "residual": 0.89,
       "index": 217
     },
     {
       "actual": 47.7,
-      "predicted": 47.41,
-      "residual": 0.29,
+      "predicted": 46.69,
+      "residual": 1.01,
       "index": 218
     },
     {
       "actual": 47.62,
-      "predicted": 47.44,
-      "residual": 0.18,
+      "predicted": 46.74,
+      "residual": 0.88,
       "index": 219
     },
     {
       "actual": 46.9,
-      "predicted": 47.11,
-      "residual": -0.21,
+      "predicted": 46.66,
+      "residual": 0.24,
       "index": 220
     },
     {
       "actual": 48.16,
-      "predicted": 48.35,
-      "residual": -0.19,
+      "predicted": 47.99,
+      "residual": 0.17,
       "index": 221
     },
     {
       "actual": 48.21,
-      "predicted": 48.6,
-      "residual": -0.39,
+      "predicted": 48.45,
+      "residual": -0.24,
       "index": 222
     },
     {
       "actual": 47.32,
-      "predicted": 47.68,
-      "residual": -0.36,
+      "predicted": 47.66,
+      "residual": -0.34,
       "index": 223
     },
     {
       "actual": 46.93,
-      "predicted": 47.42,
-      "residual": -0.49,
+      "predicted": 47.27,
+      "residual": -0.34,
       "index": 224
     },
     {
       "actual": 45.55,
-      "predicted": 45.97,
-      "residual": -0.42,
+      "predicted": 45.75,
+      "residual": -0.2,
       "index": 225
     },
     {
       "actual": 46.0,
-      "predicted": 46.24,
-      "residual": -0.24,
+      "predicted": 46.25,
+      "residual": -0.25,
       "index": 226
     },
     {
       "actual": 46.02,
-      "predicted": 46.35,
-      "residual": -0.33,
+      "predicted": 46.33,
+      "residual": -0.31,
       "index": 227
     },
     {
       "actual": 44.73,
-      "predicted": 45.06,
-      "residual": -0.33,
+      "predicted": 44.9,
+      "residual": -0.17,
       "index": 228
     },
     {
       "actual": 45.33,
-      "predicted": 45.91,
-      "residual": -0.58,
+      "predicted": 45.72,
+      "residual": -0.39,
       "index": 229
     },
     {
       "actual": 45.94,
-      "predicted": 46.29,
-      "residual": -0.35,
+      "predicted": 46.11,
+      "residual": -0.17,
       "index": 230
     },
     {
       "actual": 46.76,
-      "predicted": 47.4,
-      "residual": -0.64,
+      "predicted": 47.0,
+      "residual": -0.24,
       "index": 231
     },
     {
       "actual": 47.94,
-      "predicted": 48.53,
-      "residual": -0.59,
+      "predicted": 48.06,
+      "residual": -0.12,
       "index": 232
     },
     {
       "actual": 47.26,
-      "predicted": 48.17,
-      "residual": -0.91,
+      "predicted": 47.57,
+      "residual": -0.31,
       "index": 233
     },
     {
       "actual": 46.35,
-      "predicted": 46.78,
-      "residual": -0.43,
+      "predicted": 46.12,
+      "residual": 0.23,
       "index": 234
     },
     {
       "actual": 46.0,
-      "predicted": 46.06,
-      "residual": -0.06,
+      "predicted": 45.41,
+      "residual": 0.59,
       "index": 235
     },
     {
       "actual": 45.59,
-      "predicted": 45.8,
-      "residual": -0.21,
+      "predicted": 45.42,
+      "residual": 0.17,
       "index": 236
     },
     {
       "actual": 45.41,
-      "predicted": 45.64,
-      "residual": -0.23,
+      "predicted": 45.48,
+      "residual": -0.07,
       "index": 237
     },
     {
       "actual": 44.83,
-      "predicted": 44.73,
-      "residual": 0.1,
+      "predicted": 44.4,
+      "residual": 0.43,
       "index": 238
     },
     {
       "actual": 44.21,
-      "predicted": 44.48,
-      "residual": -0.27,
+      "predicted": 44.28,
+      "residual": -0.07,
       "index": 239
     },
     {
       "actual": 44.02,
-      "predicted": 44.56,
-      "residual": -0.54,
+      "predicted": 44.04,
+      "residual": -0.02,
       "index": 240
     },
     {
       "actual": 44.4,
-      "predicted": 45.09,
-      "residual": -0.69,
+      "predicted": 44.39,
+      "residual": 0.01,
       "index": 241
     },
     {
       "actual": 44.91,
-      "predicted": 45.25,
-      "residual": -0.34,
+      "predicted": 44.5,
+      "residual": 0.41,
       "index": 242
     },
     {
       "actual": 44.66,
-      "predicted": 44.59,
-      "residual": 0.07,
+      "predicted": 43.91,
+      "residual": 0.75,
       "index": 243
     },
     {
       "actual": 44.66,
-      "predicted": 44.73,
-      "residual": -0.07,
+      "predicted": 43.85,
+      "residual": 0.81,
       "index": 244
     },
     {
       "actual": 44.62,
-      "predicted": 44.83,
-      "residual": -0.21,
+      "predicted": 44.48,
+      "residual": 0.14,
       "index": 245
     },
     {
       "actual": 44.65,
-      "predicted": 44.73,
-      "residual": -0.08,
+      "predicted": 44.39,
+      "residual": 0.26,
       "index": 246
     },
     {
       "actual": 44.51,
-      "predicted": 44.61,
-      "residual": -0.1,
+      "predicted": 44.23,
+      "residual": 0.28,
       "index": 247
     },
     {
       "actual": 45.83,
-      "predicted": 46.4,
-      "residual": -0.57,
+      "predicted": 45.88,
+      "residual": -0.05,
       "index": 248
     },
     {
       "actual": 45.6,
-      "predicted": 46.09,
-      "residual": -0.49,
+      "predicted": 45.92,
+      "residual": -0.32,
       "index": 249
     },
     {
       "actual": 46.05,
-      "predicted": 46.68,
-      "residual": -0.63,
+      "predicted": 46.27,
+      "residual": -0.22,
       "index": 250
     },
     {
       "actual": 47.23,
-      "predicted": 47.73,
-      "residual": -0.5,
+      "predicted": 47.5,
+      "residual": -0.27,
       "index": 251
     },
     {
       "actual": 47.99,
-      "predicted": 48.15,
-      "residual": -0.16,
+      "predicted": 47.73,
+      "residual": 0.26,
       "index": 252
     },
     {
       "actual": 47.94,
-      "predicted": 48.0,
-      "residual": -0.06,
+      "predicted": 47.59,
+      "residual": 0.35,
       "index": 253
     },
     {
       "actual": 49.42,
-      "predicted": 49.83,
-      "residual": -0.41,
+      "predicted": 49.52,
+      "residual": -0.1,
       "index": 254
     },
     {
       "actual": 48.7,
-      "predicted": 49.53,
-      "residual": -0.83,
+      "predicted": 49.25,
+      "residual": -0.55,
       "index": 255
     },
     {
       "actual": 48.14,
-      "predicted": 48.99,
-      "residual": -0.85,
+      "predicted": 48.78,
+      "residual": -0.64,
       "index": 256
     },
     {
       "actual": 49.0,
-      "predicted": 49.8,
-      "residual": -0.8,
+      "predicted": 49.81,
+      "residual": -0.81,
       "index": 257
     },
     {
       "actual": 47.64,
-      "predicted": 48.45,
-      "residual": -0.81,
+      "predicted": 48.47,
+      "residual": -0.83,
       "index": 258
     },
     {
       "actual": 49.02,
-      "predicted": 49.94,
-      "residual": -0.92,
+      "predicted": 50.06,
+      "residual": -1.04,
       "index": 259
     },
     {
       "actual": 48.42,
-      "predicted": 49.11,
-      "residual": -0.69,
+      "predicted": 49.16,
+      "residual": -0.74,
       "index": 260
     },
     {
       "actual": 48.24,
-      "predicted": 48.82,
-      "residual": -0.58,
+      "predicted": 48.61,
+      "residual": -0.37,
       "index": 261
     },
     {
       "actual": 48.6,
-      "predicted": 49.3,
-      "residual": -0.7,
+      "predicted": 48.96,
+      "residual": -0.36,
       "index": 262
     },
     {
       "actual": 48.85,
-      "predicted": 49.46,
-      "residual": -0.61,
+      "predicted": 49.25,
+      "residual": -0.4,
       "index": 263
     },
     {
       "actual": 48.15,
-      "predicted": 48.67,
-      "residual": -0.52,
+      "predicted": 48.65,
+      "residual": -0.5,
       "index": 264
     },
     {
       "actual": 48.89,
-      "predicted": 49.6,
-      "residual": -0.71,
+      "predicted": 49.67,
+      "residual": -0.78,
       "index": 265
     },
     {
       "actual": 47.9,
-      "predicted": 48.55,
-      "residual": -0.65,
+      "predicted": 48.74,
+      "residual": -0.84,
       "index": 266
     },
     {
       "actual": 47.52,
-      "predicted": 48.24,
-      "residual": -0.72,
+      "predicted": 48.5,
+      "residual": -0.98,
       "index": 267
     },
     {
       "actual": 45.89,
-      "predicted": 46.24,
-      "residual": -0.35,
+      "predicted": 46.97,
+      "residual": -1.08,
       "index": 268
     },
     {
       "actual": 45.47,
-      "predicted": 45.62,
-      "residual": -0.15,
+      "predicted": 46.02,
+      "residual": -0.55,
       "index": 269
     },
     {
       "actual": 44.91,
-      "predicted": 45.0,
-      "residual": -0.09,
+      "predicted": 45.26,
+      "residual": -0.35,
       "index": 270
     },
     {
       "actual": 45.0,
-      "predicted": 44.92,
-      "residual": 0.08,
+      "predicted": 45.37,
+      "residual": -0.37,
       "index": 271
     },
     {
       "actual": 44.12,
-      "predicted": 44.02,
-      "residual": 0.1,
+      "predicted": 44.47,
+      "residual": -0.35,
       "index": 272
     },
     {
       "actual": 44.38,
-      "predicted": 43.94,
-      "residual": 0.44,
+      "predicted": 44.77,
+      "residual": -0.39,
       "index": 273
     },
     {
       "actual": 45.04,
-      "predicted": 44.77,
-      "residual": 0.27,
+      "predicted": 45.5,
+      "residual": -0.46,
       "index": 274
     },
     {
       "actual": 45.31,
-      "predicted": 45.06,
-      "residual": 0.25,
+      "predicted": 45.84,
+      "residual": -0.53,
       "index": 275
     },
     {
       "actual": 44.66,
-      "predicted": 44.18,
-      "residual": 0.48,
+      "predicted": 44.93,
+      "residual": -0.27,
       "index": 276
     },
     {
       "actual": 44.82,
-      "predicted": 44.05,
-      "residual": 0.77,
+      "predicted": 44.68,
+      "residual": 0.14,
       "index": 277
     },
     {
       "actual": 44.93,
-      "predicted": 44.15,
-      "residual": 0.78,
+      "predicted": 44.41,
+      "residual": 0.52,
       "index": 278
     },
     {
       "actual": 43.69,
-      "predicted": 42.59,
-      "residual": 1.1,
+      "predicted": 43.49,
+      "residual": 0.2,
       "index": 279
     },
     {
       "actual": 42.29,
-      "predicted": 41.11,
-      "residual": 1.18,
+      "predicted": 41.72,
+      "residual": 0.57,
       "index": 280
     },
     {
       "actual": 42.57,
-      "predicted": 41.48,
-      "residual": 1.09,
+      "predicted": 41.93,
+      "residual": 0.64,
       "index": 281
     },
     {
       "actual": 42.42,
-      "predicted": 41.63,
-      "residual": 0.79,
+      "predicted": 42.79,
+      "residual": -0.37,
       "index": 282
     },
     {
       "actual": 43.17,
-      "predicted": 42.45,
-      "residual": 0.72,
+      "predicted": 44.53,
+      "residual": -1.36,
       "index": 283
     },
     {
       "actual": 43.85,
-      "predicted": 43.69,
-      "residual": 0.16,
+      "predicted": 45.48,
+      "residual": -1.63,
       "index": 284
     },
     {
       "actual": 43.15,
-      "predicted": 42.88,
-      "residual": 0.27,
+      "predicted": 44.76,
+      "residual": -1.61,
       "index": 285
     },
     {
       "actual": 42.01,
-      "predicted": 42.0,
-      "residual": 0.01,
+      "predicted": 43.13,
+      "residual": -1.12,
       "index": 286
     },
     {
       "actual": 43.81,
-      "predicted": 44.23,
-      "residual": -0.42,
+      "predicted": 45.73,
+      "residual": -1.92,
       "index": 287
     },
     {
       "actual": 44.52,
-      "predicted": 45.2,
-      "residual": -0.68,
+      "predicted": 46.21,
+      "residual": -1.69,
       "index": 288
     },
     {
       "actual": 42.68,
-      "predicted": 43.41,
-      "residual": -0.73,
+      "predicted": 43.97,
+      "residual": -1.29,
       "index": 289
     },
     {
       "actual": 43.55,
-      "predicted": 44.33,
-      "residual": -0.78,
+      "predicted": 46.0,
+      "residual": -2.45,
       "index": 290
     },
     {
       "actual": 44.52,
-      "predicted": 45.34,
-      "residual": -0.82,
+      "predicted": 46.82,
+      "residual": -2.3,
       "index": 291
     },
     {
       "actual": 45.27,
-      "predicted": 46.36,
-      "residual": -1.09,
+      "predicted": 47.84,
+      "residual": -2.57,
       "index": 292
     },
     {
       "actual": 45.81,
-      "predicted": 46.93,
-      "residual": -1.12,
+      "predicted": 48.95,
+      "residual": -3.14,
       "index": 293
     },
     {
       "actual": 45.19,
-      "predicted": 46.51,
-      "residual": -1.32,
+      "predicted": 48.56,
+      "residual": -3.37,
       "index": 294
     },
     {
       "actual": 44.95,
-      "predicted": 45.85,
-      "residual": -0.9,
+      "predicted": 48.97,
+      "residual": -4.02,
       "index": 295
     },
     {
       "actual": 45.52,
-      "predicted": 46.49,
-      "residual": -0.97,
+      "predicted": 49.46,
+      "residual": -3.94,
       "index": 296
     },
     {
       "actual": 45.88,
-      "predicted": 46.96,
-      "residual": -1.08,
+      "predicted": 49.74,
+      "residual": -3.86,
       "index": 297
     },
     {
       "actual": 45.52,
-      "predicted": 46.47,
-      "residual": -0.95,
+      "predicted": 48.69,
+      "residual": -3.17,
       "index": 298
     },
     {
       "actual": 43.62,
-      "predicted": 44.66,
-      "residual": -1.04,
+      "predicted": 45.58,
+      "residual": -1.96,
       "index": 299
     },
     {
       "actual": 43.63,
-      "predicted": 44.6,
-      "residual": -0.97,
+      "predicted": 46.52,
+      "residual": -2.89,
       "index": 300
     },
     {
       "actual": 43.66,
-      "predicted": 44.31,
-      "residual": -0.65,
+      "predicted": 46.85,
+      "residual": -3.19,
       "index": 301
     },
     {
       "actual": 43.67,
-      "predicted": 44.43,
-      "residual": -0.76,
+      "predicted": 46.12,
+      "residual": -2.45,
       "index": 302
     },
     {
       "actual": 43.79,
-      "predicted": 44.46,
-      "residual": -0.67,
+      "predicted": 46.33,
+      "residual": -2.54,
       "index": 303
     },
     {
       "actual": 43.86,
-      "predicted": 44.13,
-      "residual": -0.27,
+      "predicted": 46.59,
+      "residual": -2.73,
       "index": 304
     },
     {
       "actual": 43.68,
-      "predicted": 43.4,
-      "residual": 0.28,
+      "predicted": 46.12,
+      "residual": -2.44,
       "index": 305
     },
     {
       "actual": 44.3,
-      "predicted": 44.01,
-      "residual": 0.29,
+      "predicted": 46.54,
+      "residual": -2.24,
       "index": 306
     },
     {
       "actual": 43.97,
-      "predicted": 43.14,
-      "residual": 0.83,
+      "predicted": 45.11,
+      "residual": -1.14,
       "index": 307
     },
     {
       "actual": 43.94,
-      "predicted": 43.12,
-      "residual": 0.82,
+      "predicted": 45.05,
+      "residual": -1.11,
       "index": 308
     },
     {
       "actual": 43.49,
-      "predicted": 42.39,
-      "residual": 1.1,
+      "predicted": 44.59,
+      "residual": -1.1,
       "index": 309
     },
     {
       "actual": 42.76,
-      "predicted": 41.39,
-      "residual": 1.37,
+      "predicted": 42.97,
+      "residual": -0.21,
       "index": 310
     },
     {
       "actual": 43.45,
-      "predicted": 42.19,
-      "residual": 1.26,
+      "predicted": 43.5,
+      "residual": -0.05,
       "index": 311
     },
     {
       "actual": 43.49,
-      "predicted": 41.94,
-      "residual": 1.55,
+      "predicted": 43.31,
+      "residual": 0.18,
       "index": 312
     },
     {
       "actual": 43.77,
-      "predicted": 42.28,
-      "residual": 1.49,
+      "predicted": 43.47,
+      "residual": 0.3,
       "index": 313
     },
     {
       "actual": 46.93,
-      "predicted": 45.89,
-      "residual": 1.04,
+      "predicted": 47.72,
+      "residual": -0.79,
       "index": 314
     },
     {
       "actual": 48.6,
-      "predicted": 47.09,
-      "residual": 1.51,
+      "predicted": 48.66,
+      "residual": -0.06,
       "index": 315
     },
     {
       "actual": 49.62,
-      "predicted": 47.31,
-      "residual": 2.31,
+      "predicted": 48.65,
+      "residual": 0.97,
       "index": 316
     },
     {
       "actual": 46.86,
-      "predicted": 44.58,
-      "residual": 2.28,
+      "predicted": 45.62,
+      "residual": 1.24,
       "index": 317
     },
     {
       "actual": 46.26,
-      "predicted": 43.27,
-      "residual": 2.99,
+      "predicted": 44.12,
+      "residual": 2.14,
       "index": 318
     },
     {
       "actual": 47.11,
-      "predicted": 43.9,
-      "residual": 3.21,
+      "predicted": 44.63,
+      "residual": 2.48,
       "index": 319
     },
     {
       "actual": 47.55,
-      "predicted": 44.17,
-      "residual": 3.38,
+      "predicted": 44.81,
+      "residual": 2.74,
       "index": 320
     },
     {
       "actual": 46.42,
-      "predicted": 44.4,
-      "residual": 2.02,
+      "predicted": 44.74,
+      "residual": 1.68,
       "index": 321
     },
     {
       "actual": 46.7,
-      "predicted": 44.84,
-      "residual": 1.86,
+      "predicted": 45.27,
+      "residual": 1.43,
       "index": 322
     },
     {
       "actual": 46.21,
-      "predicted": 44.59,
-      "residual": 1.62,
+      "predicted": 45.06,
+      "residual": 1.15,
       "index": 323
     },
     {
       "actual": 46.45,
-      "predicted": 45.26,
-      "residual": 1.19,
+      "predicted": 45.7,
+      "residual": 0.75,
       "index": 324
     },
     {
       "actual": 46.56,
-      "predicted": 45.3,
-      "residual": 1.26,
+      "predicted": 45.77,
+      "residual": 0.79,
       "index": 325
     },
     {
       "actual": 47.0,
-      "predicted": 46.35,
-      "residual": 0.65,
+      "predicted": 46.85,
+      "residual": 0.15,
       "index": 326
     },
     {
       "actual": 46.66,
-      "predicted": 46.43,
-      "residual": 0.23,
+      "predicted": 46.92,
+      "residual": -0.26,
       "index": 327
     },
     {
       "actual": 46.02,
-      "predicted": 45.63,
-      "residual": 0.39,
+      "predicted": 46.15,
+      "residual": -0.13,
       "index": 328
     },
     {
       "actual": 45.81,
-      "predicted": 45.23,
-      "residual": 0.58,
+      "predicted": 45.8,
+      "residual": 0.01,
       "index": 329
     },
     {
       "actual": 43.66,
-      "predicted": 42.45,
-      "residual": 1.21,
+      "predicted": 43.02,
+      "residual": 0.64,
       "index": 330
     },
     {
       "actual": 42.84,
-      "predicted": 40.87,
-      "residual": 1.97,
+      "predicted": 41.34,
+      "residual": 1.5,
       "index": 331
     },
     {
       "actual": 42.75,
-      "predicted": 39.73,
-      "residual": 3.02,
+      "predicted": 40.15,
+      "residual": 2.6,
       "index": 332
     },
     {
       "actual": 43.3,
-      "predicted": 39.9,
-      "residual": 3.4,
+      "predicted": 40.33,
+      "residual": 2.97,
       "index": 333
     },
     {
       "actual": 42.87,
-      "predicted": 38.36,
-      "residual": 4.51,
+      "predicted": 38.49,
+      "residual": 4.38,
       "index": 334
     },
     {
       "actual": 41.71,
-      "predicted": 37.54,
-      "residual": 4.17,
+      "predicted": 37.48,
+      "residual": 4.23,
       "index": 335
     },
     {
       "actual": 40.87,
-      "predicted": 36.91,
-      "residual": 3.96,
+      "predicted": 36.86,
+      "residual": 4.01,
       "index": 336
     },
     {
       "actual": 42.25,
-      "predicted": 38.08,
-      "residual": 4.17,
+      "predicted": 38.12,
+      "residual": 4.13,
       "index": 337
     },
     {
       "actual": 42.36,
-      "predicted": 38.13,
-      "residual": 4.23,
+      "predicted": 38.15,
+      "residual": 4.21,
       "index": 338
     },
     {
       "actual": 42.74,
-      "predicted": 38.94,
-      "residual": 3.8,
+      "predicted": 39.0,
+      "residual": 3.74,
       "index": 339
     },
     {
@@ -2049,1042 +2049,1042 @@
     },
     {
       "actual": 40.68,
-      "predicted": 37.09,
-      "residual": 3.59,
+      "predicted": 37.15,
+      "residual": 3.53,
       "index": 341
     },
     {
       "actual": 40.05,
-      "predicted": 36.06,
-      "residual": 3.99,
+      "predicted": 36.02,
+      "residual": 4.03,
       "index": 342
     },
     {
       "actual": 39.47,
-      "predicted": 35.52,
-      "residual": 3.95,
+      "predicted": 35.44,
+      "residual": 4.03,
       "index": 343
     },
     {
       "actual": 39.95,
-      "predicted": 35.22,
-      "residual": 4.73,
+      "predicted": 35.21,
+      "residual": 4.74,
       "index": 344
     },
     {
       "actual": 40.47,
-      "predicted": 35.89,
-      "residual": 4.58,
+      "predicted": 35.9,
+      "residual": 4.57,
       "index": 345
     },
     {
       "actual": 40.71,
-      "predicted": 35.71,
-      "residual": 5.0,
+      "predicted": 35.77,
+      "residual": 4.94,
       "index": 346
     },
     {
       "actual": 41.0,
-      "predicted": 36.48,
-      "residual": 4.52,
+      "predicted": 36.58,
+      "residual": 4.42,
       "index": 347
     },
     {
       "actual": 40.44,
-      "predicted": 35.46,
-      "residual": 4.98,
+      "predicted": 35.57,
+      "residual": 4.87,
       "index": 348
     },
     {
       "actual": 41.47,
-      "predicted": 36.78,
-      "residual": 4.69,
+      "predicted": 36.93,
+      "residual": 4.54,
       "index": 349
     },
     {
       "actual": 41.7,
-      "predicted": 36.95,
-      "residual": 4.75,
+      "predicted": 37.09,
+      "residual": 4.61,
       "index": 350
     },
     {
       "actual": 41.15,
-      "predicted": 37.06,
-      "residual": 4.09,
+      "predicted": 37.16,
+      "residual": 3.99,
       "index": 351
     },
     {
       "actual": 41.8,
-      "predicted": 37.4,
-      "residual": 4.4,
+      "predicted": 37.52,
+      "residual": 4.28,
       "index": 352
     },
     {
       "actual": 43.17,
-      "predicted": 39.24,
-      "residual": 3.93,
+      "predicted": 39.4,
+      "residual": 3.77,
       "index": 353
     },
     {
       "actual": 43.14,
-      "predicted": 39.26,
-      "residual": 3.88,
+      "predicted": 39.45,
+      "residual": 3.69,
       "index": 354
     },
     {
       "actual": 42.07,
-      "predicted": 38.56,
-      "residual": 3.51,
+      "predicted": 38.94,
+      "residual": 3.13,
       "index": 355
     },
     {
       "actual": 41.35,
-      "predicted": 38.04,
-      "residual": 3.31,
+      "predicted": 38.41,
+      "residual": 2.94,
       "index": 356
     },
     {
       "actual": 42.32,
-      "predicted": 38.77,
-      "residual": 3.55,
+      "predicted": 39.08,
+      "residual": 3.24,
       "index": 357
     },
     {
       "actual": 40.77,
-      "predicted": 37.11,
-      "residual": 3.66,
+      "predicted": 37.42,
+      "residual": 3.35,
       "index": 358
     },
     {
       "actual": 41.61,
-      "predicted": 38.21,
-      "residual": 3.4,
+      "predicted": 38.49,
+      "residual": 3.12,
       "index": 359
     },
     {
       "actual": 40.85,
-      "predicted": 37.4,
-      "residual": 3.45,
+      "predicted": 37.66,
+      "residual": 3.19,
       "index": 360
     },
     {
       "actual": 40.32,
-      "predicted": 37.0,
-      "residual": 3.32,
+      "predicted": 37.24,
+      "residual": 3.08,
       "index": 361
     },
     {
       "actual": 40.81,
-      "predicted": 37.16,
-      "residual": 3.65,
+      "predicted": 37.46,
+      "residual": 3.35,
       "index": 362
     },
     {
       "actual": 40.69,
-      "predicted": 36.48,
-      "residual": 4.21,
+      "predicted": 36.8,
+      "residual": 3.89,
       "index": 363
     },
     {
       "actual": 40.55,
-      "predicted": 37.44,
-      "residual": 3.11,
+      "predicted": 37.57,
+      "residual": 2.98,
       "index": 364
     },
     {
       "actual": 40.99,
-      "predicted": 38.03,
-      "residual": 2.96,
+      "predicted": 38.14,
+      "residual": 2.85,
       "index": 365
     },
     {
       "actual": 41.75,
-      "predicted": 38.21,
-      "residual": 3.54,
+      "predicted": 38.4,
+      "residual": 3.35,
       "index": 366
     },
     {
       "actual": 42.16,
-      "predicted": 38.65,
-      "residual": 3.51,
+      "predicted": 38.8,
+      "residual": 3.36,
       "index": 367
     },
     {
       "actual": 42.62,
-      "predicted": 39.11,
-      "residual": 3.51,
+      "predicted": 39.4,
+      "residual": 3.22,
       "index": 368
     },
     {
       "actual": 43.95,
-      "predicted": 40.27,
-      "residual": 3.68,
+      "predicted": 40.54,
+      "residual": 3.41,
       "index": 369
     },
     {
       "actual": 44.38,
-      "predicted": 40.86,
-      "residual": 3.52,
+      "predicted": 41.2,
+      "residual": 3.18,
       "index": 370
     },
     {
       "actual": 42.92,
-      "predicted": 39.71,
-      "residual": 3.21,
+      "predicted": 40.07,
+      "residual": 2.85,
       "index": 371
     },
     {
       "actual": 42.18,
-      "predicted": 38.73,
-      "residual": 3.45,
+      "predicted": 39.42,
+      "residual": 2.76,
       "index": 372
     },
     {
       "actual": 42.91,
-      "predicted": 38.71,
-      "residual": 4.2,
+      "predicted": 39.48,
+      "residual": 3.43,
       "index": 373
     },
     {
       "actual": 43.72,
-      "predicted": 39.69,
-      "residual": 4.03,
+      "predicted": 40.32,
+      "residual": 3.4,
       "index": 374
     },
     {
       "actual": 44.69,
-      "predicted": 40.65,
-      "residual": 4.04,
+      "predicted": 41.16,
+      "residual": 3.53,
       "index": 375
     },
     {
       "actual": 44.04,
-      "predicted": 40.37,
-      "residual": 3.67,
+      "predicted": 40.86,
+      "residual": 3.18,
       "index": 376
     },
     {
       "actual": 44.56,
-      "predicted": 40.68,
-      "residual": 3.88,
+      "predicted": 41.04,
+      "residual": 3.52,
       "index": 377
     },
     {
       "actual": 43.37,
-      "predicted": 39.75,
-      "residual": 3.62,
+      "predicted": 40.09,
+      "residual": 3.28,
       "index": 378
     },
     {
       "actual": 43.26,
-      "predicted": 39.53,
-      "residual": 3.73,
+      "predicted": 39.86,
+      "residual": 3.4,
       "index": 379
     },
     {
       "actual": 43.87,
-      "predicted": 39.98,
-      "residual": 3.89,
+      "predicted": 40.25,
+      "residual": 3.62,
       "index": 380
     },
     {
       "actual": 43.44,
-      "predicted": 39.8,
-      "residual": 3.64,
+      "predicted": 40.03,
+      "residual": 3.41,
       "index": 381
     },
     {
       "actual": 42.45,
-      "predicted": 38.69,
-      "residual": 3.76,
+      "predicted": 38.79,
+      "residual": 3.66,
       "index": 382
     },
     {
       "actual": 41.68,
-      "predicted": 38.03,
-      "residual": 3.65,
+      "predicted": 38.14,
+      "residual": 3.54,
       "index": 383
     },
     {
       "actual": 42.59,
-      "predicted": 39.08,
-      "residual": 3.51,
+      "predicted": 39.32,
+      "residual": 3.27,
       "index": 384
     },
     {
       "actual": 41.82,
-      "predicted": 38.52,
-      "residual": 3.3,
+      "predicted": 38.62,
+      "residual": 3.2,
       "index": 385
     },
     {
       "actual": 42.39,
-      "predicted": 38.84,
-      "residual": 3.55,
+      "predicted": 38.99,
+      "residual": 3.4,
       "index": 386
     },
     {
       "actual": 43.69,
-      "predicted": 40.15,
-      "residual": 3.54,
+      "predicted": 40.31,
+      "residual": 3.38,
       "index": 387
     },
     {
       "actual": 43.39,
-      "predicted": 39.97,
-      "residual": 3.42,
+      "predicted": 40.12,
+      "residual": 3.27,
       "index": 388
     },
     {
       "actual": 44.33,
-      "predicted": 40.77,
-      "residual": 3.56,
+      "predicted": 40.68,
+      "residual": 3.65,
       "index": 389
     },
     {
       "actual": 44.15,
-      "predicted": 40.63,
-      "residual": 3.52,
+      "predicted": 40.38,
+      "residual": 3.77,
       "index": 390
     },
     {
       "actual": 42.69,
-      "predicted": 39.45,
-      "residual": 3.24,
+      "predicted": 39.31,
+      "residual": 3.38,
       "index": 391
     },
     {
       "actual": 42.8,
-      "predicted": 39.88,
-      "residual": 2.92,
+      "predicted": 39.65,
+      "residual": 3.15,
       "index": 392
     },
     {
       "actual": 43.81,
-      "predicted": 40.35,
-      "residual": 3.46,
+      "predicted": 40.22,
+      "residual": 3.59,
       "index": 393
     },
     {
       "actual": 46.3,
-      "predicted": 42.67,
-      "residual": 3.63,
+      "predicted": 42.6,
+      "residual": 3.7,
       "index": 394
     },
     {
       "actual": 45.56,
-      "predicted": 41.7,
-      "residual": 3.86,
+      "predicted": 41.83,
+      "residual": 3.73,
       "index": 395
     },
     {
       "actual": 44.99,
-      "predicted": 40.96,
-      "residual": 4.03,
+      "predicted": 41.04,
+      "residual": 3.95,
       "index": 396
     },
     {
       "actual": 46.34,
-      "predicted": 42.38,
-      "residual": 3.96,
+      "predicted": 42.61,
+      "residual": 3.73,
       "index": 397
     },
     {
       "actual": 48.32,
-      "predicted": 44.39,
-      "residual": 3.93,
+      "predicted": 44.84,
+      "residual": 3.48,
       "index": 398
     },
     {
       "actual": 48.77,
-      "predicted": 44.95,
-      "residual": 3.82,
+      "predicted": 45.33,
+      "residual": 3.44,
       "index": 399
     },
     {
       "actual": 46.23,
-      "predicted": 43.03,
-      "residual": 3.2,
+      "predicted": 42.94,
+      "residual": 3.29,
       "index": 400
     },
     {
       "actual": 45.18,
-      "predicted": 42.04,
-      "residual": 3.14,
+      "predicted": 41.67,
+      "residual": 3.51,
       "index": 401
     },
     {
       "actual": 44.44,
-      "predicted": 40.99,
-      "residual": 3.45,
+      "predicted": 40.66,
+      "residual": 3.78,
       "index": 402
     },
     {
       "actual": 45.52,
-      "predicted": 42.96,
-      "residual": 2.56,
+      "predicted": 42.81,
+      "residual": 2.71,
       "index": 403
     },
     {
       "actual": 44.84,
-      "predicted": 41.74,
-      "residual": 3.1,
+      "predicted": 41.64,
+      "residual": 3.2,
       "index": 404
     },
     {
       "actual": 42.18,
-      "predicted": 38.73,
-      "residual": 3.45,
+      "predicted": 38.86,
+      "residual": 3.32,
       "index": 405
     },
     {
       "actual": 41.77,
-      "predicted": 38.11,
-      "residual": 3.66,
+      "predicted": 38.41,
+      "residual": 3.36,
       "index": 406
     },
     {
       "actual": 41.21,
-      "predicted": 37.57,
-      "residual": 3.64,
+      "predicted": 38.05,
+      "residual": 3.16,
       "index": 407
     },
     {
       "actual": 40.75,
-      "predicted": 36.5,
-      "residual": 4.25,
+      "predicted": 37.15,
+      "residual": 3.6,
       "index": 408
     },
     {
       "actual": 41.61,
-      "predicted": 37.44,
-      "residual": 4.17,
+      "predicted": 38.09,
+      "residual": 3.52,
       "index": 409
     },
     {
       "actual": 41.27,
-      "predicted": 37.61,
-      "residual": 3.66,
+      "predicted": 38.32,
+      "residual": 2.95,
       "index": 410
     },
     {
       "actual": 41.95,
-      "predicted": 38.34,
-      "residual": 3.61,
+      "predicted": 39.22,
+      "residual": 2.73,
       "index": 411
     },
     {
       "actual": 41.23,
-      "predicted": 37.52,
-      "residual": 3.71,
+      "predicted": 38.44,
+      "residual": 2.79,
       "index": 412
     },
     {
       "actual": 42.12,
-      "predicted": 38.57,
-      "residual": 3.55,
+      "predicted": 39.5,
+      "residual": 2.62,
       "index": 413
     },
     {
       "actual": 42.78,
-      "predicted": 39.43,
-      "residual": 3.35,
+      "predicted": 40.1,
+      "residual": 2.68,
       "index": 414
     },
     {
       "actual": 42.63,
-      "predicted": 39.55,
-      "residual": 3.08,
+      "predicted": 40.24,
+      "residual": 2.39,
       "index": 415
     },
     {
       "actual": 42.56,
-      "predicted": 39.6,
-      "residual": 2.96,
+      "predicted": 40.42,
+      "residual": 2.14,
       "index": 416
     },
     {
       "actual": 42.26,
-      "predicted": 39.11,
-      "residual": 3.15,
+      "predicted": 39.93,
+      "residual": 2.33,
       "index": 417
     },
     {
       "actual": 42.47,
-      "predicted": 38.96,
-      "residual": 3.51,
+      "predicted": 39.68,
+      "residual": 2.79,
       "index": 418
     },
     {
       "actual": 42.28,
-      "predicted": 38.57,
-      "residual": 3.71,
+      "predicted": 39.24,
+      "residual": 3.04,
       "index": 419
     },
     {
       "actual": 41.72,
-      "predicted": 37.99,
-      "residual": 3.73,
+      "predicted": 38.68,
+      "residual": 3.04,
       "index": 420
     },
     {
       "actual": 40.62,
-      "predicted": 37.09,
-      "residual": 3.53,
+      "predicted": 37.89,
+      "residual": 2.73,
       "index": 421
     },
     {
       "actual": 39.55,
-      "predicted": 36.39,
-      "residual": 3.16,
+      "predicted": 37.08,
+      "residual": 2.47,
       "index": 422
     },
     {
       "actual": 40.01,
-      "predicted": 36.91,
-      "residual": 3.1,
+      "predicted": 37.62,
+      "residual": 2.39,
       "index": 423
     },
     {
       "actual": 39.48,
-      "predicted": 36.71,
-      "residual": 2.77,
+      "predicted": 37.61,
+      "residual": 1.87,
       "index": 424
     },
     {
       "actual": 40.23,
-      "predicted": 37.61,
-      "residual": 2.62,
+      "predicted": 38.35,
+      "residual": 1.88,
       "index": 425
     },
     {
       "actual": 39.52,
-      "predicted": 37.23,
-      "residual": 2.29,
+      "predicted": 38.11,
+      "residual": 1.41,
       "index": 426
     },
     {
       "actual": 39.72,
-      "predicted": 37.45,
-      "residual": 2.27,
+      "predicted": 38.41,
+      "residual": 1.31,
       "index": 427
     },
     {
       "actual": 39.72,
-      "predicted": 38.13,
-      "residual": 1.59,
+      "predicted": 39.27,
+      "residual": 0.45,
       "index": 428
     },
     {
       "actual": 39.4,
-      "predicted": 37.93,
-      "residual": 1.47,
+      "predicted": 38.8,
+      "residual": 0.6,
       "index": 429
     },
     {
       "actual": 39.76,
-      "predicted": 38.53,
-      "residual": 1.23,
+      "predicted": 39.57,
+      "residual": 0.19,
       "index": 430
     },
     {
       "actual": 40.72,
-      "predicted": 39.08,
-      "residual": 1.64,
+      "predicted": 40.04,
+      "residual": 0.68,
       "index": 431
     },
     {
       "actual": 41.11,
-      "predicted": 39.73,
-      "residual": 1.38,
+      "predicted": 40.63,
+      "residual": 0.48,
       "index": 432
     },
     {
       "actual": 42.28,
-      "predicted": 40.4,
-      "residual": 1.88,
+      "predicted": 41.26,
+      "residual": 1.02,
       "index": 433
     },
     {
       "actual": 45.05,
-      "predicted": 43.21,
-      "residual": 1.84,
+      "predicted": 44.26,
+      "residual": 0.79,
       "index": 434
     },
     {
       "actual": 45.47,
-      "predicted": 43.62,
-      "residual": 1.85,
+      "predicted": 45.0,
+      "residual": 0.47,
       "index": 435
     },
     {
       "actual": 45.73,
-      "predicted": 43.82,
-      "residual": 1.91,
+      "predicted": 45.25,
+      "residual": 0.48,
       "index": 436
     },
     {
       "actual": 46.27,
-      "predicted": 43.58,
-      "residual": 2.69,
+      "predicted": 45.07,
+      "residual": 1.2,
       "index": 437
     },
     {
       "actual": 45.03,
-      "predicted": 42.31,
-      "residual": 2.72,
+      "predicted": 43.74,
+      "residual": 1.29,
       "index": 438
     },
     {
       "actual": 45.69,
-      "predicted": 43.18,
-      "residual": 2.51,
+      "predicted": 44.75,
+      "residual": 0.94,
       "index": 439
     },
     {
       "actual": 45.77,
-      "predicted": 43.46,
-      "residual": 2.31,
+      "predicted": 45.38,
+      "residual": 0.39,
       "index": 440
     },
     {
       "actual": 44.42,
-      "predicted": 42.28,
-      "residual": 2.14,
+      "predicted": 44.15,
+      "residual": 0.27,
       "index": 441
     },
     {
       "actual": 45.04,
-      "predicted": 43.2,
-      "residual": 1.84,
+      "predicted": 45.12,
+      "residual": -0.08,
       "index": 442
     },
     {
       "actual": 45.22,
-      "predicted": 43.74,
-      "residual": 1.48,
+      "predicted": 45.52,
+      "residual": -0.3,
       "index": 443
     },
     {
       "actual": 45.0,
-      "predicted": 43.43,
-      "residual": 1.57,
+      "predicted": 45.12,
+      "residual": -0.12,
       "index": 444
     },
     {
       "actual": 45.13,
-      "predicted": 43.54,
-      "residual": 1.59,
+      "predicted": 45.15,
+      "residual": -0.02,
       "index": 445
     },
     {
       "actual": 46.11,
-      "predicted": 44.5,
-      "residual": 1.61,
+      "predicted": 46.1,
+      "residual": 0.01,
       "index": 446
     },
     {
       "actual": 46.51,
-      "predicted": 44.87,
-      "residual": 1.64,
+      "predicted": 46.62,
+      "residual": -0.11,
       "index": 447
     },
     {
       "actual": 45.76,
-      "predicted": 44.27,
-      "residual": 1.49,
+      "predicted": 46.24,
+      "residual": -0.48,
       "index": 448
     },
     {
       "actual": 45.09,
-      "predicted": 43.76,
-      "residual": 1.33,
+      "predicted": 45.59,
+      "residual": -0.5,
       "index": 449
     },
     {
       "actual": 45.4,
-      "predicted": 44.4,
-      "residual": 1.0,
+      "predicted": 46.19,
+      "residual": -0.79,
       "index": 450
     },
     {
       "actual": 45.98,
-      "predicted": 45.01,
-      "residual": 0.97,
+      "predicted": 46.59,
+      "residual": -0.61,
       "index": 451
     },
     {
       "actual": 45.73,
-      "predicted": 44.92,
-      "residual": 0.81,
+      "predicted": 46.46,
+      "residual": -0.73,
       "index": 452
     },
     {
       "actual": 45.66,
-      "predicted": 44.83,
-      "residual": 0.83,
+      "predicted": 46.09,
+      "residual": -0.43,
       "index": 453
     },
     {
       "actual": 46.25,
-      "predicted": 44.68,
-      "residual": 1.57,
+      "predicted": 45.59,
+      "residual": 0.66,
       "index": 454
     },
     {
       "actual": 46.07,
-      "predicted": 44.71,
-      "residual": 1.36,
+      "predicted": 45.71,
+      "residual": 0.36,
       "index": 455
     },
     {
       "actual": 47.3,
-      "predicted": 45.48,
-      "residual": 1.82,
+      "predicted": 46.41,
+      "residual": 0.89,
       "index": 456
     },
     {
       "actual": 46.3,
-      "predicted": 44.79,
-      "residual": 1.51,
+      "predicted": 45.77,
+      "residual": 0.53,
       "index": 457
     },
     {
       "actual": 47.26,
-      "predicted": 46.02,
-      "residual": 1.24,
+      "predicted": 47.14,
+      "residual": 0.12,
       "index": 458
     },
     {
       "actual": 46.81,
-      "predicted": 45.75,
-      "residual": 1.06,
+      "predicted": 46.78,
+      "residual": 0.03,
       "index": 459
     },
     {
       "actual": 45.7,
-      "predicted": 44.35,
-      "residual": 1.35,
+      "predicted": 45.23,
+      "residual": 0.47,
       "index": 460
     },
     {
       "actual": 45.44,
-      "predicted": 44.22,
-      "residual": 1.22,
+      "predicted": 45.23,
+      "residual": 0.21,
       "index": 461
     },
     {
       "actual": 44.97,
-      "predicted": 43.9,
-      "residual": 1.07,
+      "predicted": 44.76,
+      "residual": 0.21,
       "index": 462
     },
     {
       "actual": 44.75,
-      "predicted": 43.44,
-      "residual": 1.31,
+      "predicted": 44.13,
+      "residual": 0.62,
       "index": 463
     },
     {
       "actual": 43.53,
-      "predicted": 42.27,
-      "residual": 1.26,
+      "predicted": 43.03,
+      "residual": 0.5,
       "index": 464
     },
     {
       "actual": 42.44,
-      "predicted": 41.25,
-      "residual": 1.19,
+      "predicted": 42.05,
+      "residual": 0.39,
       "index": 465
     },
     {
       "actual": 42.6,
-      "predicted": 40.62,
-      "residual": 1.98,
+      "predicted": 41.78,
+      "residual": 0.82,
       "index": 466
     },
     {
       "actual": 42.87,
-      "predicted": 41.33,
-      "residual": 1.54,
+      "predicted": 42.27,
+      "residual": 0.6,
       "index": 467
     },
     {
       "actual": 41.71,
-      "predicted": 39.16,
-      "residual": 2.55,
+      "predicted": 40.07,
+      "residual": 1.64,
       "index": 468
     },
     {
       "actual": 41.43,
-      "predicted": 38.53,
-      "residual": 2.9,
+      "predicted": 39.45,
+      "residual": 1.98,
       "index": 469
     },
     {
       "actual": 41.18,
-      "predicted": 37.97,
-      "residual": 3.21,
+      "predicted": 38.64,
+      "residual": 2.54,
       "index": 470
     },
     {
       "actual": 40.78,
-      "predicted": 36.93,
-      "residual": 3.85,
+      "predicted": 38.27,
+      "residual": 2.51,
       "index": 471
     },
     {
       "actual": 41.0,
-      "predicted": 36.87,
-      "residual": 4.13,
+      "predicted": 38.08,
+      "residual": 2.92,
       "index": 472
     },
     {
       "actual": 42.1,
-      "predicted": 38.51,
-      "residual": 3.59,
+      "predicted": 40.27,
+      "residual": 1.83,
       "index": 473
     },
     {
       "actual": 42.36,
-      "predicted": 39.53,
-      "residual": 2.83,
+      "predicted": 40.56,
+      "residual": 1.8,
       "index": 474
     },
     {
       "actual": 42.71,
-      "predicted": 39.39,
-      "residual": 3.32,
+      "predicted": 40.4,
+      "residual": 2.31,
       "index": 475
     },
     {
       "actual": 42.01,
-      "predicted": 38.43,
-      "residual": 3.58,
+      "predicted": 39.61,
+      "residual": 2.4,
       "index": 476
     },
     {
       "actual": 42.15,
-      "predicted": 38.73,
-      "residual": 3.42,
+      "predicted": 39.62,
+      "residual": 2.53,
       "index": 477
     },
     {
       "actual": 42.3,
-      "predicted": 39.22,
-      "residual": 3.08,
+      "predicted": 39.8,
+      "residual": 2.5,
       "index": 478
     },
     {
       "actual": 42.64,
-      "predicted": 40.0,
-      "residual": 2.64,
+      "predicted": 40.39,
+      "residual": 2.25,
       "index": 479
     },
     {
       "actual": 44.27,
-      "predicted": 42.05,
-      "residual": 2.22,
+      "predicted": 42.67,
+      "residual": 1.6,
       "index": 480
     },
     {
       "actual": 45.16,
-      "predicted": 43.38,
-      "residual": 1.78,
+      "predicted": 43.91,
+      "residual": 1.25,
       "index": 481
     },
     {
       "actual": 48.5,
-      "predicted": 47.66,
-      "residual": 0.84,
+      "predicted": 48.53,
+      "residual": -0.03,
       "index": 482
     },
     {
       "actual": 47.06,
-      "predicted": 46.67,
-      "residual": 0.39,
+      "predicted": 47.8,
+      "residual": -0.74,
       "index": 483
     },
     {
       "actual": 45.84,
-      "predicted": 45.52,
-      "residual": 0.32,
+      "predicted": 46.76,
+      "residual": -0.92,
       "index": 484
     },
     {
       "actual": 45.15,
-      "predicted": 44.99,
-      "residual": 0.16,
+      "predicted": 46.43,
+      "residual": -1.28,
       "index": 485
     },
     {
       "actual": 44.94,
-      "predicted": 44.81,
-      "residual": 0.13,
+      "predicted": 46.19,
+      "residual": -1.25,
       "index": 486
     },
     {
       "actual": 46.19,
-      "predicted": 45.53,
-      "residual": 0.66,
+      "predicted": 47.11,
+      "residual": -0.92,
       "index": 487
     },
     {
       "actual": 46.32,
-      "predicted": 45.57,
-      "residual": 0.75,
+      "predicted": 47.15,
+      "residual": -0.83,
       "index": 488
     },
     {
       "actual": 47.35,
-      "predicted": 46.33,
-      "residual": 1.02,
+      "predicted": 48.03,
+      "residual": -0.68,
       "index": 489
     },
     {
       "actual": 46.32,
-      "predicted": 45.57,
-      "residual": 0.75,
+      "predicted": 46.88,
+      "residual": -0.56,
       "index": 490
     },
     {
       "actual": 47.33,
-      "predicted": 46.73,
-      "residual": 0.6,
+      "predicted": 48.11,
+      "residual": -0.78,
       "index": 491
     },
     {
       "actual": 47.41,
-      "predicted": 46.8,
-      "residual": 0.61,
+      "predicted": 48.37,
+      "residual": -0.96,
       "index": 492
     }
   ],
   "residual_stats": {
-    "mean": 1.7996,
-    "std": 2.3861,
-    "skew": 0.276,
-    "kurtosis": -0.1941
+    "mean": 1.7653,
+    "std": 2.5656,
+    "skew": 0.4164,
+    "kurtosis": 0.149
   },
   "residual_histogram": [
     {
-      "x": -3.75,
-      "count": 6
-    },
-    {
-      "x": -3.3,
-      "count": 3
-    },
-    {
-      "x": -2.86,
+      "x": -4.14,
       "count": 5
     },
     {
-      "x": -2.42,
+      "x": -3.64,
       "count": 4
     },
     {
-      "x": -1.97,
-      "count": 7
+      "x": -3.13,
+      "count": 8
     },
     {
-      "x": -1.53,
-      "count": 22
+      "x": -2.63,
+      "count": 8
     },
     {
-      "x": -1.09,
-      "count": 34
+      "x": -2.13,
+      "count": 8
     },
     {
-      "x": -0.64,
-      "count": 39
+      "x": -1.63,
+      "count": 10
     },
     {
-      "x": -0.2,
-      "count": 22
+      "x": -1.13,
+      "count": 32
     },
     {
-      "x": 0.25,
-      "count": 24
+      "x": -0.63,
+      "count": 53
     },
     {
-      "x": 0.69,
-      "count": 39
+      "x": -0.13,
+      "count": 48
     },
     {
-      "x": 1.13,
+      "x": 0.37,
+      "count": 36
+    },
+    {
+      "x": 0.87,
+      "count": 27
+    },
+    {
+      "x": 1.37,
+      "count": 15
+    },
+    {
+      "x": 1.88,
+      "count": 25
+    },
+    {
+      "x": 2.38,
+      "count": 42
+    },
+    {
+      "x": 2.88,
+      "count": 48
+    },
+    {
+      "x": 3.38,
       "count": 43
     },
     {
-      "x": 1.58,
-      "count": 32
+      "x": 3.88,
+      "count": 19
     },
     {
-      "x": 2.02,
-      "count": 18
-    },
-    {
-      "x": 2.46,
-      "count": 22
-    },
-    {
-      "x": 2.91,
-      "count": 30
-    },
-    {
-      "x": 3.35,
-      "count": 50
-    },
-    {
-      "x": 3.79,
-      "count": 32
-    },
-    {
-      "x": 4.24,
-      "count": 6
-    },
-    {
-      "x": 4.68,
+      "x": 4.38,
       "count": 12
     },
     {
-      "x": 5.13,
-      "count": 9
+      "x": 4.88,
+      "count": 7
     },
     {
-      "x": 5.57,
+      "x": 5.38,
       "count": 8
     },
     {
-      "x": 6.01,
+      "x": 5.88,
       "count": 8
     },
     {
-      "x": 6.46,
+      "x": 6.38,
       "count": 6
     },
     {
-      "x": 6.9,
+      "x": 6.89,
+      "count": 6
+    },
+    {
+      "x": 7.39,
+      "count": 6
+    },
+    {
+      "x": 7.89,
       "count": 3
     },
     {
-      "x": 7.34,
-      "count": 4
+      "x": 8.39,
+      "count": 3
     },
     {
-      "x": 7.79,
-      "count": 4
+      "x": 8.89,
+      "count": 2
     },
     {
-      "x": 8.23,
+      "x": 9.39,
       "count": 0
     },
     {
-      "x": 8.67,
+      "x": 9.89,
       "count": 0
     },
     {
-      "x": 9.12,
+      "x": 10.39,
       "count": 1
     }
   ]

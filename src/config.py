@@ -44,17 +44,15 @@ DUCKDB_PATH = DATA_FOLDER / "soybean_oil.duckdb"
 # Ticker symbols — CBOT / ICE / Bursa Malaysia
 # ---------------------------------------------------------------------------
 TICKERS = {
-    "boc1": "ZL=F",       # Soybean oil front-month (CBOT)
-    "sc1": "ZS=F",        # Soybean front-month (CBOT)
-    "smc1": "ZM=F",       # Soybean meal front-month (CBOT)
-    "zc1": "ZC=F",        # Corn front-month (CBOT)
-    "lcoc1": "BZ=F",      # Brent crude front-month (ICE)
-    "hoc1": "HO=F",       # Heating oil front-month (NYMEX)
-    "rsc1": "ZW=F",       # Wheat front-month (CBOT)
+    "boc1": "ZL=F",       # Soybean oil front-month (CBOT, c/lb)
+    "sc1": "ZS=F",        # Soybean front-month (CBOT, c/bu)
+    "smc1": "ZM=F",       # Soybean meal front-month (CBOT, $/short ton)
+    "zc1": "ZC=F",        # Corn front-month (CBOT, c/bu)
+    "lcoc1": "BZ=F",      # Brent crude front-month (ICE, $/bbl)
+    "hoc1": "HO=F",       # Heating oil front-month (NYMEX, $/gal)
+    "rsc1": "ZW=F",       # Wheat front-month (CBOT, c/bu)
+    "cpo": "CPO=F",       # Crude palm oil (CME, USD/mt)
 }
-# NOTE: Palm oil (fcpoc1) removed — PALM.L returns GBp ETF price (~78),
-# but training data uses MYR/tonne (~3000-7000). No reliable yfinance source
-# for FCPO in the correct unit. Model retrained without it.
 
 TARGET_COLUMN = "boc1"
 

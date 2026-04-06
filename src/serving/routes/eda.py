@@ -143,36 +143,44 @@ async def eda_spreads() -> dict:
 
     result: dict = {"dates": dates, "spreads": {}}
 
+    # CME Board Crush: (meal * 0.022) + (oil * 0.11) - (beans / 100), result $/bu
     if all(c in df.columns for c in ["boc1", "smc1", "sc1"]):
-        crush = 11 * df["boc1"] + df["smc1"] - df["sc1"]
+        crush = (df["smc1"] * 0.022) + (df["boc1"] * 0.11) - (df["sc1"] / 100)
         p10, p90 = float(crush.quantile(0.1)), float(crush.quantile(0.9))
         result["spreads"]["crush"] = {
             "values": [round(v, 2) if pd.notna(v) else None for v in crush],
-            "label": "Crush Spread",
-            "unit": "$/ton",
+            "label": "Board Crush",
+            "unit": "$/bu",
             "p10": round(p10, 2),
             "p90": round(p90, 2),
             "mean": round(float(crush.mean()), 2),
         }
 
+    # BOPO: soy oil USD/mt - palm oil (fcpoc1 is MYR/mt in training data,
+    # approximate conversion to USD/mt using historical avg ~4.3 MYR/USD)
     if all(c in df.columns for c in ["boc1", "fcpoc1"]):
-        op = df["boc1"] - df["fcpoc1"] / 100
-        p10, p90 = float(op.quantile(0.1)), float(op.quantile(0.9))
-        result["spreads"]["oil_palm"] = {
-            "values": [round(v, 2) if pd.notna(v) else None for v in op],
-            "label": "Oil / Palm Spread",
-            "unit": "c/lb",
-            "p10": round(p10, 2),
-            "p90": round(p90, 2),
-            "mean": round(float(op.mean()), 2),
+        boc1_usd_mt = df["boc1"] * 22.0462
+        # fcpoc1 in training data is MYR/mt, convert to USD/mt (~4.3 MYR/USD avg)
+        cpo_usd_mt = df["fcpoc1"] / 4.3
+        bopo = boc1_usd_mt - cpo_usd_mt
+        p10, p90 = float(bopo.quantile(0.1)), float(bopo.quantile(0.9))
+        result["spreads"]["bopo"] = {
+            "values": [round(v, 0) if pd.notna(v) else None for v in bopo],
+            "label": "BOPO Spread",
+            "unit": "$/mt",
+            "p10": round(p10, 0),
+            "p90": round(p90, 0),
+            "mean": round(float(bopo.mean()), 0),
         }
 
-    if all(c in df.columns for c in ["sc1"]) and "rsc1" in df.columns:
+    # Soy/Corn ratio (use rsc1 as proxy since training data has rsc1 not zc1 separately)
+    # rsc1 in training data was originally canola/wheat, but for EDA we show what we have
+    if all(c in df.columns for c in ["sc1", "rsc1"]):
         ratio = df["sc1"] / df["rsc1"].replace(0, np.nan)
         p10, p90 = float(ratio.quantile(0.1)), float(ratio.quantile(0.9))
-        result["spreads"]["soy_wheat"] = {
+        result["spreads"]["soy_grain"] = {
             "values": [round(v, 2) if pd.notna(v) else None for v in ratio],
-            "label": "Soy / Wheat Ratio",
+            "label": "Soy / Grain Ratio",
             "unit": "ratio",
             "p10": round(p10, 2),
             "p90": round(p90, 2),

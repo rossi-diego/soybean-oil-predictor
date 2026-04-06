@@ -32,20 +32,16 @@
     "boc1_bb_pos"
   ],
   "target": "boc1",
-  "residual_std": 3.1041,
+  "residual_std": 2.8105,
   "backtest_metrics": {
-    "mae": 2.56,
-    "rmse": 3.42,
-    "r2": 0.9468,
-    "directional_accuracy": 0.8643,
+    "mae": 2.21,
+    "rmse": 3.12,
+    "r2": 0.9557,
+    "directional_accuracy": 0.8633,
     "n_predictions": 2050,
-    "n_folds": 5,
-    "directional_accuracy_level": 0.8643,
-    "directional_accuracy_true": 0.5603,
-    "note": "directional_accuracy_true measures real next-day direction prediction; directional_accuracy_level is autocorrelated and inflated",
-    "strategy_sharpe": 3.03
+    "n_folds": 5
   },
-  "trained_at": "2026-04-05T20:39:37.043407",
+  "trained_at": "2026-04-05T21:29:45.687313",
   "train_start": "2013-10-17",
   "train_end": "2022-09-21",
   "test_start": "2022-09-22",
@@ -87,11 +83,11 @@
       "p95": 999.7
     },
     "crush_zscore": {
-      "min": -4.09,
-      "max": 4.45,
-      "mean": -0.02,
-      "p5": -2.15,
-      "p95": 2.3
+      "min": -4.57,
+      "max": 4.91,
+      "mean": 0.05,
+      "p5": -1.97,
+      "p95": 2.44
     },
     "boc1_crude_zscore": {
       "min": -3.15,

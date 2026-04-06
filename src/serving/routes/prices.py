@@ -177,7 +177,8 @@ async def get_spread_signals() -> dict:
         "boc1": TICKERS.get("boc1", "ZL=F"),
         "sc1": TICKERS.get("sc1", "ZS=F"),
         "smc1": TICKERS.get("smc1", "ZM=F"),
-        "fcpoc1": TICKERS.get("fcpoc1", "PALM.L"),
+        "zc1": TICKERS.get("zc1", "ZC=F"),
+        "cpo": TICKERS.get("cpo", "CPO=F"),
     }
 
     history_data: dict[str, list[float]] = {}
@@ -191,11 +192,12 @@ async def get_spread_signals() -> dict:
 
     signals = []
 
-    # Crush spread: 11 * oil + meal - beans
+    # CME Board Crush: (meal * 0.022) + (oil * 0.11) - (beans_per_bu)
+    # smc1 in $/ton, boc1 in c/lb, sc1 in c/bu -> result in $/bu
     if all(k in history_data for k in ("boc1", "smc1", "sc1")):
         min_len = min(len(history_data["boc1"]), len(history_data["smc1"]), len(history_data["sc1"]))
         crush_series = [
-            11 * history_data["boc1"][i] + history_data["smc1"][i] - history_data["sc1"][i]
+            (history_data["smc1"][i] * 0.022) + (history_data["boc1"][i] * 0.11) - (history_data["sc1"][i] / 100)
             for i in range(min_len)
         ]
         current = crush_series[-1] if crush_series else 0
@@ -206,33 +208,65 @@ async def get_spread_signals() -> dict:
 
         signals.append({
             "name": "crush_spread",
-            "label": "Crush Spread",
+            "label": "Board Crush",
             "value": round(current, 2),
-            "unit": "$/ton",
+            "unit": "$/bu",
             "ma30": round(ma30, 2),
             "deviation_pct": round(deviation_pct, 1),
             "trend": trend,
             **interp,
         })
 
-    # Oil/palm spread: boc1 - fcpoc1/100
-    if all(k in history_data for k in ("boc1", "fcpoc1")):
-        min_len = min(len(history_data["boc1"]), len(history_data["fcpoc1"]))
-        op_series = [
-            history_data["boc1"][i] - history_data["fcpoc1"][i] / 100
+    # BOPO spread: soy oil USD/mt - palm oil USD/mt
+    # boc1 c/lb * 22.0462 = USD/mt, cpo already in USD/mt
+    if all(k in history_data for k in ("boc1", "cpo")):
+        min_len = min(len(history_data["boc1"]), len(history_data["cpo"]))
+        bopo_series = [
+            (history_data["boc1"][i] * 22.0462) - history_data["cpo"][i]
             for i in range(min_len)
         ]
-        current = op_series[-1] if op_series else 0
-        ma30 = sum(op_series[-30:]) / min(30, len(op_series)) if op_series else 0
+        current = bopo_series[-1] if bopo_series else 0
+        ma30 = sum(bopo_series[-30:]) / min(30, len(bopo_series)) if bopo_series else 0
         deviation_pct = ((current - ma30) / abs(ma30) * 100) if ma30 != 0 else 0
-        trend = compute_trend(op_series)
+        trend = compute_trend(bopo_series)
         interp = interpret_oil_palm_spread(current, ma30, trend)
 
         signals.append({
-            "name": "oil_palm_spread",
-            "label": "Oil / Palm Spread",
+            "name": "bopo_spread",
+            "label": "BOPO Spread",
+            "value": round(current, 0),
+            "unit": "$/mt",
+            "ma30": round(ma30, 0),
+            "deviation_pct": round(deviation_pct, 1),
+            "trend": trend,
+            **interp,
+        })
+
+    # Soy/Corn ratio: sc1 / zc1 (both in c/bu)
+    if all(k in history_data for k in ("sc1", "zc1")):
+        min_len = min(len(history_data["sc1"]), len(history_data["zc1"]))
+        ratio_series = [
+            history_data["sc1"][i] / history_data["zc1"][i]
+            if history_data["zc1"][i] != 0 else 0
+            for i in range(min_len)
+        ]
+        current = ratio_series[-1] if ratio_series else 0
+        ma30 = sum(ratio_series[-30:]) / min(30, len(ratio_series)) if ratio_series else 0
+        deviation_pct = ((current - ma30) / abs(ma30) * 100) if ma30 != 0 else 0
+        trend = compute_trend(ratio_series)
+
+        if current > 2.5:
+            interp = {"interpretation": f"Ratio at {current:.2f} — above 2.5, farmers likely plant more soy (bearish long-term supply)", "signal": "bearish"}
+        elif current < 2.2:
+            interp = {"interpretation": f"Ratio at {current:.2f} — below 2.2, farmers favor corn (bullish soy)", "signal": "bullish"}
+        else:
+            interp = {"interpretation": f"Ratio at {current:.2f} — within normal range (2.2\u20132.5), no strong planting signal", "signal": "neutral"}
+
+        signals.append({
+            "name": "soy_corn_ratio",
+            "label": "Soy / Corn Ratio",
             "value": round(current, 2),
-            "unit": "c/lb",
+            "unit": "ratio",
             "ma30": round(ma30, 2),
             "deviation_pct": round(deviation_pct, 1),
             "trend": trend,

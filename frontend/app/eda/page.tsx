@@ -59,16 +59,20 @@ function rollingStd(arr: (number | null)[], window: number, means: (number | nul
 
 const SPREAD_INFO: Record<string, { title: string; desc: string }> = {
   crush: {
-    title: "Crush Spread",
-    desc: "Processor profitability: (11 \u00D7 Oil + Meal) \u2212 Soybeans. Above $0 = profitable to crush. Traders watch for margin compression as a signal of reduced demand.",
+    title: "Board Crush (CME)",
+    desc: "CME gross processing margin: (Meal \u00D7 0.022) + (Oil \u00D7 0.11) \u2212 Beans. Result in $/bu. Positive = profitable to crush soybeans. Above 30d avg = strong processor demand.",
   },
-  oil_palm: {
-    title: "Oil / Palm Ratio",
-    desc: "Relative value between soy oil and palm oil. High ratio = soy oil expensive vs palm \u2192 substitution pressure. Low ratio = demand support for soy oil.",
+  bopo: {
+    title: "BOPO Spread (Soy Oil vs Palm Oil)",
+    desc: "Soy oil premium to palm oil in USD/mt. Wide spread (>$200/mt) = soy oil expensive, substitution risk. Narrow (<$100/mt) = soy oil competitive vs palm.",
   },
-  soy_wheat: {
-    title: "Soy / Wheat Ratio",
-    desc: "Influences planting decisions. High ratio (>2.5) = farmers plant more soy \u2192 bearish long-term supply. Typical range: 1.5\u20133.0.",
+  soy_grain: {
+    title: "Soy / Grain Ratio",
+    desc: "Drives planting decisions. Above ~2.5 = farmers plant more soybeans (bearish long-term supply). Below ~2.2 = more competing grain planted (bullish soy).",
+  },
+  soy_corn_ratio: {
+    title: "Soy / Corn Ratio",
+    desc: "Drives US farmer planting decisions. Above ~2.5 = farmers plant more soybeans (bearish long-term supply). Below ~2.2 = more corn planted (bullish soy). Typical range: 2.0\u20133.0.",
   },
 };
 

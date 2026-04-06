@@ -59,7 +59,8 @@ def compute_spread_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Crush spread z-score: (11 * oil + meal) - beans
     if all(c in df.columns for c in ["boc1", "smc1", "sc1"]):
-        crush = 11 * df["boc1"] + df["smc1"] - df["sc1"]
+        # CME Board Crush: (meal * 0.022) + (oil * 0.11) - (beans / 100)
+        crush = (df["smc1"] * 0.022) + (df["boc1"] * 0.11) - (df["sc1"] / 100)
         ma = crush.rolling(window).mean()
         std = crush.rolling(window).std().replace(0, np.nan)
         result["crush_zscore"] = (crush - ma) / std
