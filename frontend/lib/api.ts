@@ -124,7 +124,9 @@ export interface EdaQuartiles { min: number; q1: number; median: number; q3: num
 export interface EdaFeatureDistribution {
   bins: EdaDistributionBin[];
   quartiles: EdaQuartiles;
+  recent_quartiles: EdaQuartiles | null;
   mean: number; std: number; n: number; recent_n: number;
+  recent_mean: number | null; recent_std: number | null;
 }
 export interface EdaDistributionsResponse {
   features: Record<string, EdaFeatureDistribution>;

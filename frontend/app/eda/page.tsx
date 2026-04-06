@@ -199,7 +199,11 @@ export default function EDAPage() {
             <button key={p} onClick={() => setCorrPeriod(p)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-colors ${corrPeriod === p ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{p}</button>
           ))}
         </div>
-        {!corr ? <Skeleton className="h-64" /> : (() => {
+        {!corr ? <Skeleton className="h-64" /> : (corr as any).error ? (
+          <div className="flex items-center justify-center h-32 text-zinc-500 text-sm">{(corr as any).error}</div>
+        ) : !corr.matrix.length ? (
+          <div className="flex items-center justify-center h-32 text-zinc-500 text-sm">Not enough data for this period. Select a longer window.</div>
+        ) : (() => {
           const SHORT: Record<string, string> = {
             boc1: "Soy Oil", smc1: "Soy Meal", sc1: "Soybeans",
             lcoc1: "Brent", hoc1: "Heat Oil", fcpoc1: "Palm Oil", rsc1: "Wheat",
@@ -345,20 +349,32 @@ export default function EDAPage() {
                     </ResponsiveContainer>
                   </div>
                   <div className="text-[12px] space-y-1">
-                    <p className="text-zinc-300 font-medium text-[11px] mb-2">{dist.labels[selectedFeature]} <span className="text-zinc-600">| {skewLabel}</span></p>
-                    {cur != null && (
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">Current</span>
-                        <span className={`tabular-nums font-medium ${curColor}`}>{cur}{pctl != null && ` (${pctl}th pctl)`}</span>
-                      </div>
-                    )}
-                    {curLabel && <p className={`text-[9px] ${curColor}`}>{curLabel}</p>}
-                    {Object.entries(feat.quartiles).map(([k, v]) => (
-                      <div key={k} className="flex justify-between"><span className="text-zinc-500 capitalize">{k}</span><span className="tabular-nums">{v}</span></div>
-                    ))}
-                    <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums text-green-400">{feat.mean}</span></div>
-                    <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{feat.std}</span></div>
-                    <div className="flex justify-between"><span className="text-zinc-500">N (train / recent)</span><span className="tabular-nums">{feat.n} / {feat.recent_n}</span></div>
+                    {(() => {
+                      const hasRecent = (feat as any).recent_quartiles != null;
+                      const showRecent = hasRecent;
+                      const statsQ = showRecent ? (feat as any).recent_quartiles : feat.quartiles;
+                      const statsMean = showRecent ? (feat as any).recent_mean : feat.mean;
+                      const statsStd = showRecent ? (feat as any).recent_std : feat.std;
+                      const statsLabel = showRecent ? `Statistics (recent ${distWindow})` : "Statistics (full training)";
+                      return (
+                        <>
+                          <p className="text-zinc-300 font-medium text-[11px] mb-2">{dist.labels[selectedFeature]} <span className="text-zinc-600">| {statsLabel}</span></p>
+                          {cur != null && (
+                            <div className="flex justify-between">
+                              <span className="text-zinc-500">Current</span>
+                              <span className={`tabular-nums font-medium ${curColor}`}>{cur}{pctl != null && ` (${pctl}th pctl)`}</span>
+                            </div>
+                          )}
+                          {curLabel && <p className={`text-[9px] ${curColor}`}>{curLabel}</p>}
+                          {Object.entries(statsQ).map(([k, v]: [string, any]) => (
+                            <div key={k} className="flex justify-between"><span className="text-zinc-500 capitalize">{k}</span><span className="tabular-nums">{v}</span></div>
+                          ))}
+                          <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums text-green-400">{statsMean}</span></div>
+                          <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{statsStd}</span></div>
+                          <div className="flex justify-between"><span className="text-zinc-500">N (train / recent)</span><span className="tabular-nums">{feat.n} / {feat.recent_n}</span></div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               );

@@ -81,21 +81,35 @@ async def eda_correlations(method: str = "pearson", period: str = "1Y") -> dict:
     months = {"1M": 1, "3M": 3, "6M": 6, "1Y": 12, "3Y": 36}.get(period)
     if months:
         cutoff = df.index.max() - pd.DateOffset(months=months)
-        sub = df[df.index >= cutoff][cols].dropna()
+        sub = df[df.index >= cutoff][cols]
     else:
-        sub = df[cols].dropna()
+        sub = df[cols]
+
+    n_days = len(sub.dropna(how="all"))
+    if n_days < 5:
+        return {
+            "features": cols,
+            "matrix": [],
+            "method": method,
+            "period": period,
+            "n_days": n_days,
+            "start": "",
+            "end": "",
+            "labels": {c: LABELS[c] for c in cols},
+            "error": "Not enough data for this period. Select a longer window.",
+        }
 
     corr = sub.corr(method="spearman" if method == "spearman" else "pearson")
 
-    start = sub.index.min().strftime("%Y-%m-%d") if len(sub) > 0 else ""
-    end = sub.index.max().strftime("%Y-%m-%d") if len(sub) > 0 else ""
+    start = sub.dropna(how="all").index.min().strftime("%Y-%m-%d") if n_days > 0 else ""
+    end = sub.dropna(how="all").index.max().strftime("%Y-%m-%d") if n_days > 0 else ""
 
     return {
         "features": cols,
-        "matrix": [[round(corr.iloc[i, j], 4) for j in range(len(cols))] for i in range(len(cols))],
+        "matrix": [[round(corr.iloc[i, j], 4) if pd.notna(corr.iloc[i, j]) else 0.0 for j in range(len(cols))] for i in range(len(cols))],
         "method": method,
         "period": period,
-        "n_days": len(sub),
+        "n_days": n_days,
         "start": start,
         "end": end,
         "labels": {c: LABELS[c] for c in cols},
@@ -163,17 +177,33 @@ async def eda_distributions(recent_window: str = "3M") -> dict:
             })
 
         q = vals.quantile([0, 0.25, 0.5, 0.75, 1.0])
+        training_stats = {
+            "min": round(float(q[0.0]), 2),
+            "q1": round(float(q[0.25]), 2),
+            "median": round(float(q[0.5]), 2),
+            "q3": round(float(q[0.75]), 2),
+            "max": round(float(q[1.0]), 2),
+        }
+
+        recent_stats = None
+        if len(recent_vals) >= 2:
+            rq = recent_vals.quantile([0, 0.25, 0.5, 0.75, 1.0])
+            recent_stats = {
+                "min": round(float(rq[0.0]), 2),
+                "q1": round(float(rq[0.25]), 2),
+                "median": round(float(rq[0.5]), 2),
+                "q3": round(float(rq[0.75]), 2),
+                "max": round(float(rq[1.0]), 2),
+            }
+
         result[col] = {
             "bins": bins,
-            "quartiles": {
-                "min": round(float(q[0.0]), 2),
-                "q1": round(float(q[0.25]), 2),
-                "median": round(float(q[0.5]), 2),
-                "q3": round(float(q[0.75]), 2),
-                "max": round(float(q[1.0]), 2),
-            },
+            "quartiles": training_stats,
+            "recent_quartiles": recent_stats,
             "mean": round(float(vals.mean()), 2),
             "std": round(float(vals.std()), 2),
+            "recent_mean": round(float(recent_vals.mean()), 2) if len(recent_vals) >= 2 else None,
+            "recent_std": round(float(recent_vals.std()), 2) if len(recent_vals) >= 2 else None,
             "n": len(vals),
             "recent_n": len(recent_vals),
             "current": round(current, 2) if current is not None else None,
