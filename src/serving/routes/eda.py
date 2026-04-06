@@ -73,21 +73,31 @@ async def eda_prices(period: str = "all") -> dict:
 
 
 @router.get("/eda/correlations")
-async def eda_correlations(method: str = "pearson") -> dict:
-    """Correlation matrix between all features."""
+async def eda_correlations(method: str = "pearson", period: str = "1Y") -> dict:
+    """Correlation matrix between all features with period filter."""
     df = _load_data()
     cols = [c for c in LABELS if c in df.columns]
-    sub = df[cols].dropna()
 
-    if method == "spearman":
-        corr = sub.corr(method="spearman")
+    months = {"1M": 1, "3M": 3, "6M": 6, "1Y": 12, "3Y": 36}.get(period)
+    if months:
+        cutoff = df.index.max() - pd.DateOffset(months=months)
+        sub = df[df.index >= cutoff][cols].dropna()
     else:
-        corr = sub.corr(method="pearson")
+        sub = df[cols].dropna()
+
+    corr = sub.corr(method="spearman" if method == "spearman" else "pearson")
+
+    start = sub.index.min().strftime("%Y-%m-%d") if len(sub) > 0 else ""
+    end = sub.index.max().strftime("%Y-%m-%d") if len(sub) > 0 else ""
 
     return {
         "features": cols,
         "matrix": [[round(corr.iloc[i, j], 4) for j in range(len(cols))] for i in range(len(cols))],
         "method": method,
+        "period": period,
+        "n_days": len(sub),
+        "start": start,
+        "end": end,
         "labels": {c: LABELS[c] for c in cols},
     }
 

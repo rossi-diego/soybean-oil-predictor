@@ -583,8 +583,8 @@ export const api = {
     fetchApi<{ dates: string[]; series: Record<string, (number | null)[]>; window: number; labels: Record<string, string> }>(
       `/api/v1/eda/rolling-correlations?window=${window}`),
 
-  edaCorrelations: (method = "pearson") =>
-    fetchApi<EdaCorrelationsResponse>(`/api/v1/eda/correlations?method=${method}`),
+  edaCorrelations: (method = "pearson", period = "1Y") =>
+    fetchApi<EdaCorrelationsResponse>(`/api/v1/eda/correlations?method=${method}&period=${period}`),
 
   edaDistributions: () =>
     fetchApi<EdaDistributionsResponse>("/api/v1/eda/distributions"),

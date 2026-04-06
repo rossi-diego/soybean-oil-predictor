@@ -77,11 +77,12 @@ export default function EDAPage() {
   const [showBollinger, setShowBollinger] = useState(false);
   const [visibleSeries, setVisibleSeries] = useState<Set<string>>(VISIBLE_DEFAULT);
   const [corrMethod, setCorrMethod] = useState("pearson");
+  const [corrPeriod, setCorrPeriod] = useState("1Y");
   const [selectedFeature, setSelectedFeature] = useState("boc1");
 
   useEffect(() => {
     Promise.all([
-      api.edaCorrelations(corrMethod).then(setCorr).catch(() => {}),
+      api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}),
       api.edaDistributions().then(setDist).catch(() => {}),
       api.edaRollingCorrelations().then(setRollingCorr).catch(() => {}),
       api.edaSpreads().then(setSpreads).catch(() => {}),
@@ -91,7 +92,7 @@ export default function EDAPage() {
   }, []);
 
   useEffect(() => { api.edaPrices(period).then(setPrices).catch(() => {}); }, [period]);
-  useEffect(() => { api.edaCorrelations(corrMethod).then(setCorr).catch(() => {}); }, [corrMethod]);
+  useEffect(() => { api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}); }, [corrMethod, corrPeriod]);
 
   const demo = loaded && isDemoMode();
 
@@ -185,10 +186,14 @@ export default function EDAPage() {
       </Section>
 
       {/* 2. Correlation Heatmap */}
-      <Section title="Correlation Heatmap" sub={`Pearson: linear relationships. Spearman: monotonic (rank-based). If Spearman >> Pearson for a pair, the relationship is nonlinear.${corr ? ` Period: ${prices?.dates?.[0] ?? ""} to ${prices?.dates?.[prices.dates.length - 1] ?? ""}.` : ""}`}>
-        <div className="flex gap-2 mb-3">
+      <Section title="Correlation Heatmap" sub={`Pearson: linear relationships. Spearman: monotonic (rank-based).${(corr as any)?.n_days ? ` ${(corr as any).start} to ${(corr as any).end} (${(corr as any).n_days} days).` : ""}`}>
+        <div className="flex flex-wrap items-center gap-2 mb-3">
           {["pearson", "spearman"].map((m) => (
             <button key={m} onClick={() => setCorrMethod(m)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium capitalize transition-colors ${corrMethod === m ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{m}</button>
+          ))}
+          <span className="text-zinc-700">|</span>
+          {["1M", "3M", "6M", "1Y", "3Y"].map((p) => (
+            <button key={p} onClick={() => setCorrPeriod(p)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-colors ${corrPeriod === p ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{p}</button>
           ))}
         </div>
         {!corr ? <Skeleton className="h-64" /> : (() => {
