@@ -395,74 +395,83 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Market Intelligence Brief */}
-      {loaded && (
-        <div className="glass-card p-5">
-          <h2 className="text-sm font-semibold mb-3">Market Intelligence</h2>
-          <div className="space-y-2.5">
-            {/* 1. Forecast vs current */}
-            {livePred && boc1 != null && (() => {
-              const d = livePred.predicted_price - boc1;
-              const pct = (d / boc1) * 100;
-              const bias = Math.abs(pct) < 2 ? "Neutral" : pct > 0 ? "Bullish" : "Bearish";
-              const biasColor = bias === "Bullish" ? "text-green-400" : bias === "Bearish" ? "text-red-400" : "text-zinc-400";
-              return (
-                <div className="flex items-start gap-2 text-[13px]">
-                  <span className={`shrink-0 mt-0.5 ${biasColor}`}>{bias === "Bullish" ? "\u25B2" : bias === "Bearish" ? "\u25BC" : "\u25B6"}</span>
-                  <p className="text-zinc-400">
-                    Model forecast: <strong className="text-zinc-200">{livePred.predicted_price.toFixed(2)} c/lb</strong> vs
-                    current <strong className="text-zinc-200">{boc1.toFixed(2)}</strong>{" "}
-                    <span className={biasColor}>
-                      ({d > 0 ? "+" : ""}{pct.toFixed(1)}%)
-                    </span>.
-                    Bias: <strong className={biasColor}>{bias}</strong>.
-                    Model predicts next-day direction correctly 56% of the time on out-of-sample data.
-                  </p>
-                </div>
-              );
-            })()}
+      {/* Market Intelligence */}
+      {loaded && livePred && boc1 != null && (() => {
+        const d = livePred.predicted_price - boc1;
+        const pct = (d / boc1) * 100;
+        const modelBias = Math.abs(pct) < 2 ? "neutral" : pct > 0 ? "bullish" : "bearish";
+        const farFromMean = Math.abs(boc1 - 41) / 41 > 0.5;
 
-            {/* 2. Spread context */}
-            {spreads.length > 0 && spreads.map((s) => (
-              <div key={s.name} className="flex items-start gap-2 text-[13px]">
-                <span className={`shrink-0 mt-0.5 ${SIGNAL_TEXT[s.signal]}`}>{TREND_ICON[s.trend]}</span>
-                <p className="text-zinc-400">{s.interpretation}</p>
+        // Determine overall signal by checking model + spread alignment
+        const spreadBullish = spreads.filter((s) => s.signal === "bullish").length;
+        const spreadBearish = spreads.filter((s) => s.signal === "bearish").length;
+        const spreadsAgree = (modelBias === "bullish" && spreadBullish >= spreadBearish) ||
+                             (modelBias === "bearish" && spreadBearish >= spreadBullish);
+
+        let signalText: string;
+        let signalColor: string;
+        let signalDot: string;
+        if (farFromMean) {
+          signalText = "LOW CONFIDENCE \u2014 price outside training range";
+          signalColor = "text-red-400";
+          signalDot = "bg-red-400";
+        } else if (modelBias === "neutral") {
+          signalText = "NEUTRAL \u2014 model sees no clear directional edge";
+          signalColor = "text-zinc-400";
+          signalDot = "bg-zinc-400";
+        } else if (spreadsAgree) {
+          signalText = `${modelBias.toUpperCase()} \u2014 model and spreads aligned`;
+          signalColor = modelBias === "bullish" ? "text-green-400" : "text-red-400";
+          signalDot = modelBias === "bullish" ? "bg-green-400" : "bg-red-400";
+        } else {
+          signalText = `MIXED \u2014 model ${modelBias} but spreads diverge`;
+          signalColor = "text-yellow-500";
+          signalDot = "bg-yellow-500";
+        }
+
+        // Build spread summary line
+        const crushSpread = spreads.find((s) => s.name === "crush_spread");
+        const bopoSpread = spreads.find((s) => s.name === "bopo_spread");
+        const scRatio = spreads.find((s) => s.name === "soy_corn_ratio");
+
+        return (
+          <div className="glass-card p-5">
+            <div className="space-y-2">
+              {/* Line 1: Signal */}
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${signalDot}`} />
+                <p className={`text-[13px] font-semibold ${signalColor}`}>{signalText}</p>
               </div>
-            ))}
 
-            {/* 3. Risk flag — if BOC1 is far from training mean */}
-            {boc1 != null && backtest && (() => {
-              const mae = backtest.metrics.mae;
-              const farFromMean = Math.abs(boc1 - 41) / 41 > 0.5;
-              if (farFromMean) {
-                return (
-                  <div className="flex items-start gap-2 text-[13px]">
-                    <span className="shrink-0 mt-0.5 text-yellow-500">!</span>
-                    <p className="text-yellow-500/80">
-                      Current BOC1 ({boc1.toFixed(0)} c/lb) is {((boc1 - 41) / 41 * 100).toFixed(0)}% above training
-                      mean. Model accuracy may be lower in this regime (training MAE: {mae} c/lb).
-                    </p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-
-            {/* 4. Pipeline summary (compact) */}
-            <div className="flex items-start gap-2 text-[13px]">
-              <span className="shrink-0 mt-0.5 text-zinc-600">&bull;</span>
-              <p className="text-zinc-600">
-                Pipeline: yfinance &rarr; Parquet &rarr; dbt + DuckDB &rarr; Ridge model &rarr; FastAPI on Render
+              {/* Line 2: Forecast */}
+              <p className="text-[13px] text-zinc-400">
+                Model predicts{" "}
+                <strong className={d > 0 ? "text-green-400" : "text-red-400"}>
+                  {d > 0 ? "upside" : "downside"} of {Math.abs(pct).toFixed(1)}%
+                </strong>{" "}
+                ({livePred.predicted_price.toFixed(2)} vs {boc1.toFixed(2)} c/lb).
+                Next-day directional accuracy: 56%.
               </p>
+
+              {/* Line 3: Spread context */}
+              {(crushSpread || bopoSpread || scRatio) && (
+                <p className="text-[13px] text-zinc-500">
+                  {crushSpread && <>Crush: <strong className="text-zinc-300">${crushSpread.value}/bu</strong> ({crushSpread.deviation_pct > 0 ? "+" : ""}{crushSpread.deviation_pct}% vs avg). </>}
+                  {bopoSpread && <>BOPO: <strong className="text-zinc-300">${bopoSpread.value}/mt</strong> ({(bopoSpread.value as number) > 200 ? "wide" : "narrow"}). </>}
+                  {scRatio && <>Soy/Corn: <strong className="text-zinc-300">{scRatio.value}</strong>.</>}
+                </p>
+              )}
+
+              {/* Line 4: Regime warning */}
+              {farFromMean && (
+                <p className="text-[12px] text-yellow-500/80">
+                  Current BOC1 ({boc1.toFixed(0)} c/lb) is {((boc1 - 41) / 41 * 100).toFixed(0)}% above training mean. Prediction reliability is reduced in this regime.
+                </p>
+              )}
             </div>
           </div>
-
-          {/* Footnote */}
-          <p className="text-[10px] text-zinc-700 mt-3 pt-2 border-t border-[#1e1e22]">
-            A 1% improvement in hedge timing on a 10,000 MT soybean oil position is worth ~$50,000.
-          </p>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Model table */}
       {comp && comp.models.length > 0 && (
