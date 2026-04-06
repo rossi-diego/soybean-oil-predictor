@@ -254,14 +254,13 @@ async def eda_spreads() -> dict:
             "mean": round(float(bopo.mean()), 0),
         }
 
-    # Soy/Corn ratio (use rsc1 as proxy since training data has rsc1 not zc1 separately)
-    # rsc1 in training data was originally canola/wheat, but for EDA we show what we have
-    if all(c in df.columns for c in ["sc1", "rsc1"]):
-        ratio = df["sc1"] / df["rsc1"].replace(0, np.nan)
+    # Soy/Corn ratio: sc1 (c/bu) / zc1 (c/bu) — same as Dashboard
+    if all(c in df.columns for c in ["sc1", "zc1"]):
+        ratio = df["sc1"] / df["zc1"].replace(0, np.nan)
         p10, p90 = float(ratio.quantile(0.1)), float(ratio.quantile(0.9))
-        result["spreads"]["soy_grain"] = {
+        result["spreads"]["soy_corn"] = {
             "values": [round(v, 2) if pd.notna(v) else None for v in ratio],
-            "label": "Soy / Wheat Ratio",
+            "label": "Soy / Corn Ratio",
             "unit": "ratio",
             "p10": round(p10, 2),
             "p90": round(p90, 2),

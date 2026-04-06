@@ -56,8 +56,7 @@ function rollingStd(arr: (number | null)[], w: number, means: (number | null)[])
 const SPREAD_INFO: Record<string, { title: string; desc: string }> = {
   crush: { title: "Board Crush (CME)", desc: "Gross processing margin: (Meal × 0.022) + (Oil × 0.11) − Beans. Result in $/bu. Positive = profitable to crush. Above 30d avg = strong processor demand." },
   bopo: { title: "BOPO Spread", desc: "Soy oil premium to palm oil in USD/mt. Wide (>$200) = soy oil expensive, substitution risk. Narrow (<$100) = soy oil competitive." },
-  soy_grain: { title: "Soy / Wheat Ratio", desc: "Soybeans (c/bu) ÷ Wheat (c/bu). Measures relative value between the two crops. Different from the Soy/Corn ratio on the Dashboard which uses ZC=F." },
-  soy_corn_ratio: { title: "Soy / Corn Ratio", desc: "US farmer planting economics. Above 2.5 = more soy planted. Below 2.2 = more corn. Range: 2.0–3.0." },
+  soy_corn: { title: "Soy / Corn Ratio", desc: "Soybeans (c/bu) ÷ Corn (c/bu). Drives US farmer planting decisions. Above ~2.5 = farmers plant more soybeans (bearish supply). Below ~2.2 = more corn planted (bullish soy). Typical range: 2.0–3.0." },
 };
 
 const VISIBLE_DEFAULT = new Set(["boc1", "sc1", "smc1", "lcoc1"]);
