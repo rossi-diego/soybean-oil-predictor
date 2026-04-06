@@ -391,9 +391,17 @@ export default function EDAPage() {
       </Section>
 
       {/* 6. Stationarity & Returns */}
-      <Section title="Stationarity &amp; Returns" sub="ADF test for unit roots. ACF/PACF computed on daily returns (not levels). Fat tails indicate extreme moves are more frequent than a normal distribution predicts.">
-        {!station ? <Skeleton className="h-48" /> : (
-          <div className="space-y-5">
+      <Section title="Stationarity &amp; Returns" sub="Can we predict tomorrow&apos;s price from today&apos;s? These tests reveal the statistical structure of BOC1 price movements, which determines what types of models work and what signals traders can rely on.">
+        {!station ? <Skeleton className="h-48" /> : (() => {
+          const { returns_stats: rs, confidence_interval: ci } = station;
+          const acfLag1 = station.acf.find((a) => a.lag === 1);
+          const acfSignificant = acfLag1 && Math.abs(acfLag1.value) > ci;
+          const stationaryCount = Object.values(station.adf_tests).filter((r) => r.stationary).length;
+          const totalCount = Object.keys(station.adf_tests).length;
+
+          return (
+          <div className="space-y-6">
+            {/* Returns histogram */}
             <div>
               <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">BOC1 Daily Returns (%)</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -410,18 +418,24 @@ export default function EDAPage() {
                   </ResponsiveContainer>
                 </div>
                 <div className="text-[12px] space-y-1">
-                  <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums">{station.returns_stats.mean.toFixed(4)}%</span></div>
-                  <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{station.returns_stats.std.toFixed(4)}%</span></div>
-                  <div className="flex justify-between"><span className="text-zinc-500">Skewness</span><span className="tabular-nums">{station.returns_stats.skew.toFixed(4)}</span></div>
-                  <div className="flex justify-between"><span className="text-zinc-500">Kurtosis</span><span className="tabular-nums">{station.returns_stats.kurtosis.toFixed(4)}</span></div>
-                  <p className="text-[10px] text-zinc-500 pt-1 border-t border-[#1e1e22]">
-                    {station.returns_stats.kurtosis > 0 ? "Fat tails \u2014 extreme daily moves more frequent than normal. Typical for commodity prices." : "Approximately normal distribution of returns."}
-                  </p>
+                  <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums">{rs.mean.toFixed(4)}%</span></div>
+                  <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{rs.std.toFixed(4)}%</span></div>
+                  <div className="flex justify-between"><span className="text-zinc-500">Skewness</span><span className="tabular-nums">{rs.skew.toFixed(2)}</span></div>
+                  <div className="flex justify-between"><span className="text-zinc-500">Kurtosis</span><span className="tabular-nums">{rs.kurtosis.toFixed(2)}</span></div>
                 </div>
+              </div>
+              <div className="mt-2 p-3 bg-white/[0.02] rounded-md text-[11px] text-zinc-400 space-y-1">
+                <p>Average daily move is near zero ({rs.mean.toFixed(2)}%) &mdash; no persistent drift.</p>
+                <p>Std of {rs.std.toFixed(2)}% means a typical day moves \u00B1{(rs.std * 0.69).toFixed(1)} c/lb at current prices.</p>
+                {rs.kurtosis > 3 && <p className="text-yellow-500/80">Kurtosis of {rs.kurtosis.toFixed(1)} (normal = 3) confirms fat tails &mdash; extreme moves (crashes, spikes) happen more often than a bell curve predicts. Standard VaR models underestimate tail risk.</p>}
               </div>
             </div>
 
+            {/* ADF test */}
             <div>
+              <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-md mb-3 text-[12px] text-zinc-300">
+                <strong>Bottom line:</strong> Soybean oil prices wander randomly (non-stationary). You cannot predict tomorrow&apos;s <em>price</em> from today&apos;s price alone. However, daily <em>returns</em> and <em>spreads</em> are predictable &mdash; which is why the model uses stationary features like crush z-score, momentum, and mean-reversion signals.
+              </div>
               <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">Augmented Dickey-Fuller Test</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-[12px]">
@@ -438,38 +452,57 @@ export default function EDAPage() {
                         <td className="py-1.5 px-2 text-right tabular-nums">{r.statistic?.toFixed(2) ?? "\u2014"}</td>
                         <td className="py-1.5 px-2 text-right tabular-nums">{r.p_value != null ? r.p_value.toFixed(4) : "\u2014"}</td>
                         <td className="py-1.5 px-2 text-center">
-                          {r.stationary === true && <span className="text-green-400 text-[10px]">Yes (p &lt; 0.05)</span>}
-                          {r.stationary === false && <span className="text-red-400 text-[10px]">No (unit root)</span>}
+                          {r.stationary === true && <span className="text-green-400 text-[10px]">Stationary (p &lt; 0.05)</span>}
+                          {r.stationary === false && <span className="text-red-400 text-[10px]">Unit root</span>}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <p className="text-[10px] text-zinc-600 mt-1">Non-stationary series require differencing for pure time-series models. Cross-sectional features (used here) are robust to non-stationarity.</p>
+              <p className="text-[11px] text-zinc-500 mt-2">
+                {stationaryCount} of {totalCount} commodities are stationary. A unit root means the price has no tendency to revert to an average &mdash; it can drift to any level. For trading: don&apos;t use mean-reversion on raw prices. Instead, trade <strong className="text-zinc-300">spreads</strong> (crush, BOPO) which are mean-reverting, or model <strong className="text-zinc-300">returns</strong> which are stationary.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[{ data: station.acf, title: "ACF (Returns)", color: "#3b82f6" }, { data: station.pacf, title: "PACF (Returns)", color: "#22c55e" }].map(({ data, title, color }) => (
-                <div key={title}>
-                  <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">{title}</h3>
-                  <div className="h-36">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
-                        <XAxis dataKey="lag" stroke="#3f3f46" fontSize={9} />
-                        <YAxis stroke="#3f3f46" fontSize={9} domain={[-0.15, 0.15]} />
-                        <ReferenceLine y={station.confidence_interval} stroke="#ef4444" strokeDasharray="3 3" opacity={0.5} />
-                        <ReferenceLine y={-station.confidence_interval} stroke="#ef4444" strokeDasharray="3 3" opacity={0.5} />
-                        <Bar dataKey="value" fill={color} opacity={0.7} />
-                      </BarChart>
-                    </ResponsiveContainer>
+            {/* ACF / PACF */}
+            <div>
+              <p className="text-[11px] text-zinc-400 mb-3">
+                <strong className="text-zinc-300">Autocorrelation:</strong> Do yesterday&apos;s returns predict today&apos;s? Bars exceeding the red dashed lines (95% confidence bounds) are statistically significant. If most bars are near zero, returns are roughly independent day-to-day.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { data: station.acf.filter((d) => d.lag > 0), title: "ACF (Returns)", color: "#3b82f6" },
+                  { data: station.pacf.filter((d) => d.lag > 0), title: "PACF (Returns)", color: "#22c55e" },
+                ].map(({ data, title, color }) => (
+                  <div key={title}>
+                    <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-2">{title}</h3>
+                    <div className="h-36">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#1e1e22" />
+                          <XAxis dataKey="lag" stroke="#3f3f46" fontSize={9} />
+                          <YAxis stroke="#3f3f46" fontSize={9} domain={[-0.12, 0.12]} />
+                          <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} formatter={(v: number) => [v?.toFixed(4), "r"]} />
+                          <ReferenceLine y={ci} stroke="#ef4444" strokeDasharray="3 3" opacity={0.6} label={{ value: "95% CI", fill: "#ef4444", fontSize: 8 }} />
+                          <ReferenceLine y={-ci} stroke="#ef4444" strokeDasharray="3 3" opacity={0.6} />
+                          <ReferenceLine y={0} stroke="#3f3f46" />
+                          <Bar dataKey="value" fill={color} opacity={0.8} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-2">
+                {acfSignificant
+                  ? `Lag 1 autocorrelation (${acfLag1?.value.toFixed(3)}) is significant \u2014 slight short-term momentum exists in daily returns. The model captures this signal via lagged return features.`
+                  : "Returns show minimal autocorrelation \u2014 daily moves are largely independent. This limits the accuracy ceiling for any single-day prediction model, consistent with weak-form market efficiency."}
+              </p>
             </div>
           </div>
-        )}
+          );
+        })()}
       </Section>
     </div>
   );
