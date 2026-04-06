@@ -103,100 +103,89 @@ export default function DashboardPage() {
         </p>
       </section>
 
-      {/* Price metrics */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* 3x2 Key metrics grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {/* BOC1 Last */}
         <div className="glass-card p-4">
-          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
-            BOC1 Last
-          </p>
-          {!loaded ? (
-            <Skeleton className="h-8 w-24 mt-1.5" />
-          ) : (
-            <p className="text-2xl font-bold mt-1 text-green-400">
-              {boc1?.toFixed(2) ?? "N/A"}
-            </p>
+          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">BOC1 Last</p>
+          {!loaded ? <Skeleton className="h-8 w-24 mt-1.5" /> : (
+            <p className="text-2xl font-bold mt-1 text-green-400">{boc1?.toFixed(2) ?? "N/A"}</p>
           )}
           <p className="text-[10px] text-zinc-600 mt-0.5">cents/lb, CBOT</p>
         </div>
+
+        {/* Model Forecast */}
         <div className="glass-card p-4">
-          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
-            Model Forecast
-          </p>
-          {!loaded ? (
-            <Skeleton className="h-8 w-24 mt-1.5" />
-          ) : (
+          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">Model Forecast</p>
+          {!loaded ? <Skeleton className="h-8 w-24 mt-1.5" /> : (
             <>
               <div className="flex items-baseline gap-2 mt-1">
-                <p className="text-2xl font-bold text-blue-400">
-                  {livePred?.predicted_price.toFixed(2) ?? "N/A"}
-                </p>
+                <p className="text-2xl font-bold text-blue-400">{livePred?.predicted_price.toFixed(2) ?? "N/A"}</p>
                 {diff !== null && boc1 != null && (
                   <span className={`text-xs font-medium ${diff > 0 ? "text-green-400" : "text-red-400"}`}>
                     {diff > 0 ? "\u25B2" : "\u25BC"} {diff > 0 ? "+" : ""}{((diff / boc1) * 100).toFixed(1)}%
                   </span>
                 )}
               </div>
-              {diff !== null && (
-                <p className="text-[10px] mt-0.5">
-                  <span className={diff > 0 ? "text-green-400" : "text-red-400"}>
-                    {diff > 0 ? "Bullish" : "Bearish"}
-                  </span>
-                  <span className="text-zinc-600"> vs {boc1?.toFixed(2)} current</span>
-                </p>
-              )}
+              <p className="text-[10px] mt-0.5">
+                {diff !== null ? (
+                  <><span className={diff > 0 ? "text-green-400" : "text-red-400"}>{diff > 0 ? "Bullish" : "Bearish"}</span><span className="text-zinc-600"> vs {boc1?.toFixed(2)}</span></>
+                ) : <span className="text-zinc-600">{livePred?.model_name ?? "loading"}</span>}
+              </p>
             </>
           )}
-          <p className="text-[10px] text-zinc-600 mt-0.5">
-            {livePred?.model_name ?? "loading"}
-          </p>
         </div>
-      </div>
 
-      {/* Spread signal cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Directional Scorecard */}
+        <div className="glass-card p-4">
+          <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">Direction Accuracy</p>
+          {!loaded || !backtest ? <Skeleton className="h-8 w-24 mt-1.5" /> : (() => {
+            const pts = backtest.points.slice(-20);
+            let correct = 0;
+            const dots: boolean[] = [];
+            for (let i = 1; i < pts.length; i++) {
+              const predDir = Math.sign(pts[i].predicted - pts[i - 1].actual);
+              const actDir = Math.sign(pts[i].actual - pts[i - 1].actual);
+              const ok = predDir === actDir;
+              dots.push(ok);
+              if (ok) correct++;
+            }
+            const pct = dots.length > 0 ? (correct / dots.length * 100) : 0;
+            return (
+              <>
+                <p className="text-2xl font-bold mt-1 tabular-nums">{pct.toFixed(0)}%</p>
+                <div className="flex gap-[2px] mt-1">
+                  {dots.map((ok, i) => (
+                    <div key={i} className={`w-[6px] h-[6px] rounded-full ${ok ? "bg-green-400" : "bg-red-400"}`} />
+                  ))}
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-0.5">Last {dots.length} predictions</p>
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Spread signal cards fill the second row */}
         {!loaded ? (
           <>
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
           </>
         ) : (
           spreads.map((s) => (
-            <div
-              key={s.name}
-              className={`glass-card p-4 border-l-[3px] ${SIGNAL_BORDER[s.signal]}`}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">
-                    {s.label}
-                  </p>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <p className="text-2xl font-bold tabular-nums">
-                      {s.value.toFixed(2)}
-                    </p>
-                    <span className="text-[11px] text-zinc-600">{s.unit}</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={`text-sm ${SIGNAL_TEXT[s.signal]}`}>
-                    {TREND_ICON[s.trend]}
-                  </span>
-                  <p className="text-[10px] text-zinc-600 mt-0.5">
-                    30d avg: {s.ma30.toFixed(2)}
-                  </p>
-                  <span
-                    className={`text-[10px] font-medium ${
-                      s.deviation_pct > 0 ? "text-green-400" : s.deviation_pct < 0 ? "text-red-400" : "text-zinc-400"
-                    }`}
-                  >
-                    {s.deviation_pct > 0 ? "+" : ""}
-                    {s.deviation_pct.toFixed(1)}%
-                  </span>
-                </div>
+            <div key={s.name} className={`glass-card p-4 border-l-[3px] ${SIGNAL_BORDER[s.signal]}`}>
+              <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">{s.label}</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <p className="text-xl font-bold tabular-nums">
+                  {typeof s.value === "number" && s.value > 10 ? s.value.toFixed(0) : s.value.toFixed(2)}
+                </p>
+                <span className="text-[10px] text-zinc-600">{s.unit}</span>
+                <span className={`text-[10px] font-medium ${s.deviation_pct > 0 ? "text-green-400" : s.deviation_pct < 0 ? "text-red-400" : "text-zinc-400"}`}>
+                  {TREND_ICON[s.trend]} {s.deviation_pct > 0 ? "+" : ""}{s.deviation_pct.toFixed(1)}%
+                </span>
               </div>
-              <p className="text-[12px] text-zinc-400 mt-2 leading-relaxed">
-                {s.interpretation}
-              </p>
+              <p className="text-[10px] text-zinc-500 mt-1 line-clamp-2">{s.interpretation}</p>
             </div>
           ))
         )}
