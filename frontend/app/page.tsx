@@ -464,7 +464,8 @@ export default function DashboardPage() {
       {/* Model table */}
       {comp && comp.models.length > 0 && (
         <div className="glass-card p-5">
-          <h2 className="text-sm font-semibold mb-3">Model Performance</h2>
+          <h2 className="text-sm font-semibold">Model Performance</h2>
+          <p className="text-[11px] text-zinc-500 mb-3">Holdout evaluation (20% temporal split, {comp.models[0]?.n_test ?? 541} samples). Walk-forward metrics above use 5-fold cross-validation.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>

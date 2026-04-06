@@ -191,6 +191,11 @@ export default function ModelsPage() {
                 <div className="flex justify-between"><span className="text-zinc-500">Kurtosis</span><span className="tabular-nums">{diag.residual_stats.kurtosis.toFixed(4)}</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">N points</span><span className="tabular-nums">{diag.points.length}</span></div>
               </div>
+              {Math.abs(diag.residual_stats.mean) > 1 && (
+                <p className="text-[10px] text-yellow-600 mt-2 leading-relaxed">
+                  Residual mean of {diag.residual_stats.mean.toFixed(2)} indicates systematic {diag.residual_stats.mean > 0 ? "underprediction" : "overprediction"} — the model tends to forecast ~{Math.abs(diag.residual_stats.mean).toFixed(1)} c/lb {diag.residual_stats.mean > 0 ? "below" : "above"} actual. This bias is expected when prices trend {diag.residual_stats.mean > 0 ? "upward" : "downward"} beyond the training distribution.
+                </p>
+              )}
               {/* Residuals over time */}
               <h3 className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mt-4 mb-2">Residuals Over Time</h3>
               <div className="h-24">

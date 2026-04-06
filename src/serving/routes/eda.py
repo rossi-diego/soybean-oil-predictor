@@ -261,7 +261,7 @@ async def eda_spreads() -> dict:
         p10, p90 = float(ratio.quantile(0.1)), float(ratio.quantile(0.9))
         result["spreads"]["soy_grain"] = {
             "values": [round(v, 2) if pd.notna(v) else None for v in ratio],
-            "label": "Soy / Grain Ratio",
+            "label": "Soy / Wheat Ratio",
             "unit": "ratio",
             "p10": round(p10, 2),
             "p90": round(p90, 2),

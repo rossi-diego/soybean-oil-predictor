@@ -56,7 +56,7 @@ function rollingStd(arr: (number | null)[], w: number, means: (number | null)[])
 const SPREAD_INFO: Record<string, { title: string; desc: string }> = {
   crush: { title: "Board Crush (CME)", desc: "Gross processing margin: (Meal × 0.022) + (Oil × 0.11) − Beans. Result in $/bu. Positive = profitable to crush. Above 30d avg = strong processor demand." },
   bopo: { title: "BOPO Spread", desc: "Soy oil premium to palm oil in USD/mt. Wide (>$200) = soy oil expensive, substitution risk. Narrow (<$100) = soy oil competitive." },
-  soy_grain: { title: "Soy / Grain Ratio", desc: "Drives planting decisions. Above ~2.5 = farmers plant more soybeans (bearish supply). Below ~2.2 = more grain planted (bullish soy)." },
+  soy_grain: { title: "Soy / Wheat Ratio", desc: "Soybeans (c/bu) ÷ Wheat (c/bu). Measures relative value between the two crops. Different from the Soy/Corn ratio on the Dashboard which uses ZC=F." },
   soy_corn_ratio: { title: "Soy / Corn Ratio", desc: "US farmer planting economics. Above 2.5 = more soy planted. Below 2.2 = more corn. Range: 2.0–3.0." },
 };
 
@@ -423,9 +423,11 @@ export default function EDAPage() {
             {Object.keys(spreads.spreads).map((key) => {
               const s = spreads.spreads[key];
               const info = SPREAD_INFO[key];
-              const current = s.values[s.values.length - 1];
+              const current = s.values.findLast((v: number | null) => v != null) ?? null;
               const range = s.p90 - s.p10;
-              const pctl = current != null && range > 0 ? Math.round(((current - s.p10) / range) * 100) : null;
+              const rawPctl = current != null && range > 0 ? Math.round(((current - s.p10) / range) * 100) : null;
+              const pctl = rawPctl != null ? Math.max(0, Math.min(rawPctl, 99)) : null;
+              const pctlLabel = rawPctl != null && rawPctl > 99 ? ">99th" : rawPctl != null && rawPctl < 1 ? "<1st" : pctl != null ? `${pctl}th` : null;
               const data = spreads.dates.map((d, i) => ({ date: d, value: s.values[i] }));
               return (
                 <div key={key}>
@@ -433,7 +435,7 @@ export default function EDAPage() {
                     <h3 className="text-[12px] font-medium">{info?.title ?? s.label}</h3>
                     <span className="text-[10px] text-zinc-500">
                       Current: <strong className="text-zinc-300">{current != null ? (typeof current === "number" && current > 10 ? current.toFixed(0) : current.toFixed(2)) : "N/A"} {s.unit}</strong>
-                      {pctl != null && ` (${pctl}th percentile)`}
+                      {pctlLabel != null && ` (${pctlLabel} percentile)`}
                     </span>
                   </div>
                   {info && <p className="text-[11px] text-zinc-500 mb-2">{info.desc}</p>}
