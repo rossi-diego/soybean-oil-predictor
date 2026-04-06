@@ -131,16 +131,24 @@ async def eda_rolling_correlations(window: int = 60) -> dict:
 
 
 @router.get("/eda/distributions")
-async def eda_distributions() -> dict:
-    """Histogram and quartile data for each feature, plus recent 30-day window."""
+async def eda_distributions(recent_window: str = "3M") -> dict:
+    """Histogram and quartile data for each feature with configurable recent window."""
     df = _load_data()
     cols = [c for c in LABELS if c in df.columns]
-    recent = df.tail(30)
+
+    months = {"1M": 1, "3M": 3, "6M": 6, "1Y": 12}.get(recent_window, 3)
+    cutoff = df.index.max() - pd.DateOffset(months=months)
+    recent = df[df.index >= cutoff]
+
+    start = df.index.min().strftime("%Y-%m-%d")
+    end = df.index.max().strftime("%Y-%m-%d")
     result = {}
 
     for col in cols:
         vals = df[col].dropna()
         recent_vals = recent[col].dropna()
+        current = float(vals.iloc[-1]) if len(vals) > 0 else None
+        percentile = float((vals < current).mean() * 100) if current is not None else None
 
         hist_counts, hist_edges = np.histogram(vals, bins=25)
         recent_counts, _ = np.histogram(recent_vals, bins=hist_edges)
@@ -168,9 +176,17 @@ async def eda_distributions() -> dict:
             "std": round(float(vals.std()), 2),
             "n": len(vals),
             "recent_n": len(recent_vals),
+            "current": round(current, 2) if current is not None else None,
+            "percentile": round(percentile, 0) if percentile is not None else None,
         }
 
-    return {"features": result, "labels": {c: LABELS[c] for c in cols}}
+    return {
+        "features": result,
+        "labels": {c: LABELS[c] for c in cols},
+        "training_start": start,
+        "training_end": end,
+        "recent_window": recent_window,
+    }
 
 
 @router.get("/eda/spreads")

@@ -79,12 +79,13 @@ export default function EDAPage() {
   const [corrMethod, setCorrMethod] = useState("pearson");
   const [corrPeriod, setCorrPeriod] = useState("1Y");
   const [rollPair, setRollPair] = useState("lcoc1");
+  const [distWindow, setDistWindow] = useState("3M");
   const [selectedFeature, setSelectedFeature] = useState("boc1");
 
   useEffect(() => {
     Promise.all([
       api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}),
-      api.edaDistributions().then(setDist).catch(() => {}),
+      api.edaDistributions(distWindow).then(setDist).catch(() => {}),
       api.edaRollingCorrelations().then(setRollingCorr).catch(() => {}),
       api.edaSpreads().then(setSpreads).catch(() => {}),
       api.edaSeasonality().then(setSeason).catch(() => {}),
@@ -94,6 +95,7 @@ export default function EDAPage() {
 
   useEffect(() => { api.edaPrices(period).then(setPrices).catch(() => {}); }, [period]);
   useEffect(() => { api.edaCorrelations(corrMethod, corrPeriod).then(setCorr).catch(() => {}); }, [corrMethod, corrPeriod]);
+  useEffect(() => { api.edaDistributions(distWindow).then(setDist).catch(() => {}); }, [distWindow]);
 
   const demo = loaded && isDemoMode();
 
@@ -299,17 +301,24 @@ export default function EDAPage() {
       })()}
 
       {/* 3. Distribution Analysis */}
-      <Section title="Distribution Analysis" sub="Distributions show whether current prices are typical or extreme. Values near the tails may reduce model accuracy. Blue = training data. Yellow = recent 30 days.">
+      <Section title="Distribution Analysis" sub={`Values near the tails may reduce model accuracy. Blue = training data (${(dist as any)?.training_start ?? ""} to ${(dist as any)?.training_end ?? ""}). Yellow = recent ${distWindow}.`}>
         {!dist ? <Skeleton className="h-48" /> : (
           <>
-            <div className="flex flex-wrap gap-1.5 mb-3">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
               {Object.keys(dist.features).map((f) => (
                 <button key={f} onClick={() => setSelectedFeature(f)} className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${selectedFeature === f ? "bg-white/10 text-white" : "text-zinc-600 hover:text-zinc-400"}`}>{dist.labels[f] ?? f}</button>
+              ))}
+              <span className="text-zinc-700">|</span>
+              <span className="text-[10px] text-zinc-600">Recent:</span>
+              {["1M", "3M", "6M", "1Y"].map((w) => (
+                <button key={w} onClick={() => setDistWindow(w)} className={`text-[10px] px-2 py-0.5 rounded font-medium transition-colors ${distWindow === w ? "bg-yellow-600/20 text-yellow-400" : "text-zinc-600 hover:text-zinc-400"}`}>{w}</button>
               ))}
             </div>
             {dist.features[selectedFeature] && (() => {
               const feat = dist.features[selectedFeature];
-              const skewLabel = feat.mean > feat.quartiles.median + 0.5 ? "Right-skewed" : feat.mean < feat.quartiles.median - 0.5 ? "Left-skewed" : "Approximately normal";
+              const skewLabel = feat.mean > feat.quartiles.median + 0.5 ? "Right-skewed" : feat.mean < feat.quartiles.median - 0.5 ? "Left-skewed" : "Approx. normal";
+              const cur = (feat as any).current;
+              const pctl = (feat as any).percentile;
               return (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2 h-48">
@@ -320,20 +329,23 @@ export default function EDAPage() {
                         <YAxis stroke="#3f3f46" fontSize={9} />
                         <Tooltip contentStyle={{ background: "#111113", border: "1px solid #1e1e22", borderRadius: 8, fontSize: 11 }} />
                         <Bar dataKey="count" fill="#3b82f6" opacity={0.5} name="Training" />
-                        <Bar dataKey="recent_count" fill="#eab308" opacity={0.7} name="Recent 30d" />
+                        <Bar dataKey="recent_count" fill="#eab308" opacity={0.7} name={`Recent ${distWindow}`} />
                         <ReferenceLine x={feat.mean} stroke="#22c55e" strokeDasharray="3 3" />
-                        <ReferenceLine x={feat.quartiles.median} stroke="#8b5cf6" strokeDasharray="3 3" />
+                        {cur != null && <ReferenceLine x={cur} stroke="#f97316" strokeWidth={2} label={{ value: "Now", fill: "#f97316", fontSize: 9 }} />}
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                   <div className="text-[12px] space-y-1">
                     <p className="text-zinc-300 font-medium text-[11px] mb-2">{dist.labels[selectedFeature]} <span className="text-zinc-600">| {skewLabel}</span></p>
+                    {cur != null && (
+                      <div className="flex justify-between"><span className="text-zinc-500">Current</span><span className="tabular-nums text-orange-400">{cur}{pctl != null && ` (${pctl}th pctl)`}</span></div>
+                    )}
                     {Object.entries(feat.quartiles).map(([k, v]) => (
                       <div key={k} className="flex justify-between"><span className="text-zinc-500 capitalize">{k}</span><span className="tabular-nums">{v}</span></div>
                     ))}
                     <div className="flex justify-between"><span className="text-zinc-500">Mean</span><span className="tabular-nums text-green-400">{feat.mean}</span></div>
                     <div className="flex justify-between"><span className="text-zinc-500">Std</span><span className="tabular-nums">{feat.std}</span></div>
-                    <div className="flex justify-between"><span className="text-zinc-500">N</span><span className="tabular-nums">{feat.n} / {feat.recent_n} recent</span></div>
+                    <div className="flex justify-between"><span className="text-zinc-500">N (train / recent)</span><span className="tabular-nums">{feat.n} / {feat.recent_n}</span></div>
                   </div>
                 </div>
               );

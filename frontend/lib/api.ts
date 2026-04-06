@@ -586,8 +586,8 @@ export const api = {
   edaCorrelations: (method = "pearson", period = "1Y") =>
     fetchApi<EdaCorrelationsResponse>(`/api/v1/eda/correlations?method=${method}&period=${period}`),
 
-  edaDistributions: () =>
-    fetchApi<EdaDistributionsResponse>("/api/v1/eda/distributions"),
+  edaDistributions: (recentWindow = "3M") =>
+    fetchApi<EdaDistributionsResponse>(`/api/v1/eda/distributions?recent_window=${recentWindow}`),
 
   edaSpreads: () =>
     fetchApi<EdaSpreadsResponse>("/api/v1/eda/spreads"),
