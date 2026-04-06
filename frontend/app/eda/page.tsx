@@ -54,10 +54,10 @@ function rollingStd(arr: (number | null)[], w: number, means: (number | null)[])
 }
 
 const SPREAD_INFO: Record<string, { title: string; desc: string }> = {
-  crush: { title: "Board Crush (CME)", desc: "Gross processing margin: (Meal \u00D7 0.022) + (Oil \u00D7 0.11) \u2212 Beans. Result in $/bu. Positive = profitable to crush. Above 30d avg = strong processor demand." },
+  crush: { title: "Board Crush (CME)", desc: "Gross processing margin: (Meal × 0.022) + (Oil × 0.11) − Beans. Result in $/bu. Positive = profitable to crush. Above 30d avg = strong processor demand." },
   bopo: { title: "BOPO Spread", desc: "Soy oil premium to palm oil in USD/mt. Wide (>$200) = soy oil expensive, substitution risk. Narrow (<$100) = soy oil competitive." },
   soy_grain: { title: "Soy / Grain Ratio", desc: "Drives planting decisions. Above ~2.5 = farmers plant more soybeans (bearish supply). Below ~2.2 = more grain planted (bullish soy)." },
-  soy_corn_ratio: { title: "Soy / Corn Ratio", desc: "US farmer planting economics. Above 2.5 = more soy planted. Below 2.2 = more corn. Range: 2.0\u20133.0." },
+  soy_corn_ratio: { title: "Soy / Corn Ratio", desc: "US farmer planting economics. Above 2.5 = more soy planted. Below 2.2 = more corn. Range: 2.0–3.0." },
 };
 
 const VISIBLE_DEFAULT = new Set(["boc1", "sc1", "smc1", "lcoc1"]);
@@ -137,7 +137,7 @@ export default function EDAPage() {
       {demo && <DemoBanner />}
 
       {/* 1. Price History */}
-      <Section title="Price History" sub="Normalized view (base 100) compares commodities across different scales. Toggle Bollinger Bands (20d \u00B1 2\u03C3) and MAs in absolute view.">
+      <Section title="Price History" sub="Normalized view (base 100) compares commodities across different scales. Toggle Bollinger Bands (20d ± 2σ) and MAs in absolute view.">
         <div className="flex flex-wrap items-center gap-2 mb-2">
           {["1Y", "3Y", "5Y", "all"].map((p) => (
             <button key={p} onClick={() => setPeriod(p)} className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-colors ${period === p ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"}`}>{p === "all" ? "All" : p}</button>
@@ -232,7 +232,7 @@ export default function EDAPage() {
                           className={`p-1 text-center font-mono tabular-nums rounded-sm ${strong ? "ring-1 ring-white/40" : ""}`}
                           style={{ background: bg, color: fg, minWidth: 48 }}
                           title={`${corr.labels[row]} vs ${corr.labels[corr.features[j]]}: r = ${val.toFixed(4)} (${corrMethod})`}
-                        >{isDiag ? "\u2014" : val.toFixed(2)}</td>
+                        >{isDiag ? "—" : val.toFixed(2)}</td>
                       );
                     })}
                   </tr>
@@ -314,7 +314,7 @@ export default function EDAPage() {
       </Section>
 
       {/* 4. Ratio Analysis */}
-      <Section title="Ratio Analysis" sub="Key commodity ratios traders monitor. Shaded band = 10th\u201390th percentile range. Dashed line = historical average.">
+      <Section title="Ratio Analysis" sub="Key commodity ratios traders monitor. Shaded band = 10th–90th percentile range. Dashed line = historical average.">
         {!spreads ? <Skeleton className="h-48" /> : (
           <div className="space-y-6">
             {Object.keys(spreads.spreads).map((key) => {
@@ -383,7 +383,7 @@ export default function EDAPage() {
               </div>
               <p className="text-[11px] text-zinc-500 mt-2">
                 Historically peaks in <strong className="text-zinc-300">{peak?.name}</strong> ({peak?.median.toFixed(1)} c/lb median) and troughs in <strong className="text-zinc-300">{trough?.name}</strong> ({trough?.median.toFixed(1)}).
-                {cur && ` Current month (${cur.name}): median ${cur.median.toFixed(1)} c/lb. Shaded band = Q1\u2013Q3 range.`}
+                {cur && ` Current month (${cur.name}): median ${cur.median.toFixed(1)} c/lb. Shaded band = Q1–Q3 range.`}
               </p>
             </>
           );
@@ -426,7 +426,7 @@ export default function EDAPage() {
               </div>
               <div className="mt-2 p-3 bg-white/[0.02] rounded-md text-[11px] text-zinc-400 space-y-1">
                 <p>Average daily move is near zero ({rs.mean.toFixed(2)}%) &mdash; no persistent drift.</p>
-                <p>Std of {rs.std.toFixed(2)}% means a typical day moves \u00B1{(rs.std * 0.69).toFixed(1)} c/lb at current prices.</p>
+                <p>Std of {rs.std.toFixed(2)}% means a typical day moves ±{(rs.std * 0.69).toFixed(1)} c/lb at current prices.</p>
                 {rs.kurtosis > 3 && <p className="text-yellow-500/80">Kurtosis of {rs.kurtosis.toFixed(1)} (normal = 3) confirms fat tails &mdash; extreme moves (crashes, spikes) happen more often than a bell curve predicts. Standard VaR models underestimate tail risk.</p>}
               </div>
             </div>
@@ -449,8 +449,8 @@ export default function EDAPage() {
                     {Object.entries(station.adf_tests).map(([feat, r]) => (
                       <tr key={feat} className="border-b border-[#1e1e22]/50">
                         <td className="py-1.5 px-2 font-medium">{station.labels[feat] ?? feat}</td>
-                        <td className="py-1.5 px-2 text-right tabular-nums">{r.statistic?.toFixed(2) ?? "\u2014"}</td>
-                        <td className="py-1.5 px-2 text-right tabular-nums">{r.p_value != null ? r.p_value.toFixed(4) : "\u2014"}</td>
+                        <td className="py-1.5 px-2 text-right tabular-nums">{r.statistic?.toFixed(2) ?? "—"}</td>
+                        <td className="py-1.5 px-2 text-right tabular-nums">{r.p_value != null ? r.p_value.toFixed(4) : "—"}</td>
                         <td className="py-1.5 px-2 text-center">
                           {r.stationary === true && <span className="text-green-400 text-[10px]">Stationary (p &lt; 0.05)</span>}
                           {r.stationary === false && <span className="text-red-400 text-[10px]">Unit root</span>}
@@ -496,8 +496,8 @@ export default function EDAPage() {
               </div>
               <p className="text-[11px] text-zinc-500 mt-2">
                 {acfSignificant
-                  ? `Lag 1 autocorrelation (${acfLag1?.value.toFixed(3)}) is significant \u2014 slight short-term momentum exists in daily returns. The model captures this signal via lagged return features.`
-                  : "Returns show minimal autocorrelation \u2014 daily moves are largely independent. This limits the accuracy ceiling for any single-day prediction model, consistent with weak-form market efficiency."}
+                  ? `Lag 1 autocorrelation (${acfLag1?.value.toFixed(3)}) is significant — slight short-term momentum exists in daily returns. The model captures this signal via lagged return features.`
+                  : "Returns show minimal autocorrelation — daily moves are largely independent. This limits the accuracy ceiling for any single-day prediction model, consistent with weak-form market efficiency."}
               </p>
             </div>
           </div>

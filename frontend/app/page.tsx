@@ -294,7 +294,7 @@ export default function DashboardPage() {
               {[
                 { label: "MAE", value: backtest.metrics.mae.toFixed(2), unit: "c/lb" },
                 { label: "RMSE", value: backtest.metrics.rmse.toFixed(2), unit: "c/lb" },
-                { label: "R\u00B2", value: backtest.metrics.r2.toFixed(4), unit: "" },
+                { label: "R²", value: backtest.metrics.r2.toFixed(4), unit: "" },
                 { label: "Dir. Accuracy", value: `${(backtest.metrics.directional_accuracy * 100).toFixed(1)}%`, unit: "" },
                 { label: "Folds", value: String(backtest.n_folds), unit: "" },
                 { label: "OOS Predictions", value: backtest.n_points.toLocaleString(), unit: "" },
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                 );
               })}
               <span className="text-[9px] text-zinc-600 shrink-0 ml-auto">
-                yfinance {prices[0] && `\u00B7 ${new Date(prices[0].timestamp).toLocaleTimeString()}`}
+                yfinance {prices[0] && `· ${new Date(prices[0].timestamp).toLocaleTimeString()}`}
               </span>
             </div>
 
@@ -401,19 +401,19 @@ export default function DashboardPage() {
         let signalColor: string;
         let signalDot: string;
         if (farFromMean) {
-          signalText = "LOW CONFIDENCE \u2014 price outside training range";
+          signalText = "LOW CONFIDENCE — price outside training range";
           signalColor = "text-red-400";
           signalDot = "bg-red-400";
         } else if (modelBias === "neutral") {
-          signalText = "NEUTRAL \u2014 model sees no clear directional edge";
+          signalText = "NEUTRAL — model sees no clear directional edge";
           signalColor = "text-zinc-400";
           signalDot = "bg-zinc-400";
         } else if (spreadsAgree) {
-          signalText = `${modelBias.toUpperCase()} \u2014 model and spreads aligned`;
+          signalText = `${modelBias.toUpperCase()} — model and spreads aligned`;
           signalColor = modelBias === "bullish" ? "text-green-400" : "text-red-400";
           signalDot = modelBias === "bullish" ? "bg-green-400" : "bg-red-400";
         } else {
-          signalText = `MIXED \u2014 model ${modelBias} but spreads diverge`;
+          signalText = `MIXED — model ${modelBias} but spreads diverge`;
           signalColor = "text-yellow-500";
           signalDot = "bg-yellow-500";
         }

@@ -105,7 +105,7 @@ export default function ModelsPage() {
                   {[
                     { key: "mae", label: "MAE" },
                     { key: "rmse", label: "RMSE" },
-                    { key: "r2", label: "R\u00B2" },
+                    { key: "r2", label: "R²" },
                     { key: "directional_accuracy", label: "Dir. Acc." },
                     { key: "train_time_s", label: "Time (s)" },
                   ].map(({ key, label }) => (

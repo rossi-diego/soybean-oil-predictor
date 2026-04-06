@@ -28,25 +28,25 @@ const FEATURE_LABELS: Record<string, string> = Object.fromEntries(
 const SCENARIOS: { label: string; desc: string; detail: string; adjustments: Record<string, number> }[] = [
   {
     label: "Grain Rally +15%",
-    desc: "Soybeans and meal rally 15% \u2014 simulates strong demand or weather-driven supply shock in the US Corn Belt.",
+    desc: "Soybeans and meal rally 15% — simulates strong demand or weather-driven supply shock in the US Corn Belt.",
     detail: "SC1 +15%, SMC1 +15%, Wheat +10%",
     adjustments: { sc1: 1.15, smc1: 1.15, rsc1: 1.10 },
   },
   {
     label: "Energy Spike +25%",
-    desc: "Crude oil and heating oil spike 25% \u2014 simulates geopolitical disruption. Bullish for soy oil via biodiesel demand.",
+    desc: "Crude oil and heating oil spike 25% — simulates geopolitical disruption. Bullish for soy oil via biodiesel demand.",
     detail: "Brent +25%, Heating Oil +25%",
     adjustments: { lcoc1: 1.25, hoc1: 1.25 },
   },
   {
     label: "Demand Destruction -15%",
     desc: "Global demand downturn (recession, China slowdown). All commodity prices fall as consumption contracts.",
-    detail: "All features \u221215%",
+    detail: "All features −15%",
     adjustments: { smc1: 0.85, sc1: 0.85, lcoc1: 0.85, hoc1: 0.85, rsc1: 0.85 },
   },
   {
     label: "Crush Margin Squeeze",
-    desc: "Bean prices rise but products lag \u2014 simulates tight soybean supply with weak crush margins. Processors cut throughput.",
+    desc: "Bean prices rise but products lag — simulates tight soybean supply with weak crush margins. Processors cut throughput.",
     detail: "SC1 +20%, SMC1 +5%, others flat",
     adjustments: { sc1: 1.20, smc1: 1.05 },
   },
@@ -268,7 +268,7 @@ export default function PredictPage() {
                 <div className="flex justify-between"><span className="text-zinc-500">Champion</span><span>{(meta as any)?.champion ?? "ridge"}</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">Training samples</span><span className="tabular-nums">{meta?.n_training_samples?.toLocaleString() ?? "2,016"}</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">Period</span><span className="text-zinc-400">{(meta as any)?.train_start ?? "2013"} &ndash; {(meta as any)?.test_end ?? "2025"}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500">Last trained</span><span className="text-zinc-400">{meta?.trained_at ? new Date(meta.trained_at).toLocaleDateString() : "\u2014"}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">Last trained</span><span className="text-zinc-400">{meta?.trained_at ? new Date(meta.trained_at).toLocaleDateString() : "—"}</span></div>
               </div>
             </div>
             <div>
@@ -351,7 +351,7 @@ export default function PredictPage() {
                     onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
                     className={`w-full bg-black/30 border rounded-md px-2 py-1.5 text-[13px] tabular-nums focus:outline-none transition-colors placeholder:text-zinc-700 ${outOfRange ? "border-yellow-600/50" : "border-[#262626] focus:border-zinc-500"}`}
                   />
-                  {range && <p className="text-[8px] text-zinc-600 mt-0.5">{range.min}\u2013{range.max} {unit}</p>}
+                  {range && <p className="text-[8px] text-zinc-600 mt-0.5">{range.min}–{range.max} {unit}</p>}
                   {outOfRange && <p className="text-[9px] text-yellow-500/80 mt-0.5">Outside training range</p>}
                 </div>
               );
