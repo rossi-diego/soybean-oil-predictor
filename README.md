@@ -27,14 +27,12 @@ Data     (yfinance — daily commodity prices)
 
 | Metric | Value | Method |
 |--------|-------|--------|
-| MAE | 2.37 c/lb | Walk-forward (5-fold TimeSeriesSplit) |
-| RMSE | 2.99 c/lb | Out-of-sample holdout (20% temporal) |
-| R2 | 0.86 | Out-of-sample holdout |
-| Directional Accuracy | 56.0% | True next-day direction prediction |
-| Strategy Sharpe | 3.03 | Long when model predicts up, flat otherwise |
-| Champion Model | Ridge | Lowest MAE across 5 models |
+| MAE | 4.05 c/lb | Walk-forward (5-fold TimeSeriesSplit) |
+| RMSE | 5.04 c/lb | Out-of-sample holdout (20% temporal) |
+| Training Period | Oct 2013 – Apr 2026 | 2,762 trading days |
+| Champion Model | Linear Regression | Lowest MAE across 5 models |
 
-12 features: 5 raw commodity prices + 7 stationary indicators (crush spread z-score, crude ratio z-score, momentum, mean-reversion, volatility, Bollinger position). Ridge selected as champion over XGBoost — L2 regularization prevents overfitting on this feature set. Walk-forward validation across 2,050 out-of-sample predictions confirms generalization.
+12 features: 5 raw commodity prices + 7 stationary indicators (crush spread z-score, crude ratio z-score, momentum, mean-reversion, volatility, Bollinger position). Linear regression selected as champion — regularization-free model generalizes best on this feature set. Walk-forward validation across 2,250 out-of-sample predictions confirms robustness.
 
 ---
 
