@@ -95,7 +95,7 @@ export default function ModelsPage() {
       {demo && <DemoBanner />}
 
       {/* 1. Comparison Table */}
-      <Section title="Performance Comparison" sub="5 models predict BOC1 price levels. MAE measures prediction error. Directional accuracy (56% true next-day) is the primary trading metric. Click headers to sort.">
+      <Section title="Performance Comparison" sub="5 models predict BOC1 price levels. MAE measures prediction error. Directional accuracy measures true next-day direction calls. Click headers to sort.">
         {!comp ? <Skeleton className="h-48" /> : (
           <div className="overflow-x-auto">
             <table className="w-full text-[13px]">

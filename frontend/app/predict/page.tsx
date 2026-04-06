@@ -288,7 +288,7 @@ export default function PredictPage() {
                 <div className="flex justify-between"><span className="text-zinc-500">MAE</span><span className="tabular-nums">{bm?.mae?.toFixed(2) ?? "2.69"} c/lb</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">RMSE</span><span className="tabular-nums">{bm?.rmse?.toFixed(2) ?? "3.53"} c/lb</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">R&sup2;</span><span className="tabular-nums">{bm?.r2?.toFixed(4) ?? "0.8138"}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500">Dir. Accuracy</span><span className="tabular-nums">{bm?.directional_accuracy ? `${(bm.directional_accuracy * 100).toFixed(1)}%` : "76.3%"}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500">Dir. Accuracy</span><span className="tabular-nums">{bm?.directional_accuracy ? `${(bm.directional_accuracy * 100).toFixed(1)}%` : "—"}</span></div>
                 <div className="flex justify-between"><span className="text-zinc-500">OOS predictions</span><span className="tabular-nums">{bm?.n_predictions?.toLocaleString() ?? "2,100"}</span></div>
               </div>
             </div>

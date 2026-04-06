@@ -99,7 +99,7 @@ export default function DashboardPage() {
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
           Front-month contract forecast using commodity cross-correlations,
-          crush economics, and Ridge regression. 56% directional accuracy on out-of-sample data.
+          crush economics, and linear regression.{backtest ? ` ${(backtest.metrics.directional_accuracy * 100).toFixed(1)}% directional accuracy on out-of-sample data.` : ""}
         </p>
       </section>
 
@@ -140,26 +140,25 @@ export default function DashboardPage() {
         <div className="glass-card p-4">
           <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">Direction Accuracy</p>
           {!loaded || !backtest ? <Skeleton className="h-8 w-24 mt-1.5" /> : (() => {
+            const overallPct = backtest.metrics.directional_accuracy * 100;
             const pts = backtest.points.slice(-20);
-            let correct = 0;
             const dots: boolean[] = [];
             for (let i = 1; i < pts.length; i++) {
               const predDir = Math.sign(pts[i].predicted - pts[i - 1].actual);
               const actDir = Math.sign(pts[i].actual - pts[i - 1].actual);
-              const ok = predDir === actDir;
-              dots.push(ok);
-              if (ok) correct++;
+              dots.push(predDir === actDir);
             }
-            const pct = dots.length > 0 ? (correct / dots.length * 100) : 0;
+            const recentCorrect = dots.filter(Boolean).length;
+            const recentPct = dots.length > 0 ? (recentCorrect / dots.length * 100) : 0;
             return (
               <>
-                <p className="text-2xl font-bold mt-1 tabular-nums">{pct.toFixed(0)}%</p>
+                <p className="text-2xl font-bold mt-1 tabular-nums">{overallPct.toFixed(1)}%</p>
                 <div className="flex gap-[2px] mt-1">
                   {dots.map((ok, i) => (
                     <div key={i} className={`w-[6px] h-[6px] rounded-full ${ok ? "bg-green-400" : "bg-red-400"}`} />
                   ))}
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-0.5">Last {dots.length} predictions</p>
+                <p className="text-[10px] text-zinc-600 mt-0.5">Overall (last {dots.length}: {recentPct.toFixed(0)}%)</p>
               </>
             );
           })()}
@@ -439,7 +438,7 @@ export default function DashboardPage() {
                   {d > 0 ? "upside" : "downside"} of {Math.abs(pct).toFixed(1)}%
                 </strong>{" "}
                 ({livePred.predicted_price.toFixed(2)} vs {boc1.toFixed(2)} c/lb).
-                Next-day directional accuracy: 56%.
+                Next-day directional accuracy: {backtest ? `${(backtest.metrics.directional_accuracy * 100).toFixed(1)}%` : "—"}.
               </p>
 
               {/* Line 3: Spread context */}
